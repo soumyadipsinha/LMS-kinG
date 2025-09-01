@@ -32,7 +32,7 @@ export default function About() {
     <div className="bg-white">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-        <div className="max-w-6xl mx-auto px-4 py-20 md:py-28">
+        <div className="max-w-6xl mx-auto px-4 py-20 md:py-10">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-6">
               Empowering Learners
@@ -72,11 +72,11 @@ export default function About() {
       </section>
 
       {/* Mission Section */}
-      <section className="py-20">
+      <section className="py-15">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
+              <h2 className="text-3xl md:text-5xl font-bold text-[#1B4A8B]">
                 Our Mission
               </h2>
               <p className="text-lg text-slate-600 mb-6 leading-relaxed">
@@ -85,7 +85,7 @@ export default function About() {
               </p>
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <div className="w-6 h-6 bg-[#1B4A8B] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                     <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
@@ -93,7 +93,7 @@ export default function About() {
                   <p className="text-slate-600">Personalized learning paths tailored to individual needs</p>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <div className="w-6 h-6 bg-[#1B4A8B] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                     <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
@@ -101,7 +101,7 @@ export default function About() {
                   <p className="text-slate-600">Industry-expert instructors with real-world experience</p>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <div className="w-6 h-6 bg-[#1B4A8B] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                     <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
@@ -124,10 +124,10 @@ export default function About() {
       </section>
 
       {/* Team Section */}
-      <section className="py-20 bg-slate-50">
+      <section className="py-10 bg-slate-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold text-[#1B4A8B] mb-4">
               Meet Our Team
             </h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
@@ -161,7 +161,7 @@ export default function About() {
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold text-[#1B4A8B]">
               Our Values
             </h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
