@@ -1,5 +1,4 @@
-// src/pages/CourseDetails.jsx
-import { Link, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 function Star({ filled }) {
   return (
@@ -16,23 +15,16 @@ function Star({ filled }) {
 
 export default function CourseDetails() {
   const { id } = useParams();
-  
-  // In a real app these would come from route params / API
-  const course = {
-    id: id,
-    title: "Machine Learning Course",
-    name: "Advance Machine Learning",
-    sub: "Drive deep into machine learning",
-    author: "By John Doe",
-    price: "$99.89",
-  };
+  const location = useLocation();
+  const { course } = location.state || {}; // get course object from state
+
+  if (!course) {
+    return <p className="text-center mt-20">Course not found.</p>;
+  }
 
   const similar = Array.from({ length: 3 }).map((_, i) => ({
-    id: i + 1,
-    title: "Advance Machine Learning",
-    sub: "Drive deep into machine learning",
-    author: "By John Doe",
-    price: "$99.89",
+    ...course, // just showing same course for simplicity
+    id: i + 10,
   }));
 
   return (
@@ -60,19 +52,18 @@ export default function CourseDetails() {
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
           {/* Left column */}
           <div>
-            <h2 className="text-xl font-semibold text-slate-900">
+            <h2 className="text-3xl font-semibold text-slate-900">
               Course Overview
             </h2>
-
             <p className="mt-4 text-slate-600 leading-relaxed">
-              Learn fundamental and advanced machine learning concepts with
-              hands-on projects. Build, evaluate, and deploy models for real
-              datasets while mastering workflows used in production ML.
+              <span className="font-bold">Real-time Corporate Projects:</span> Gain hands-on experience during your course.<br/>
+              <span className="font-bold">1:1 AI Mentorship & Mock Interviews:</span> Personalised support and MNC scenario<br/>
+              <span className="font-bold">Weekly Audits & Assessments:</span> Track progress and unlock certifications regularly.<br/>
+              <span className="font-bold">Direct Referrals to Top MNCs:</span> Opportunities for potential salaries up to ₹20 LPA.
             </p>
-
             <div className="mt-8">
               <button className="inline-flex items-center justify-center rounded-full bg-[#1b3b6b] text-white font-semibold px-6 py-2.5 shadow hover:bg-[#163257]">
-                Book Now
+                Register Now
               </button>
             </div>
           </div>
@@ -80,10 +71,14 @@ export default function CourseDetails() {
           {/* Right preview card */}
           <aside>
             <div className="rounded-xl border border-slate-200 bg-white p-4">
-              <div className="aspect-[16/10] w-full rounded-xl bg-slate-200" />
+              <img
+                src={course.img}
+                alt={course.title}
+                className="aspect-[16/10] w-full rounded-xl object-cover"
+              />
               <div className="mt-4">
                 <h3 className="text-sm font-semibold text-slate-800">
-                  {course.name}
+                  {course.title}
                 </h3>
                 <p className="mt-1 text-sm text-slate-600">{course.sub}</p>
                 <p className="mt-1 text-xs text-slate-500">{course.author}</p>
@@ -95,26 +90,25 @@ export default function CourseDetails() {
           </aside>
         </div>
 
-        {/* Similar Course */}
+        {/* Similar Courses */}
         <h2 className="mt-12 text-2xl md:text-3xl font-extrabold text-[#1b3b6b]">
-          Similar Course
+          Similar Courses
         </h2>
-
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {similar.map((c) => (
-            <Link key={c.id} to={`/courses/${c.id}`} className="group">
-              <div className="aspect-[16/11] w-full rounded-xl bg-slate-200 group-hover:bg-slate-300 transition-colors" />
+            <div key={c.id} className="group">
+              <img
+                src={c.img}
+                alt={c.title}
+                className="aspect-[16/11] w-full rounded-xl object-cover group-hover:scale-105 transition-transform duration-300"
+              />
               <div className="mt-3">
-                <h3 className="text-sm font-semibold text-slate-800">
-                  {c.title}
-                </h3>
+                <h3 className="text-sm font-semibold text-slate-800">{c.title}</h3>
                 <p className="mt-1 text-sm text-slate-600">{c.sub}</p>
                 <p className="mt-1 text-xs text-slate-500">{c.author}</p>
-                <p className="mt-1 text-sm font-semibold text-slate-800">
-                  {c.price}
-                </p>
+                <p className="mt-1 text-sm font-semibold text-slate-800">{c.price}</p>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </div>

@@ -50,7 +50,7 @@ export default function Faq() {
     <div className="bg-white">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-        <div className="max-w-6xl mx-auto px-4 py-20 md:py-28">
+        <div className="max-w-6xl mx-auto px-4 py-20 md:py-15">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-6">
               Frequently Asked
@@ -75,7 +75,7 @@ export default function Faq() {
       <section className="py-16 bg-slate-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">
+            <h2 className="text-2xl md:text-5xl font-bold text-[#1B4A8B]">
               Browse by Category
             </h2>
             <p className="text-slate-600">
@@ -102,7 +102,7 @@ export default function Faq() {
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold text-[#1B4A8B]">
               Common Questions
             </h2>
             <p className="text-lg text-slate-600">

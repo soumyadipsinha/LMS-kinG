@@ -17,23 +17,24 @@ export default function Navbar() {
           </Link>
 
           {/* Nav Links */}
-          <nav className="hidden md:flex items-center gap-6">
-            <NavLink to="/" end className={navLink}>
-              Home
-            </NavLink>
-            <NavLink to="/courses" className={navLink}>
-              Courses
-            </NavLink>
-            <NavLink to="/about" className={navLink}>
-              About
-            </NavLink>
-            <NavLink to="/faq" className={navLink}>
-              FAQ
-            </NavLink>
-          </nav>
+
 
           {/* Login + Mobile Menu */}
           <div className="flex items-center gap-3">
+            <nav className="hidden md:flex items-center gap-6">
+              <NavLink to="/" end className={navLink}>
+                Home
+              </NavLink>
+              <NavLink to="/courses" className={navLink}>
+                Courses
+              </NavLink>
+              <NavLink to="/about" className={navLink}>
+                About
+              </NavLink>
+              <NavLink to="/faq" className={navLink}>
+                FAQ
+              </NavLink>
+            </nav>
             <Link
               to="/login"
               className="inline-flex items-center gap-2 rounded-full bg-[#1B4A8B] text-white text-sm font-semibold px-5 py-2.5 shadow hover:bg-indigo-700"
