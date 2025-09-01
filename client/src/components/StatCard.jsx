@@ -29,8 +29,9 @@ export default function StatsSection() {
   ];
 
   return (
-    <section className="max-w-6xl mx-auto px-4 mt-12">
-      <div className="grid grid-cols-1 md:grid-cols-4 bg-white border-2 border-blue-400 rounded-2xl shadow-md overflow-hidden">
+    <section className="max-w-6xl mx-auto ">
+      <div className="grid grid-cols-1 md:grid-cols-4 bg-white rounded-2xl shadow-[0_8px_20px_rgba(0,0,0,0.15)]">
+
         {stats.map((item, index) => (
           <div
             key={index}

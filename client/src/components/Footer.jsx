@@ -1,4 +1,10 @@
 // src/components/Footer.jsx
+import { FaFacebook } from "react-icons/fa";
+import { FaInstagram } from "react-icons/fa";
+import { FaLinkedin } from "react-icons/fa";
+
+
+
 import { Link } from "react-router-dom";
 
 export default function Footer() {
@@ -11,7 +17,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Brand + blurb + CTA */}
           <div>
-            <div className="text-2xl font-extrabold tracking-wide">LITERA</div>
+            <div className="text-4xl font-extrabold tracking-wide">LITERA</div>
             <p className="mt-4 text-sm leading-relaxed text-indigo-100">
               A Best Platform Enroll in your Special Course A Best Platform Enroll
               in your Special Course. {/* duplicated tone to mirror screenshot text flow */} 
@@ -52,13 +58,13 @@ export default function Footer() {
             </p>
             <ul className="mt-4 space-y-2">
               <li>
-                <a href="#" className="hover:underline">Facebook</a>
+                <a href="#" className="flex items-center gap-2 hover:underline"><FaFacebook />Facebook</a>
               </li>
               <li>
-                <a href="#" className="hover:underline">Instagram</a>
+                <a href="#" className="flex items-center gap-2 hover:underline"><FaInstagram />Instagram</a>
               </li>
               <li>
-                <a href="#" className="hover:underline">LinkedIn</a>
+                <a href="#" className="flex items-center gap-2 hover:underline"><FaLinkedin />LinkedIn</a>
               </li>
             </ul>
           </div>
