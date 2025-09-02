@@ -1,4 +1,9 @@
 import { Link } from "react-router-dom";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 import AiPic from "../assets/Ai-pic.jpg";
 import ReactPic from "../assets/react-pic.jpg";
 import NodePic from "../assets/Node-pic.jpg";
@@ -24,37 +29,106 @@ export default function Courses() {
     { id: 6, title: "Javascript Deep Dive", sub: "Master JS fundamentals and ES6+", author: "By Emily Clark", price: "$69.99", img: JSDeepPic },
   ];
 
+  const promoSlides = [
+    {
+      id: 1,
+      gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      icon: "🤖",
+      title: "AI & Machine Learning",
+      subtitle: "Master the future of technology with neural networks and deep learning algorithms"
+    },
+    {
+      id: 2,
+      gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+      icon: "📊",
+      title: "Data Science",
+      subtitle: "Transform raw data into powerful insights and predictive analytics"
+    },
+    {
+      id: 3,
+      gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+      icon: "💻",
+      title: "Web Development",
+      subtitle: "Build modern, responsive web applications with cutting-edge technologies"
+    },
+    {
+      id: 4,
+      gradient: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+      icon: "🧠",
+      title: "Deep Learning",
+      subtitle: "Explore neural networks, computer vision, and natural language processing"
+    }
+  ];
+
   return (
     <div className="bg-white">
       <div className="max-w-6xl mx-auto px-4 py-10 md:py-12">
-        {/* Promo Banner */}
-        <section className="rounded-3xl bg-[#E7EB6E] p-6 md:p-8 relative overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-6">
-            <div className="hidden md:block" />
-            <div className="bg-white/90 rounded-lg p-5 shadow-sm">
-              <h2 className="text-xl font-extrabold text-slate-900">Code your future</h2>
-              <p className="mt-2 text-sm text-slate-600">
-                Take control of a career. Learn the latest skills in web Development.
-              </p>
-            </div>
-            <div className="justify-self-end">
-              <div className="w-40 h-40 md:w-48 md:h-48 grid place-items-center">
-                <svg viewBox="0 0 120 120" className="w-full h-full" aria-hidden="true">
-                  <circle cx="60" cy="60" r="58" fill="#FFF7CC" />
-                  <g fill="#111827">
-                    <rect x="54" y="20" width="12" height="26" rx="2" />
-                    <rect x="30" y="64" width="20" height="12" rx="2" />
-                    <rect x="70" y="64" width="20" height="12" rx="2" />
-                    <rect x="40" y="84" width="40" height="8" rx="2" />
-                  </g>
-                  <g fill="#4F46E5">
-                    <rect x="22" y="30" width="16" height="10" rx="2" />
-                    <rect x="82" y="30" width="16" height="10" rx="2" />
-                  </g>
-                </svg>
-              </div>
-            </div>
-          </div>
+        {/* Promo Banner with Swiper */}
+        <section className="rounded-3xl overflow-hidden relative bg-gray-100">
+          <Swiper
+            modules={[Navigation, Pagination, Autoplay]}
+            spaceBetween={0}
+            slidesPerView={1}
+            navigation={true}
+            pagination={{ clickable: true }}
+            autoplay={{
+              delay: 2000,
+              disableOnInteraction: false,
+            }}
+            loop={true}
+            style={{ height: '320px' }}
+          >
+            {promoSlides.map((slide) => (
+              <SwiperSlide key={slide.id}>
+                <div 
+                  className="relative w-full h-full flex items-center"
+                  style={{ background: slide.gradient }}
+                >
+                  {/* Background Pattern */}
+                  <div className="absolute inset-0 opacity-10">
+                    <div className="absolute top-4 left-4 w-20 h-20 border-2 border-white rounded-full"></div>
+                    <div className="absolute top-12 right-8 w-12 h-12 border-2 border-white rounded-full"></div>
+                    <div className="absolute bottom-8 left-12 w-16 h-16 border-2 border-white rounded-full"></div>
+                    <div className="absolute bottom-16 right-4 w-8 h-8 border-2 border-white rounded-full"></div>
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="relative z-10 w-full px-8 md:px-12">
+                    <div className="flex items-center gap-6">
+                      {/* Icon */}
+                      <div className="text-6xl md:text-8xl">
+                        {slide.icon}
+                      </div>
+                      
+                      {/* Text Content */}
+                      <div className="flex-1">
+                        <div className="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg max-w-md">
+                          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                            {slide.title}
+                          </h2>
+                          <p className="text-gray-700 leading-relaxed">
+                            {slide.subtitle}
+                          </p>
+                          <div className="mt-4 flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <span className="text-sm text-gray-600 font-medium">Live Classes Available</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Floating Elements */}
+                  <div className="absolute top-6 right-6 text-white/20 text-4xl">
+                    {slide.icon}
+                  </div>
+                  <div className="absolute bottom-6 left-6 text-white/10 text-2xl">
+                    ⚡
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </section>
 
         {/* Title */}

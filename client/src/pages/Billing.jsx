@@ -30,7 +30,7 @@ function BillingCard({ title, amount, status, date, type }) {
       
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-2xl font-bold text-slate-900">${amount}</p>
+          <p className="text-2xl font-bold text-slate-900">₹{amount}</p>
           <p className="text-sm text-slate-500 mt-1">Due: {date}</p>
         </div>
         <button className="px-4 py-2 rounded-full border border-slate-300 text-sm font-medium hover:bg-slate-50">
@@ -76,9 +76,9 @@ export default function Billing() {
   const [activeTab, setActiveTab] = useState("invoices");
 
   const invoices = [
-    { id: 1, title: "Machine Learning Course", amount: "99.89", status: "Paid", date: "Dec 15, 2024", type: "Course Purchase" },
-    { id: 2, title: "Data Science Bundle", amount: "149.99", status: "Pending", date: "Dec 20, 2024", type: "Course Purchase" },
-    { id: 3, title: "Premium Subscription", amount: "29.99", status: "Failed", date: "Dec 10, 2024", type: "Monthly Subscription" },
+    { id: 1, title: "Machine Learning Course", amount: "4,999", status: "Paid", date: "Dec 15, 2024", type: "Course Purchase" },
+    { id: 2, title: "Data Science Bundle", amount: "7,499", status: "Pending", date: "Dec 20, 2024", type: "Course Purchase" },
+    { id: 3, title: "Premium Subscription", amount: "1,499", status: "Failed", date: "Dec 10, 2024", type: "Monthly Subscription" },
   ];
 
   const paymentMethods = [

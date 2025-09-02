@@ -7,43 +7,59 @@ export default function Faq() {
   const faqs = [
     {
       question: "How do I enroll in a course?",
-      answer: "Enrolling is simple! Browse our course catalog, select the course you're interested in, and click the 'Enroll Now' button. You'll be guided through a quick registration process and can start learning immediately."
+      answer: "Enrolling is simple! Browse our course catalog, select the course you're interested in, and click the 'Enroll Now' button. You'll be guided through a quick registration process and can start learning immediately.",
+      icon: "🎯",
+      category: "Enrollment"
     },
     {
       question: "Do you offer live classes and support?",
-      answer: "Yes! We offer daily live sessions with expert instructors where you can ask questions in real-time. Additionally, we provide 24/7 doubt support through our community forums and dedicated support team."
+      answer: "Yes! We offer daily live sessions with expert instructors where you can ask questions in real-time. Additionally, we provide 24/7 doubt support through our community forums and dedicated support team.",
+      icon: "🎥",
+      category: "Learning"
     },
     {
       question: "What if I'm not satisfied with a course?",
-      answer: "We offer a 30-day money-back guarantee on all courses. If you're not completely satisfied with your learning experience, simply contact our support team within 30 days of purchase for a full refund."
+      answer: "We offer a 30-day money-back guarantee on all courses. If you're not completely satisfied with your learning experience, simply contact our support team within 30 days of purchase for a full refund.",
+      icon: "💰",
+      category: "Payment"
     },
     {
       question: "Are the courses suitable for beginners?",
-      answer: "Absolutely! Our courses are designed for learners of all levels. We offer beginner-friendly content with clear explanations, and many courses include prerequisite materials to help you get started."
+      answer: "Absolutely! Our courses are designed for learners of all levels. We offer beginner-friendly content with clear explanations, and many courses include prerequisite materials to help you get started.",
+      icon: "🚀",
+      category: "Learning"
     },
     {
       question: "Do I get a certificate upon completion?",
-      answer: "Yes, you'll receive a certificate of completion for every course you finish. Our certificates are recognized by industry professionals and can be shared on your LinkedIn profile and resume."
+      answer: "Yes, you'll receive a certificate of completion for every course you finish. Our certificates are recognized by industry professionals and can be shared on your LinkedIn profile and resume.",
+      icon: "🏆",
+      category: "Learning"
     },
     {
       question: "Can I access courses on mobile devices?",
-      answer: "Yes! Our platform is fully responsive and works seamlessly on smartphones, tablets, and desktop computers. You can learn anywhere, anytime with our mobile-optimized interface."
+      answer: "Yes! Our platform is fully responsive and works seamlessly on smartphones, tablets, and desktop computers. You can learn anywhere, anytime with our mobile-optimized interface.",
+      icon: "📱",
+      category: "Support"
     },
     {
       question: "How long do I have access to the courses?",
-      answer: "You have lifetime access to all courses you purchase. This means you can revisit the content anytime, and you'll also get free updates when we add new materials to the courses."
+      answer: "You have lifetime access to all courses you purchase. This means you can revisit the content anytime, and you'll also get free updates when we add new materials to the courses.",
+      icon: "⏰",
+      category: "Support"
     },
     {
       question: "What payment methods do you accept?",
-      answer: "We accept all major credit cards, PayPal, and bank transfers. We also offer flexible payment plans for many courses, allowing you to pay in installments."
+      answer: "We accept all major credit cards, PayPal, and bank transfers. We also offer flexible payment plans for many courses, allowing you to pay in installments.",
+      icon: "💳",
+      category: "Payment"
     }
   ];
 
   const categories = [
-    { name: "Enrollment", count: 2 },
-    { name: "Learning", count: 3 },
-    { name: "Support", count: 2 },
-    { name: "Payment", count: 1 }
+    { name: "Enrollment", count: 2, icon: "🎯", color: "from-blue-500 to-cyan-500" },
+    { name: "Learning", count: 3, icon: "📚", color: "from-purple-500 to-pink-500" },
+    { name: "Support", count: 2, icon: "🛠️", color: "from-green-500 to-emerald-500" },
+    { name: "Payment", count: 1, icon: "💰", color: "from-orange-500 to-red-500" }
   ];
 
   return (
@@ -52,30 +68,36 @@ export default function Faq() {
       <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50">
         <div className="max-w-6xl mx-auto px-4 py-20 md:py-15">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-6">
-              Frequently Asked
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
-                {" "}Questions
-              </span>
-            </h1>
+            <div className="mb-6">
+              <div className="text-6xl md:text-8xl mb-4 animate-bounce">❓</div>
+              <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-6">
+                Frequently Asked
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 animate-pulse">
+                  {" "}Questions
+                </span>
+              </h1>
+            </div>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
               Find answers to common questions about our courses, enrollment process, 
-              and learning experience. Can't find what you're looking for? 
+              and <span className="font-semibold text-indigo-600">AI-powered learning experience</span>. Can't find what you're looking for? 
               Contact our support team.
             </p>
           </div>
         </div>
         
-        {/* Decorative elements */}
-        <div className="absolute top-10 right-10 w-20 h-20 bg-indigo-200 rounded-full opacity-20"></div>
-        <div className="absolute bottom-10 left-10 w-32 h-32 bg-purple-200 rounded-full opacity-20"></div>
+        {/* Animated decorative elements */}
+        <div className="absolute top-10 right-10 w-20 h-20 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full opacity-30 animate-pulse"></div>
+        <div className="absolute bottom-10 left-10 w-32 h-32 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full opacity-30 animate-bounce"></div>
+        <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full opacity-20 animate-spin"></div>
+        <div className="absolute bottom-1/3 left-1/4 w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full opacity-25 animate-ping"></div>
       </section>
 
       {/* FAQ Categories */}
-      <section className="py-16 bg-slate-50">
+      <section className="py-16 bg-gradient-to-r from-slate-50 to-indigo-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-5xl font-bold text-[#1B4A8B]">
+            <div className="text-4xl mb-4 animate-bounce">📂</div>
+            <h2 className="text-2xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1B4A8B] to-indigo-600 mb-4">
               Browse by Category
             </h2>
             <p className="text-slate-600">
@@ -83,14 +105,17 @@ export default function Faq() {
             </p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {categories.map((category, index) => (
-              <div key={index} className="bg-white rounded-xl p-6 text-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                <div className="text-2xl font-bold text-indigo-600 mb-2">
-                  {category.count}
-                </div>
-                <div className="text-sm font-medium text-slate-700">
-                  {category.name}
+              <div key={index} className="group hover:scale-105 transition-transform duration-300">
+                <div className={`bg-gradient-to-br ${category.color} rounded-xl p-6 text-center shadow-lg text-white`}>
+                  <div className="text-3xl mb-3 animate-pulse">{category.icon}</div>
+                  <div className="text-2xl font-bold mb-2">
+                    {category.count}
+                  </div>
+                  <div className="text-sm font-medium opacity-90">
+                    {category.name}
+                  </div>
                 </div>
               </div>
             ))}
@@ -98,88 +123,80 @@ export default function Faq() {
         </div>
       </section>
 
-      {/* FAQ Accordion */}
-      <section className="py-20">
+      {/* FAQ List */}
+      <section className="py-16 bg-gradient-to-br from-white to-blue-50">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold text-[#1B4A8B]">
+            <div className="text-4xl mb-4 animate-bounce">💡</div>
+            <h2 className="text-2xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1B4A8B] to-indigo-600 mb-4">
               Common Questions
             </h2>
-            <p className="text-lg text-slate-600">
-              Everything you need to know about learning with us
+            <p className="text-slate-600">
+              Everything you need to know about our platform
             </p>
           </div>
           
           <div className="space-y-4">
             {faqs.map((faq, index) => (
-              <div key={index} className="border border-slate-200 rounded-xl overflow-hidden">
-                <button
-                  className="w-full px-6 py-4 text-left bg-white hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-inset"
-                  onClick={() => setOpenIndex(openIndex === index ? -1 : index)}
+              <div key={index} className="group">
+                <div 
+                  className={`bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border-2 ${
+                    openIndex === index ? 'border-indigo-500' : 'border-transparent'
+                  }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-slate-900 pr-4">
-                      {faq.question}
-                    </h3>
-                    <div className="flex-shrink-0">
-                      <svg
-                        className={`w-5 h-5 text-slate-500 transition-transform ${
-                          openIndex === index ? 'rotate-180' : ''
-                        }`}
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
+                  <button
+                    className="w-full p-6 text-left flex items-center justify-between hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-colors"
+                    onClick={() => setOpenIndex(openIndex === index ? -1 : index)}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="text-2xl animate-pulse">{faq.icon}</div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-900 mb-1">
+                          {faq.question}
+                        </h3>
+                        <span className="text-xs text-indigo-600 font-medium bg-indigo-100 px-2 py-1 rounded-full">
+                          {faq.category}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </button>
-                
-                {openIndex === index && (
-                  <div className="px-6 pb-4 bg-slate-50">
-                    <p className="text-slate-600 leading-relaxed">
-                      {faq.answer}
-                    </p>
-                  </div>
-                )}
+                    <div className={`text-2xl transition-transform duration-300 ${
+                      openIndex === index ? 'rotate-180' : ''
+                    }`}>
+                      ▼
+                    </div>
+                  </button>
+                  
+                  {openIndex === index && (
+                    <div className="px-6 pb-6 animate-fadeIn">
+                      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4">
+                        <p className="text-slate-700 leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Contact Support Section */}
-      <section className="py-20 bg-slate-50">
+      {/* Contact Section */}
+      <section className="py-16 bg-gradient-to-r from-slate-50 to-indigo-50">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="bg-white rounded-2xl p-8 md:p-12 shadow-sm">
-            <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-8 h-8 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-              </svg>
-            </div>
-            
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">
-              Still Have Questions?
-            </h2>
-            <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
-              Our support team is here to help you with any questions or concerns. 
-              We typically respond within 24 hours.
+          <div className="bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl p-8 shadow-lg">
+            <div className="text-6xl mb-4 animate-bounce">🤖</div>
+            <h3 className="text-2xl font-bold text-slate-800 mb-4">Still Have Questions?</h3>
+            <p className="text-slate-600 mb-6">
+              Our AI-powered support team is here to help! Get instant answers or connect with our human experts.
             </p>
-            
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="inline-flex items-center justify-center rounded-lg bg-indigo-600 text-white font-semibold px-6 py-3 hover:bg-indigo-700 transition-colors">
-                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                </svg>
-                Contact Support
+              <button className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+                Chat with AI Assistant
               </button>
-              <button className="inline-flex items-center justify-center rounded-lg border border-slate-300 text-slate-700 font-semibold px-6 py-3 hover:bg-slate-50 transition-colors">
-                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-2 0c0 .993-.241 1.929-.668 2.754l-1.524-1.525a3.997 3.997 0 00.078-2.183l1.562-1.562C15.802 8.249 16 9.1 16 10zm-5.165 3.913l1.58 1.58A5.98 5.98 0 0110 16a5.976 5.976 0 01-2.516-.552l1.562-1.562a4.006 4.006 0 001.789.027zm-4.677-2.796a4.002 4.002 0 01-.041-2.08l-.08.08-1.53-1.533A5.98 5.98 0 004 10c0 .954.223 1.856.619 2.657l1.54-1.54zm1.088-6.45A5.974 5.974 0 0110 4c.954 0 1.856.223 2.657.619l-1.54 1.54a4.002 4.002 0 00-2.346.033L7.246 4.668zM12 10a2 2 0 11-4 0 2 2 0 014 0z" clipRule="evenodd" />
-                </svg>
-                Live Chat
+              <button className="bg-white text-indigo-600 px-6 py-3 rounded-lg font-semibold border-2 border-indigo-600 hover:bg-indigo-600 hover:text-white transition-all duration-300 transform hover:scale-105">
+                Contact Human Support
               </button>
             </div>
           </div>

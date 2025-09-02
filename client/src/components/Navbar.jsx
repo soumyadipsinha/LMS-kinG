@@ -1,26 +1,51 @@
 // src/components/Navbar.jsx
 import { Link, NavLink } from "react-router-dom";
+import { useState } from "react";
+import LoginModal from "./LoginModal.jsx";
+import SignupModal from "./SignupModal.jsx";
 
 const navLink =
   "uppercase text-lg font-bold tracking-wide text-slate-700 hover:text-[#1B4A8B] transition-colors px-4 py-2";
 
 export default function Navbar() {
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+
+  const handleLoginClick = () => {
+    setIsLoginModalOpen(true);
+  };
+
+  const handleCloseLoginModal = () => {
+    setIsLoginModalOpen(false);
+  };
+
+  const handleCloseSignupModal = () => {
+    setIsSignupModalOpen(false);
+  };
+
+  const handleSwitchToSignup = () => {
+    setIsLoginModalOpen(false);
+    setIsSignupModalOpen(true);
+  };
+
+  const handleSwitchToLogin = () => {
+    setIsSignupModalOpen(false);
+    setIsLoginModalOpen(true);
+  };
+
   return (
-    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="h-16 flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <span className="text-3xl font-extrabold tracking-wide text-[#1B4A8B]">
-              LITERA
-            </span>
-          </Link>
+    <>
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="h-16 flex items-center justify-between">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2">
+              <span className="text-3xl font-extrabold tracking-wide text-[#1B4A8B]">
+                LITERA
+              </span>
+            </Link>
 
-          {/* Nav Links */}
-
-
-          {/* Login + Mobile Menu */}
-          <div className="flex items-center gap-3">
+            {/* Nav Links */}
             <nav className="hidden md:flex items-center gap-6">
               <NavLink to="/" end className={navLink}>
                 Home
@@ -35,19 +60,37 @@ export default function Navbar() {
                 FAQ
               </NavLink>
             </nav>
-            <Link
-              to="/login"
-              className="inline-flex items-center gap-2 rounded-full bg-[#1B4A8B] text-white text-sm font-semibold px-5 py-2.5 shadow hover:bg-indigo-700"
-            >
-              Login
-            </Link>
-            <button className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-md border border-slate-300 text-slate-700">
-              <span className="sr-only">Menu</span>
-              ☰
-            </button>
+
+            {/* Login + Mobile Menu */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleLoginClick}
+                className="inline-flex items-center gap-2 rounded-full bg-[#1B4A8B] text-white text-sm font-semibold px-5 py-2.5 shadow hover:bg-indigo-700"
+              >
+                Login
+              </button>
+              <button className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-md border border-slate-300 text-slate-700">
+                <span className="sr-only">Menu</span>
+                ☰
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Login Modal */}
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={handleCloseLoginModal}
+        onSwitchToSignup={handleSwitchToSignup}
+      />
+
+      {/* Signup Modal */}
+      <SignupModal 
+        isOpen={isSignupModalOpen} 
+        onClose={handleCloseSignupModal}
+        onSwitchToLogin={handleSwitchToLogin}
+      />
+    </>
   );
 }

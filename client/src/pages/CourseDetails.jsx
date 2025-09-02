@@ -22,10 +22,33 @@ export default function CourseDetails() {
     return <p className="text-center mt-20">Course not found.</p>;
   }
 
-  const similar = Array.from({ length: 3 }).map((_, i) => ({
-    ...course, // just showing same course for simplicity
-    id: i + 10,
-  }));
+  // Different similar courses with unique data
+  const similar = [
+    {
+      id: 1,
+      title: "Data Science Fundamentals",
+      sub: "Master the basics of data analysis and visualization",
+      author: "By Sarah Johnson",
+      price: "$89.99",
+      img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop"
+    },
+    {
+      id: 2,
+      title: "Web Development Bootcamp",
+      sub: "Learn full-stack development from scratch",
+      author: "By Mike Chen",
+      price: "$129.99",
+      img: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=250&fit=crop"
+    },
+    {
+      id: 3,
+      title: "Digital Marketing Mastery",
+      sub: "Comprehensive guide to modern marketing strategies",
+      author: "By Emily Rodriguez",
+      price: "$79.99",
+      img: "https://images.unsplash.com/photo-1557838923-2985c318be48?w=400&h=250&fit=crop"
+    }
+  ];
 
   return (
     <div className="bg-white">
@@ -96,7 +119,7 @@ export default function CourseDetails() {
         </h2>
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {similar.map((c) => (
-            <div key={c.id} className="group">
+            <div key={c.id} className="group cursor-pointer">
               <img
                 src={c.img}
                 alt={c.title}

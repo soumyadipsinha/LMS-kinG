@@ -8,49 +8,60 @@ function NotificationCard({ title, message, time, type, isRead }) {
     switch (type) {
       case "course":
         return (
-          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-          </svg>
+          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
+            <span className="text-white text-lg">📚</span>
+          </div>
         );
       case "payment":
         return (
-          <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-          </svg>
+          <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+            <span className="text-white text-lg">💰</span>
+          </div>
         );
       case "system":
         return (
-          <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
+          <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+            <span className="text-white text-lg">⚙️</span>
+          </div>
         );
       default:
         return (
-          <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-5 5v-5zM4 19h6v-2H4v2z" />
-          </svg>
+          <div className="w-10 h-10 bg-gradient-to-r from-gray-500 to-slate-500 rounded-full flex items-center justify-center">
+            <span className="text-white text-lg">🔔</span>
+          </div>
         );
     }
   };
 
+  const getTypeColor = (type) => {
+    switch (type) {
+      case "course": return "from-blue-50 to-cyan-50 border-blue-200";
+      case "payment": return "from-green-50 to-emerald-50 border-green-200";
+      case "system": return "from-purple-50 to-pink-50 border-purple-200";
+      default: return "from-gray-50 to-slate-50 border-gray-200";
+    }
+  };
+
   return (
-    <div className={`bg-white border rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow ${!isRead ? 'border-l-4 border-l-blue-500' : ''}`}>
+    <div className={`bg-gradient-to-r ${getTypeColor(type)} border-2 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 ${!isRead ? 'border-l-4 border-l-blue-500 ring-2 ring-blue-100' : ''}`}>
       <div className="flex items-start gap-4">
-        <div className="flex-shrink-0 mt-1">
+        <div className="flex-shrink-0">
           {getTypeIcon(type)}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between">
-            <h3 className={`text-sm font-semibold ${!isRead ? 'text-slate-900' : 'text-slate-700'}`}>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className={`text-lg font-bold ${!isRead ? 'text-slate-900' : 'text-slate-700'}`}>
               {title}
             </h3>
-            <span className="text-xs text-slate-500">{time}</span>
+            <span className="text-xs text-slate-500 bg-white px-2 py-1 rounded-full shadow-sm">
+              {time}
+            </span>
           </div>
-          <p className="text-sm text-slate-600 mt-1">{message}</p>
+          <p className="text-sm text-slate-600 leading-relaxed">{message}</p>
           {!isRead && (
-            <div className="mt-3">
-              <button className="text-xs text-blue-600 hover:text-blue-800 font-medium">
+            <div className="mt-4 flex items-center gap-3">
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+              <button className="text-sm text-blue-600 hover:text-blue-800 font-semibold bg-white px-3 py-1 rounded-full shadow-sm transition-all duration-300 hover:shadow-md">
                 Mark as read
               </button>
             </div>
@@ -61,23 +72,28 @@ function NotificationCard({ title, message, time, type, isRead }) {
   );
 }
 
-function NotificationPreference({ title, description, enabled, onToggle }) {
+function NotificationPreference({ title, description, enabled, onToggle, icon }) {
   return (
-    <div className="bg-white border rounded-xl p-6 shadow-sm">
+    <div className="bg-white border-2 border-gray-100 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
       <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
-          <p className="text-sm text-slate-600 mt-1">{description}</p>
+        <div className="flex items-center gap-4 flex-1">
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${enabled ? 'bg-gradient-to-r from-green-100 to-emerald-100' : 'bg-gradient-to-r from-gray-100 to-slate-100'}`}>
+            {icon}
+          </div>
+          <div className="flex-1">
+            <h3 className="text-sm font-bold text-slate-900">{title}</h3>
+            <p className="text-sm text-slate-600 mt-1">{description}</p>
+          </div>
         </div>
         <button
           onClick={onToggle}
-          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-            enabled ? 'bg-blue-600' : 'bg-slate-200'
+          className={`relative inline-flex h-7 w-14 items-center rounded-full transition-all duration-300 shadow-lg ${
+            enabled ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-gradient-to-r from-gray-300 to-slate-300'
           }`}
         >
           <span
-            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-              enabled ? 'translate-x-6' : 'translate-x-1'
+            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-all duration-300 ${
+              enabled ? 'translate-x-8' : 'translate-x-1'
             }`}
           />
         </button>
@@ -108,7 +124,7 @@ export default function Notifications() {
     {
       id: 2,
       title: "Payment Successful",
-      message: "Your payment of $99.89 for Machine Learning Course has been processed successfully.",
+      message: "Your payment of ₹4,999 for Machine Learning Course has been processed successfully.",
       time: "1 day ago",
       type: "payment",
       isRead: true,
@@ -116,7 +132,7 @@ export default function Notifications() {
     {
       id: 3,
       title: "System Maintenance",
-      message: "Scheduled maintenance will occur on December 20th from 2-4 AM EST.",
+      message: "Scheduled maintenance will occur on December 20th from 2-4 AM IST.",
       time: "2 days ago",
       type: "system",
       isRead: true,
@@ -143,112 +159,131 @@ export default function Notifications() {
   };
 
   return (
-    <section className="max-w-6xl mx-auto px-6 md:px-10 py-8">
+    <section className="max-w-6xl mx-auto px-6 md:px-10 py-8 bg-gradient-to-br from-slate-50 to-indigo-50 min-h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-8 bg-white rounded-2xl p-6 shadow-lg border border-indigo-100">
         <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold" style={{ color: brand.blue }}>
-            Notifications
-          </h1>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="text-3xl">🔔</div>
+            <h1 className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              Notifications
+            </h1>
+          </div>
           <p className="text-[12px] text-slate-500 mt-1">Manage your notification preferences and view recent updates</p>
         </div>
-        <button className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
+        <button className="inline-flex items-center gap-2 rounded-full border-2 border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 px-4 py-2 text-sm font-semibold text-indigo-700 hover:from-indigo-100 hover:to-purple-100 transition-all duration-300 shadow-sm">
+          <span className="text-lg">✅</span>
           Mark All as Read
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-200 mb-8">
-        <button
-          className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors ${
-            activeTab === "all" 
-              ? "border-blue-500 text-blue-600" 
-              : "border-transparent text-slate-600 hover:text-slate-900"
-          }`}
-          onClick={() => setActiveTab("all")}
-        >
-          All Notifications
-        </button>
-        <button
-          className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors ${
-            activeTab === "course" 
-              ? "border-blue-500 text-blue-600" 
-              : "border-transparent text-slate-600 hover:text-slate-900"
-          }`}
-          onClick={() => setActiveTab("course")}
-        >
-          Course Updates
-        </button>
-        <button
-          className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors ${
-            activeTab === "payment" 
-              ? "border-blue-500 text-blue-600" 
-              : "border-transparent text-slate-600 hover:text-slate-900"
-          }`}
-          onClick={() => setActiveTab("payment")}
-        >
-          Payment Alerts
-        </button>
-        <button
-          className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors ${
-            activeTab === "system" 
-              ? "border-blue-500 text-blue-600" 
-              : "border-transparent text-slate-600 hover:text-slate-900"
-          }`}
-          onClick={() => setActiveTab("system")}
-        >
-          System Notifications
-        </button>
+      <div className="bg-white rounded-2xl p-2 shadow-lg border border-indigo-100 mb-8">
+        <div className="flex flex-wrap gap-2">
+          <button
+            className={`px-6 py-3 text-sm font-bold rounded-xl transition-all duration-300 ${
+              activeTab === "all" 
+                ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg" 
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+            }`}
+            onClick={() => setActiveTab("all")}
+          >
+            📋 All Notifications
+          </button>
+          <button
+            className={`px-6 py-3 text-sm font-bold rounded-xl transition-all duration-300 ${
+              activeTab === "course" 
+                ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg" 
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+            }`}
+            onClick={() => setActiveTab("course")}
+          >
+            📚 Course Updates
+          </button>
+          <button
+            className={`px-6 py-3 text-sm font-bold rounded-xl transition-all duration-300 ${
+              activeTab === "payment" 
+                ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg" 
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+            }`}
+            onClick={() => setActiveTab("payment")}
+          >
+            💰 Payment Alerts
+          </button>
+          <button
+            className={`px-6 py-3 text-sm font-bold rounded-xl transition-all duration-300 ${
+              activeTab === "system" 
+                ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg" 
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+            }`}
+            onClick={() => setActiveTab("system")}
+          >
+            ⚙️ System Notifications
+          </button>
+        </div>
       </div>
 
       {/* Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Notifications List */}
         <div className="lg:col-span-2">
-          <div className="space-y-4">
-            {filteredNotifications.map((notification) => (
-              <NotificationCard key={notification.id} {...notification} />
-            ))}
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-indigo-100">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="text-2xl">📬</div>
+              <h2 className="text-xl font-bold text-slate-900">Recent Notifications</h2>
+            </div>
+            <div className="space-y-4">
+              {filteredNotifications.map((notification) => (
+                <NotificationCard key={notification.id} {...notification} />
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Preferences Sidebar */}
         <div className="lg:col-span-1">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Notification Preferences</h2>
-          <div className="space-y-4">
-            <NotificationPreference
-              title="Email Notifications"
-              description="Receive notifications via email"
-              enabled={preferences.emailNotifications}
-              onToggle={() => togglePreference('emailNotifications')}
-            />
-            <NotificationPreference
-              title="Push Notifications"
-              description="Receive push notifications in browser"
-              enabled={preferences.pushNotifications}
-              onToggle={() => togglePreference('pushNotifications')}
-            />
-            <NotificationPreference
-              title="Course Updates"
-              description="Get notified about new courses and updates"
-              enabled={preferences.courseUpdates}
-              onToggle={() => togglePreference('courseUpdates')}
-            />
-            <NotificationPreference
-              title="Payment Reminders"
-              description="Receive payment due reminders"
-              enabled={preferences.paymentReminders}
-              onToggle={() => togglePreference('paymentReminders')}
-            />
-            <NotificationPreference
-              title="Marketing Emails"
-              description="Receive promotional and marketing emails"
-              enabled={preferences.marketingEmails}
-              onToggle={() => togglePreference('marketingEmails')}
-            />
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-indigo-100">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="text-2xl">⚙️</div>
+              <h2 className="text-xl font-bold text-slate-900">Notification Preferences</h2>
+            </div>
+            <div className="space-y-4">
+              <NotificationPreference
+                title="Email Notifications"
+                description="Receive notifications via email"
+                enabled={preferences.emailNotifications}
+                onToggle={() => togglePreference('emailNotifications')}
+                icon="📧"
+              />
+              <NotificationPreference
+                title="Push Notifications"
+                description="Receive push notifications in browser"
+                enabled={preferences.pushNotifications}
+                onToggle={() => togglePreference('pushNotifications')}
+                icon="🔔"
+              />
+              <NotificationPreference
+                title="Course Updates"
+                description="Get notified about new courses and updates"
+                enabled={preferences.courseUpdates}
+                onToggle={() => togglePreference('courseUpdates')}
+                icon="📚"
+              />
+              <NotificationPreference
+                title="Payment Reminders"
+                description="Receive payment due reminders"
+                enabled={preferences.paymentReminders}
+                onToggle={() => togglePreference('paymentReminders')}
+                icon="💰"
+              />
+              <NotificationPreference
+                title="Marketing Emails"
+                description="Receive promotional and marketing emails"
+                enabled={preferences.marketingEmails}
+                onToggle={() => togglePreference('marketingEmails')}
+                icon="📢"
+              />
+            </div>
           </div>
         </div>
       </div>
