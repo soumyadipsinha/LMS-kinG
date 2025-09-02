@@ -1,4 +1,3 @@
-// src/App.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
 import RootLayout from "./layout/RootLayout.jsx";
 import DashboardLayout from "./layout/DashboardLayout.jsx";
@@ -18,6 +17,8 @@ import Profile from "./pages/Profile.jsx";
 import Billing from "./pages/Billing.jsx";
 import Logout from "./pages/Logout.jsx";
 import SelectedCourse from "./pages/SelectedCouse.jsx";
+import LaunchPad from "./pages/LaunchPad.jsx";
+import LaunchPadDetails from "./pages/LaunchPadDetails.jsx";
 
 export default function App() {
   return (
@@ -26,11 +27,14 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="courses" element={<Courses />} />
         <Route path="courses/:id" element={<CourseDetails />} />
+        <Route path="launchpad" element={<LaunchPad />} />
+        <Route path="launchpad/details" element={<LaunchPadDetails />} />
         <Route path="about" element={<About />} />
         <Route path="faq" element={<Faq />} />
         <Route path="login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route path="signup" element={<Signup />} />
       </Route>
+
       <Route path="/dashboard" element={<DashboardLayout />}>
         <Route index element={<Navigate to="subscription" replace />} />
         <Route path="subscription" element={<Subscription />} />

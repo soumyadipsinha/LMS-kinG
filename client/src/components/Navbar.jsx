@@ -53,6 +53,9 @@ export default function Navbar() {
               <NavLink to="/courses" className={navLink}>
                 Courses
               </NavLink>
+              <NavLink to="/launchpad" className={navLink}>
+                LaunchPad
+              </NavLink>
               <NavLink to="/about" className={navLink}>
                 About
               </NavLink>

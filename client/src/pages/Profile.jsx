@@ -1,5 +1,5 @@
 // src/pages/Profile.jsx
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const brand = { blue: "#18457A" };
 
@@ -7,9 +7,9 @@ export default function Profile() {
   const [form, setForm] = useState({
     firstName: "Sanchari",
     lastName: "Ghosh",
-    email: "gsanchari9870@gmail.com",
+    email: "sanchari76@gmail.com",
     countryCode: "+91",
-    phone: "9647762617",
+    phone: "9876543450",
     password: "*******************",
     github: "",
     linkedin: "",
@@ -18,7 +18,95 @@ export default function Profile() {
     resume: ""
   });
 
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const fileInputRef = useRef(null);
+
   const onChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+
+  const handleFileUpload = (file) => {
+    if (file) {
+      // Validate file type
+      const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'text/plain',
+        'image/jpeg',
+        'image/png',
+        'image/gif'
+      ];
+      
+      if (!allowedTypes.includes(file.type)) {
+        alert('Please upload a valid file type (PDF, DOC, DOCX, TXT, or Image)');
+        return;
+      }
+      
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        alert('File size must be less than 10MB');
+        return;
+      }
+      
+      setUploadedFile({
+        file: file,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        url: URL.createObjectURL(file)
+      });
+      
+      // Update form with file name
+      setForm(prev => ({ ...prev, resume: file.name }));
+    }
+  };
+
+  const handleFileInputChange = (e) => {
+    const file = e.target.files[0];
+    handleFileUpload(file);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    const file = e.dataTransfer.files[0];
+    handleFileUpload(file);
+  };
+
+  const removeFile = () => {
+    if (uploadedFile) {
+      URL.revokeObjectURL(uploadedFile.url);
+      setUploadedFile(null);
+      setForm(prev => ({ ...prev, resume: "" }));
+    }
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const getFileIcon = (fileType) => {
+    if (fileType.includes('pdf')) return '📄';
+    if (fileType.includes('word') || fileType.includes('document')) return '📝';
+    if (fileType.includes('text')) return '📄';
+    if (fileType.includes('image')) return '🖼️';
+    return '📎';
+  };
 
   return (
     <section className="max-w-5xl mx-auto px-6 md:px-10 py-8 bg-gradient-to-br from-slate-50 to-indigo-50 min-h-screen">
@@ -46,7 +134,7 @@ export default function Profile() {
           <button className="inline-flex items-center gap-2 rounded-full border-2 border-orange-200 bg-gradient-to-r from-orange-50 to-red-50 px-4 py-2 text-sm hover:from-orange-100 hover:to-red-100 transition-all duration-300 shadow-sm">
             <span className="font-medium text-orange-700">💳 Payment</span>
           </button>
-          <button className="inline-flex items-center gap-2 rounded-full border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50 px-4 py-2 text-sm hover:from-purple-100 hover:to-pink-100 transition-all duration-300 shadow-sm">
+          <button className="inline-flex items-center gap-2 rounded-full border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50 px-4 py-2 text-sm hover:from-purple-100 hover:to-purple-100 transition-all duration-300 shadow-sm">
             <span className="font-medium text-purple-700">📋 Project Info</span>
           </button>
         </div>
@@ -195,16 +283,92 @@ export default function Profile() {
                   className="w-full rounded-xl border-2 border-red-200 bg-gradient-to-r from-red-50 to-pink-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-400 transition-all duration-300 group-hover:border-red-300"
                 />
               </div>
-              <div className="group">
+            </div>
+          </div>
+
+          {/* File Upload Section */}
+          <div className="mt-8">
+            <div className="bg-gradient-to-r from-orange-100 to-red-100 rounded-xl p-4 mb-4">
+              <p className="text-sm font-semibold text-orange-800 flex items-center gap-2">
+                <span className="text-xl">📁</span>
+                Resume / Project File Upload
+              </p>
+            </div>
+
+            {!uploadedFile ? (
+              <div
+                className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 ${
+                  isDragOver
+                    ? 'border-orange-400 bg-orange-50 border-orange-400'
+                    : 'border-orange-200 bg-gradient-to-r from-orange-50 to-red-50 hover:border-orange-300 hover:bg-orange-100'
+                }`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                <div className="text-4xl mb-4">📁</div>
+                <h3 className="text-lg font-semibold text-slate-800 mb-2">
+                  {isDragOver ? 'Drop your file here!' : 'Upload Resume or Project File'}
+                </h3>
+                <p className="text-sm text-slate-600 mb-4">
+                  Drag and drop your file here, or click to browse
+                </p>
+                <p className="text-xs text-slate-500 mb-6">
+                  Supported formats: PDF, DOC, DOCX, TXT, Images (Max size: 10MB)
+                </p>
+                
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-orange-600 hover:to-red-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                >
+                  📂 Choose File
+                </button>
+                
                 <input
-                  placeholder="Resume / Project Link |"
-                  name="resume"
-                  value={form.resume}
-                  onChange={onChange}
-                  className="w-full rounded-xl border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-400 transition-all duration-300 group-hover:border-purple-300"
+                  ref={fileInputRef}
+                  type="file"
+                  onChange={handleFileInputChange}
+                  accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif"
+                  className="hidden"
                 />
               </div>
-            </div>
+            ) : (
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="text-4xl">{getFileIcon(uploadedFile.type)}</div>
+                    <div>
+                      <h4 className="font-semibold text-slate-800">{uploadedFile.name}</h4>
+                      <p className="text-sm text-slate-600">
+                        {formatFileSize(uploadedFile.size)} • {uploadedFile.type}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors duration-300"
+                    >
+                      🔄 Replace
+                    </button>
+                    <button
+                      onClick={removeFile}
+                      className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors duration-300"
+                    >
+                      🗑️ Remove
+                    </button>
+                  </div>
+                </div>
+                
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  onChange={handleFileInputChange}
+                  accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif"
+                  className="hidden"
+                />
+              </div>
+            )}
           </div>
 
           {/* Save Button */}

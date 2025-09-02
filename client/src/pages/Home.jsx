@@ -7,6 +7,16 @@ import pic5 from "../assets/pic5.png";
 import pic6 from "../assets/pic6.png"; 
 import { BiSolidCheckCircle } from "react-icons/bi";
 
+// Import course images
+import courses1 from "../assets/courses1.jpg";
+import courses2 from "../assets/courses2.jpg";
+import courses3 from "../assets/courses3.jpg";
+import courses4 from "../assets/courses4.jpg";
+import javascriptPic from "../assets/javascript-pic.jpg";
+import reactPic from "../assets/react-pic.jpg";
+import nodePic from "../assets/Node-pic.jpg";
+import fullstackPic from "../assets/FullStack-pic.jpg";
+
 
 export default function Home() {
   return (
@@ -87,25 +97,45 @@ export default function Home() {
 
           <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             <CourseCard
+              imgSrc={javascriptPic}
               title="Intro to JavaScript"
               level="Beginner Level"
               desc="Kickstart coding with JS fundamentals."
+              id="javascript-basics"
             />
             <CourseCard
+              imgSrc={reactPic}
               title="React for Web"
               level="Intermediate"
               desc="Build real apps with components & hooks."
+              id="react-web"
             />
             <CourseCard
+              imgSrc={nodePic}
               title="Node & APIs"
               level="Intermediate"
               desc="Create secure REST APIs with Node/Express."
+              id="node-apis"
             />
             <CourseCard
-              title="Data Analysis"
+              imgSrc={fullstackPic}
+              title="Full Stack Development"
               level="Advanced"
-              desc="Work with datasets and insights."
+              desc="Master both frontend and backend development."
+              id="fullstack-dev"
             />
+          </div>
+
+          {/* View All Courses Button */}
+          <div className="mt-12 text-center">
+            <Link
+              to="/courses"
+              className="inline-flex items-center justify-center rounded-full border-2 border-[#1B4A8B] bg-[#1B4A8B] text-white font-semibold px-8 py-4 shadow-lg hover:bg-white hover:text-[#1B4A8B] hover:border-[#1B4A8B] transition-all duration-300 transform hover:scale-105"
+            >
+              <span className="mr-2">🚀</span>
+              View All Courses
+              <span className="ml-2">→</span>
+            </Link>
           </div>
         </div>
       </section>

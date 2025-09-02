@@ -1,4 +1,8 @@
 import { useMemo, useState } from "react";
+// Import company logo images
+import GoogleLogo from "../assets/Google1.jpg";
+import MetaLogo from "../assets/Meta1.jpg";
+import MicrosoftLogo from "../assets/Microsoft1.jpg";
 
 const styles = {
   brandBlue: "#18457A",
@@ -231,12 +235,16 @@ function ContestCard({ title, description, participants, prize, startTime, endTi
   );
 }
 
-function CompanyLogo({ company, logo, description }) {
+function CompanyLogo({ company, logoImage, description }) {
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 group">
       <div className="text-center">
-        <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-          <span className="text-4xl">{logo}</span>
+        <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+          <img 
+            src={logoImage} 
+            alt={`${company} logo`}
+            className="w-16 h-16 object-contain"
+          />
         </div>
         <h3 className="text-xl font-black text-gray-900 mb-2">{company}</h3>
         <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
@@ -459,6 +467,79 @@ export default function AlgoBridge() {
         </p>
       </div>
 
+      {/* NEW: Company Logos Showcase */}
+      <div className="mb-16 bg-gradient-to-r from-gray-50 to-blue-50 rounded-3xl p-8 border-2 border-blue-200 shadow-xl">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4">
+            🏢 Official Partners & Certifiers
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Get certified by industry leaders and unlock opportunities at top tech companies
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="text-center group">
+            <div className="bg-white rounded-2xl p-6 border-2 border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:border-blue-300">
+              <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+                <img 
+                  src={GoogleLogo} 
+                  alt="Google logo"
+                  className="w-20 h-20 object-contain"
+                />
+              </div>
+              <h3 className="text-xl font-black text-gray-900 mb-2">Google</h3>
+              <p className="text-sm text-gray-600">Search & AI Algorithms</p>
+              <div className="mt-3 px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-xs font-bold">
+                Official Partner
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-center group">
+            <div className="bg-white rounded-2xl p-6 border-2 border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:border-purple-300">
+              <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+                <img 
+                  src={MetaLogo} 
+                  alt="Meta logo"
+                  className="w-20 h-20 object-contain"
+                />
+              </div>
+              <h3 className="text-xl font-black text-gray-900 mb-2">Meta</h3>
+              <p className="text-sm text-gray-600">Social Media & AI</p>
+              <div className="mt-3 px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-xs font-bold">
+                Official Partner
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-center group">
+            <div className="bg-white rounded-2xl p-6 border-2 border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:border-green-300">
+              <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+                <img 
+                  src={MicrosoftLogo} 
+                  alt="Microsoft logo"
+                  className="w-20 h-20 object-contain"
+                />
+              </div>
+              <h3 className="text-xl font-black text-gray-900 mb-2">Microsoft</h3>
+              <p className="text-sm text-gray-600">Enterprise & Cloud</p>
+              <div className="mt-3 px-4 py-2 bg-green-100 text-green-800 rounded-full text-xs font-bold">
+                Official Partner
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="text-center mt-8">
+          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-full font-bold shadow-lg">
+            <span>🎯</span>
+            <span>Triple Certification Available</span>
+            <span>🎯</span>
+          </div>
+        </div>
+      </div>
+
       {/* NEW: About Company Section */}
       <div className="mb-16">
         <div className="text-center mb-12">
@@ -482,17 +563,17 @@ export default function AlgoBridge() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <CompanyLogo 
               company="Google" 
-              logo="🔍" 
+              logoImage={GoogleLogo}
               description="Master search algorithms and data structures"
             />
             <CompanyLogo 
               company="Meta" 
-              logo="📱" 
+              logoImage={MetaLogo}
               description="Social media algorithms and AI systems"
             />
             <CompanyLogo 
               company="Microsoft" 
-              logo="💻" 
+              logoImage={MicrosoftLogo}
               description="Enterprise software and cloud computing"
             />
           </div>
