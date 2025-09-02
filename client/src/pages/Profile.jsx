@@ -7,9 +7,9 @@ export default function Profile() {
   const [form, setForm] = useState({
     firstName: "Sanchari",
     lastName: "Ghosh",
-    email: "gsanchari9870@gmail.com",
+    email: "sanchari76@gmail.com",
     countryCode: "+91",
-    phone: "9647762617",
+    phone: "9876543450",
     password: "*******************",
     github: "",
     linkedin: "",
