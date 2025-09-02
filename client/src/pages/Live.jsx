@@ -37,16 +37,13 @@ function LiveVideoPlayer({ title, author, viewers, videoUrl, thumbnail, isLive =
           {/* Video Player */}
           <div className="relative w-full h-full">
             {isPlaying ? (
-              <video
-                src={videoUrl}
+              <iframe
+                src={`${videoUrl}?autoplay=1`}
                 className="w-full h-full object-cover"
-                controls
-                autoPlay
-                muted
-                loop
-              >
-                Your browser does not support the video tag.
-              </video>
+                title={title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
             ) : (
               <>
                 <img 
@@ -128,7 +125,7 @@ function LiveVideoPlayer({ title, author, viewers, videoUrl, thumbnail, isLive =
 }
 
 export default function LiveClasses() {
-  // Real machine learning tutorial videos with educational content
+  // Restored YouTube links instead of sample mp4
   const items = useMemo(
     () => [
       {
@@ -137,7 +134,7 @@ export default function LiveClasses() {
         author: "Stanford Online",
         viewers: "1.8K",
         thumbnail: "https://i.ytimg.com/vi/jGwO_UgTS7I/hqdefault.jpg",
-        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        videoUrl: "https://www.youtube.com/embed/m8pOnJxOcqY",
         isLive: true
       },
       {
@@ -146,7 +143,7 @@ export default function LiveClasses() {
         author: "MIT OpenCourseWare",
         viewers: "1.2K",
         thumbnail: "https://i.ytimg.com/vi/i_LwzRVP7bg/hqdefault.jpg",
-        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+        videoUrl: "https://www.youtube.com/embed/i_LwzRVP7bg",
         isLive: true
       },
       {
@@ -154,17 +151,17 @@ export default function LiveClasses() {
         title: "ML for Everybody – Full Course",
         author: "freeCodeCamp.org",
         viewers: "3.4K",
-        thumbnail: "https://i.ytimg.com/vi/i_LwzRVP7bg/hqdefault.jpg",
-        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        thumbnail: "https://i.ytimg.com/vi/m8pOnJxOcqY/hqdefault.jpg",
+        videoUrl: "https://www.youtube.com/embed/m8pOnJxOcqY",
         isLive: true
       },
       {
         id: 4,
-        title: "Neural Networks for ML (Coursera)",
-        author: "Geoff Hinton",
+        title: "Neural Networks for ML (Geoffrey Hinton)",
+        author: "Coursera",
         viewers: "924",
-        thumbnail: "https://archive.org/services/img/academictorrents_743c16a18756557a67478a7570baf24a59f9cda6",
-        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+        thumbnail: "https://i.ytimg.com/vi/cbeTc-Urqak/hqdefault.jpg",
+        videoUrl: "https://www.youtube.com/embed/cbeTc-Urqak",
         isLive: false
       }
     ],
@@ -174,72 +171,46 @@ export default function LiveClasses() {
   const liveClasses = items.filter(item => item.isLive);
   const upcomingClasses = items.filter(item => !item.isLive);
 
-  return (
-    <section className="max-w-7xl mx-auto px-6 md:px-10 py-8">
-      <h1 className="text-2xl md:text-3xl font-extrabold" style={{ color: styles.brandBlue }}>
-        Live Classes
-      </h1>
+    return (
+    <>
+      <section className="max-w-7xl mx-auto px-6 md:px-10 py-8">
+        <h1 className="text-2xl md:text-3xl font-extrabold" style={{ color: styles.brandBlue }}>
+          Live Classes
+        </h1>
 
-      {/* AI Features Banner */}
-      <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-            </svg>
+        {/* Live Now Section */}
+        {liveClasses.length > 0 && (
+          <div className="mt-6">
+            <div className="flex items-center gap-2 mb-3">
+              <LiveBadge />
+              <h2 className="text-lg font-semibold text-slate-900">Happening Now</h2>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {liveClasses.map((item) => (
+                <LiveVideoPlayer key={item.id} {...item} />
+              ))}
+            </div>
           </div>
-          <div>
-            <h3 className="font-semibold text-blue-900">AI-Powered Learning Experience</h3>
-            <p className="text-sm text-blue-700">Real-time transcription, smart Q&A, and personalized learning insights</p>
-          </div>
-        </div>
-      </div>
+        )}
 
-      {/* Live Now Section */}
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
-          <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-          Live Now ({liveClasses.length})
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {liveClasses.map((c) => (
-            <LiveVideoPlayer 
-              key={c.id} 
-              title={c.title} 
-              author={c.author}
-              viewers={c.viewers}
-              thumbnail={c.thumbnail}
-              videoUrl={c.videoUrl}
-              isLive={c.isLive}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Upcoming Classes */}
-      {upcomingClasses.length > 0 && (
-        <div className="mt-12">
-          <h2 className="text-xl font-semibold text-slate-900 mb-4">Upcoming Classes</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {upcomingClasses.map((c) => (
-              <LiveVideoPlayer 
-                key={c.id} 
-                title={c.title} 
-                author={c.author}
-                viewers={c.viewers}
-                thumbnail={c.thumbnail}
-                videoUrl={c.videoUrl}
-                isLive={c.isLive}
-              />
-            ))}
+        {/* Upcoming Classes Section */}
+        {upcomingClasses.length > 0 && (
+          <div className="mt-10">
+            <h2 className="text-lg font-semibold text-slate-900 mb-3">Upcoming Classes</h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {upcomingClasses.map((item) => (
+                <LiveVideoPlayer key={item.id} {...item} />
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </section>
 
       {/* AI Features List */}
       <div className="mt-12 bg-white border rounded-xl p-6">
         <h3 className="text-lg font-semibold text-slate-900 mb-4">AI-Powered Features</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Feature 1 */}
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
               <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 24 24">
@@ -251,7 +222,8 @@ export default function LiveClasses() {
               <p className="text-sm text-slate-600">Automatic speech-to-text with 99% accuracy</p>
             </div>
           </div>
-          
+
+          {/* Feature 2 */}
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
               <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
@@ -263,7 +235,8 @@ export default function LiveClasses() {
               <p className="text-sm text-slate-600">AI-powered question answering and explanations</p>
             </div>
           </div>
-          
+
+          {/* Feature 3 */}
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
               <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
@@ -277,6 +250,9 @@ export default function LiveClasses() {
           </div>
         </div>
       </div>
-    </section>
+    </>
   );
+
+
+
 }
