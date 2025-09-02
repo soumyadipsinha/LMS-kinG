@@ -12,6 +12,7 @@ import Signup from "./pages/SignUp.jsx";
 import Subscription from "./pages/Subscription.jsx";
 import Live from "./pages/Live.jsx";
 import Recordings from "./pages/Recordings.jsx";
+import AlgoBridge from "./pages/AlgoBridge.jsx";
 import Notifications from "./pages/Notifications.jsx";
 import Profile from "./pages/Profile.jsx";
 import Billing from "./pages/Billing.jsx";
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="subscription" element={<Subscription />} />
         <Route path="live" element={<Live />} />
         <Route path="recordings" element={<Recordings />} />
+        <Route path="algobridge" element={<AlgoBridge />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="profile" element={<Profile />} />
         <Route path="billing" element={<Billing />} />

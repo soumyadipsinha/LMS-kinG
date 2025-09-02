@@ -11,6 +11,7 @@ const menu = [
   { to: "/dashboard/subscription", label: "Subscription" },
   { to: "/dashboard/live", label: "Live Classes" },
   { to: "/dashboard/recordings", label: "Recording Classes" },
+  { to: "/dashboard/algobridge", label: "AlgoBridge" },
   { to: "/dashboard/notifications", label: "Notification Preferences" },
   { to: "/dashboard/profile", label: "Profile" },
   { to: "/dashboard/billing", label: "Billing" },
