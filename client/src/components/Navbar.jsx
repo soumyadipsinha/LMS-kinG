@@ -64,8 +64,14 @@ export default function Navbar() {
               </NavLink>
             </nav>
 
-            {/* Login + Mobile Menu */}
+            {/* Login + Admin + Mobile Menu */}
             <div className="flex items-center gap-3">
+              <Link
+                to="/admin/login"
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-red-600 to-orange-600 text-white text-sm font-semibold px-4 py-2.5 shadow hover:from-red-700 hover:to-orange-700 transition-all duration-300"
+              >
+                👑 Admin
+              </Link>
               <button
                 onClick={handleLoginClick}
                 className="inline-flex items-center gap-2 rounded-full bg-[#1B4A8B] text-white text-sm font-semibold px-5 py-2.5 shadow hover:bg-indigo-700"

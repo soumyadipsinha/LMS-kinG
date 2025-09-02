@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import RootLayout from "./layout/RootLayout.jsx";
 import DashboardLayout from "./layout/DashboardLayout.jsx";
+import AdminLayout from "./layout/AdminLayout.jsx";
 import Home from "./pages/Home.jsx";
 import Courses from "./pages/Courses.jsx";
 import CourseDetails from "./pages/CourseDetails.jsx";
@@ -8,6 +9,7 @@ import About from "./pages/About.jsx";
 import Faq from "./pages/Faq.jsx";
 import Login from "./pages/Login.jsx";
 import Signup from "./pages/SignUp.jsx";
+import AdminLogin from "./pages/AdminLogin.jsx";
 import Subscription from "./pages/Subscription.jsx";
 import Live from "./pages/Live.jsx";
 import Recordings from "./pages/Recordings.jsx";
@@ -19,6 +21,14 @@ import Logout from "./pages/Logout.jsx";
 import SelectedCourse from "./pages/SelectedCouse.jsx";
 import LaunchPad from "./pages/LaunchPad.jsx";
 import LaunchPadDetails from "./pages/LaunchPadDetails.jsx";
+
+// Admin Pages
+import AdminDashboard from "./pages/AdminDashboard.jsx";
+import AdminStudents from "./pages/AdminStudents.jsx";
+import AdminCourses from "./pages/AdminCourses.jsx";
+import AdminExams from "./pages/AdminExams.jsx";
+import AdminAnalytics from "./pages/AdminAnalytics.jsx";
+import AdminSettings from "./pages/AdminSettings.jsx";
 
 export default function App() {
   return (
@@ -33,6 +43,7 @@ export default function App() {
         <Route path="faq" element={<Faq />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
+        <Route path="admin/login" element={<AdminLogin />} />
       </Route>
 
       <Route path="/dashboard" element={<DashboardLayout />}>
@@ -46,6 +57,17 @@ export default function App() {
         <Route path="billing" element={<Billing />} />
         <Route path="logout" element={<Logout />} />
         <Route path="selected-course/:id" element={<SelectedCourse />} />
+      </Route>
+
+      {/* Admin Routes */}
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="students" element={<AdminStudents />} />
+        <Route path="courses" element={<AdminCourses />} />
+        <Route path="exams" element={<AdminExams />} />
+        <Route path="analytics" element={<AdminAnalytics />} />
+        <Route path="settings" element={<AdminSettings />} />
       </Route>
     </Routes>
   );
