@@ -1,105 +1,110 @@
-// src/components/Navbar.jsx
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext.jsx";
+import { Bell } from "lucide-react";
 import LoginModal from "./LoginModal.jsx";
 import SignupModal from "./SignupModal.jsx";
 
-const navLink =
-  "uppercase text-lg font-bold tracking-wide text-slate-700 hover:text-[#1B4A8B] transition-colors px-4 py-2";
+const navLink = "uppercase text-lg font-bold text-slate-700 hover:text-[#1B4A8B] px-4 py-2";
 
 export default function Navbar() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
-  const handleLoginClick = () => {
-    setIsLoginModalOpen(true);
+  const handleProfileClick = () => {
+    navigate("/dashboard/profile");
   };
 
-  const handleCloseLoginModal = () => {
-    setIsLoginModalOpen(false);
-  };
-
-  const handleCloseSignupModal = () => {
-    setIsSignupModalOpen(false);
-  };
-
-  const handleSwitchToSignup = () => {
-    setIsLoginModalOpen(false);
-    setIsSignupModalOpen(true);
-  };
-
-  const handleSwitchToLogin = () => {
-    setIsSignupModalOpen(false);
-    setIsLoginModalOpen(true);
+  const handleLogout = async () => {
+    await logout();
+    navigate("/"); // redirect to home after logout
   };
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-200">
         <div className="max-w-6xl mx-auto px-4">
           <div className="h-16 flex items-center justify-between">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2">
-              <img
-                src="/src/assets/kinglogo.jpg"
-                alt="King Logo"
-                className="h-15 w-20"
-              />
+            <Link to="/">
+              <img src="/src/assets/kinglogo.jpg" alt="Logo" className="h-12" />
             </Link>
 
             {/* Nav Links */}
-            <nav className="hidden md:flex items-center gap-6">
-              <NavLink to="/" end className={navLink}>
-                Home
-              </NavLink>
-              <NavLink to="/courses" className={navLink}>
-                Courses
-              </NavLink>
-              <NavLink to="/launchpad" className={navLink}>
-                LaunchPad
-              </NavLink>
-              <NavLink to="/about" className={navLink}>
-                About
-              </NavLink>
-              <NavLink to="/faq" className={navLink}>
-                FAQ
-              </NavLink>
+            <nav className="hidden md:flex gap-6">
+              <NavLink to="/" end className={navLink}>Home</NavLink>
+              <NavLink to="/courses" className={navLink}>Courses</NavLink>
+              <NavLink to="/launchpad" className={navLink}>LaunchPad</NavLink>
+              <NavLink to="/about" className={navLink}>About</NavLink>
+              <NavLink to="/faq" className={navLink}>FAQ</NavLink>
             </nav>
 
-            {/* Login + Admin + Mobile Menu */}
+            {/* Right Section */}
             <div className="flex items-center gap-3">
-              <Link
-                to="/admin/login"
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-red-600 to-orange-600 text-white text-sm font-semibold px-4 py-2.5 shadow hover:from-red-700 hover:to-orange-700 transition-all duration-300"
-              >
-                👑 Admin
-              </Link>
-              <button
-                onClick={handleLoginClick}
-                className="inline-flex items-center gap-2 rounded-full bg-[#1B4A8B] text-white text-sm font-semibold px-5 py-2.5 shadow hover:bg-indigo-700"
-              >
-                Login
-              </button>
-              <button className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-md border border-slate-300 text-slate-700">
-                <span className="sr-only">Menu</span>☰
-              </button>
+              {user ? (
+                <>
+                  <button className="relative p-2 text-slate-700">
+                    <Bell size={22} />
+                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-600 rounded-full"></span>
+                  </button>
+
+                  <div className="relative">
+                    <img
+                      src={user.avatar || "/src/assets/default-avatar.png"}
+                      alt="Profile"
+                      className="w-10 h-10 rounded-full border cursor-pointer"
+                      onClick={handleProfileClick}
+                    />
+                    <div className="absolute right-0 mt-2 bg-white shadow rounded p-2 min-w-[120px]">
+                      <p className="px-4 py-2 text-gray-700">{user.firstName}</p>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-red-600 hover:bg-slate-100 rounded"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/admin/login"
+                    className="rounded-full bg-gradient-to-r from-red-600 to-orange-600 text-white text-sm font-semibold px-4 py-2.5 shadow"
+                  >
+                    👑 Admin
+                  </Link>
+                  <button
+                    onClick={() => setIsLoginModalOpen(true)}
+                    className="rounded-full bg-[#1B4A8B] text-white text-sm font-semibold px-5 py-2.5 shadow"
+                  >
+                    Login
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
       </header>
 
-      {/* Login Modal */}
+      {/* Modals */}
       <LoginModal
         isOpen={isLoginModalOpen}
-        onClose={handleCloseLoginModal}
-        onSwitchToSignup={handleSwitchToSignup}
+        onClose={() => setIsLoginModalOpen(false)}
+        onSwitchToSignup={() => {
+          setIsLoginModalOpen(false);
+          setIsSignupModalOpen(true);
+        }}
       />
-
-      {/* Signup Modal */}
       <SignupModal
         isOpen={isSignupModalOpen}
-        onClose={handleCloseSignupModal}
-        onSwitchToLogin={handleSwitchToLogin}
+        onClose={() => setIsSignupModalOpen(false)}
+        onSwitchToLogin={() => {
+          setIsSignupModalOpen(false);
+          setIsLoginModalOpen(true);
+        }}
       />
     </>
   );
