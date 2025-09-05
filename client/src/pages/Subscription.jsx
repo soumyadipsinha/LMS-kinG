@@ -45,24 +45,24 @@ export default function Subscription() {
   const courses = [
     { 
       id: 1, 
-      title: "Advanced Machine Learning", 
-      author: "Dr. Sarah Johnson", 
+      title: "Google Cloud Platform", 
+      author: "Google Experts", 
       progress: 60,
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop"
+      image: "/src/assets/Google1.jpg"
     },
     { 
       id: 2, 
-      title: "Data Science Fundamentals", 
-      author: "Prof. Michael Chen", 
+      title: "Microsoft Azure Fundamentals", 
+      author: "Microsoft Team", 
       progress: 75,
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop"
+      image: "/src/assets/Microsoft1.jpg"
     },
     { 
       id: 3, 
-      title: "Web Development Bootcamp", 
-      author: "Emily Rodriguez", 
+      title: "Meta Development", 
+      author: "Meta Developers", 
       progress: 35,
-      image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=250&fit=crop"
+      image: "/src/assets/Meta1.jpg"
     },
     { 
       id: 4, 

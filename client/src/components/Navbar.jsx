@@ -40,9 +40,11 @@ export default function Navbar() {
           <div className="h-16 flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
-              <span className="text-3xl font-extrabold tracking-wide text-[#1B4A8B]">
-                LITERA
-              </span>
+              <img
+                src="/src/assets/kinglogo.jpg"
+                alt="King Logo"
+                className="h-15 w-20"
+              />
             </Link>
 
             {/* Nav Links */}
@@ -79,8 +81,7 @@ export default function Navbar() {
                 Login
               </button>
               <button className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-md border border-slate-300 text-slate-700">
-                <span className="sr-only">Menu</span>
-                ☰
+                <span className="sr-only">Menu</span>☰
               </button>
             </div>
           </div>
@@ -88,15 +89,15 @@ export default function Navbar() {
       </header>
 
       {/* Login Modal */}
-      <LoginModal 
-        isOpen={isLoginModalOpen} 
+      <LoginModal
+        isOpen={isLoginModalOpen}
         onClose={handleCloseLoginModal}
         onSwitchToSignup={handleSwitchToSignup}
       />
 
       {/* Signup Modal */}
-      <SignupModal 
-        isOpen={isSignupModalOpen} 
+      <SignupModal
+        isOpen={isSignupModalOpen}
         onClose={handleCloseSignupModal}
         onSwitchToLogin={handleSwitchToLogin}
       />

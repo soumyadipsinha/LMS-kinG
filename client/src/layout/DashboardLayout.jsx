@@ -34,9 +34,9 @@ export default function DashboardLayout() {
           {/* Profile section */}
           <div className="px-6 pt-8 pb-6">
             <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white/20 mx-auto shadow">
-              <img className="w-full h-full object-cover" src="https://i.pravatar.cc/200?img=47" alt="profile" />
+              <img className="w-full h-full object-cover" src="https://i.pravatar.cc/200?img=8" alt="profile" />
             </div>
-            <p className="text-center mt-4 font-medium">Sanchari Ghosh</p>
+            <p className="text-center mt-4 font-medium">Soumyadip Sinha</p>
           </div>
 
           {/* Menu (scrollable) */}
