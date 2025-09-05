@@ -1,6 +1,8 @@
 // src/layout/DashboardLayout.jsx
 import { NavLink, Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar.jsx";
+import { getCurrentUser } from "../utils/auth.js";
 
 const BRAND = {
   blue: "#163D74",
@@ -19,6 +21,13 @@ const menu = [
 ];
 
 export default function DashboardLayout() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+  }, []);
+
   return (
     <div className="h-screen w-full overflow-hidden bg-white text-slate-900">
       {/* Top navbar */}
@@ -36,7 +45,9 @@ export default function DashboardLayout() {
             <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white/20 mx-auto shadow">
               <img className="w-full h-full object-cover" src="https://i.pravatar.cc/200?img=8" alt="profile" />
             </div>
-            <p className="text-center mt-4 font-medium">Soumyadip Sinha</p>
+            <p className="text-center mt-4 font-medium">
+              {user ? user.name || user.email?.split('@')[0] || 'User' : 'Loading...'}
+            </p>
           </div>
 
           {/* Menu (scrollable) */}
