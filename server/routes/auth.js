@@ -1,295 +1,74 @@
-import express from 'express';
-import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
-import { protect, authRateLimit } from '../middleware/auth.js';
-import { 
-  validateUserRegistration, 
-  validateUserLogin 
-} from '../middleware/validation.js';
-import { generateTokenResponse, clearTokenCookie } from '../utils/jwt.js';
+import express from "express";
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
 const router = express.Router();
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const JWT_EXPIRE = process.env.JWT_EXPIRE || "7d";
 
-// @desc    Register user
-// @route   POST /api/auth/register
-// @access  Public
-router.post('/register', validateUserRegistration, async (req, res) => {
+// --- SIGNUP ---
+router.post("/signup", async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'User already exists with this email'
-      });
-    }
+    if (existingUser)
+      return res.status(400).json({ message: "Email already registered" });
 
-    // Create user
-    const user = await User.create({
-      firstName,
-      lastName,
-      email,
-      password
-    });
+    const user = new User({ firstName, lastName, email, password });
+    await user.save();
 
-    // Generate token response
-    const tokenResponse = generateTokenResponse(user, res);
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: JWT_EXPIRE });
 
     res.status(201).json({
-      status: 'success',
-      message: 'User registered successfully',
-      data: tokenResponse
+      user: { id: user._id, firstName, lastName, email, role: user.role },
+      token,
     });
-  } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Server error during registration'
-    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-// @desc    Login user
-// @route   POST /api/auth/login
-// @access  Public
-router.post('/login', authRateLimit(5, 15 * 60 * 1000), validateUserLogin, async (req, res) => {
+// --- LOGIN ---
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user and include password for comparison
-    const user = await User.findOne({ email }).select('+password');
-    
-    if (!user) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'Invalid credentials'
-      });
-    }
-
-    // Check if user is active
-    if (!user.isActive) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'Account is deactivated. Please contact support.'
-      });
-    }
-
-    // Check password
-    const isPasswordValid = await user.comparePassword(password);
-    if (!isPasswordValid) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'Invalid credentials'
-      });
-    }
-
-    // Update last login
-    await user.updateLastLogin();
-
-    // Generate token response
-    const tokenResponse = generateTokenResponse(user, res);
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Login successful',
-      data: tokenResponse
-    });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Server error during login'
-    });
-  }
-});
-
-// @desc    Logout user
-// @route   POST /api/auth/logout
-// @access  Private
-router.post('/logout', protect, (req, res) => {
-  try {
-    // Clear token cookie
-    clearTokenCookie(res);
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Logged out successfully'
-    });
-  } catch (error) {
-    console.error('Logout error:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Server error during logout'
-    });
-  }
-});
-
-// @desc    Get current user
-// @route   GET /api/auth/me
-// @access  Private
-router.get('/me', protect, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id)
-      .populate('enrolledCourses.course', 'title thumbnail instructor')
-      .select('-password');
-
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user
-      }
-    });
-  } catch (error) {
-    console.error('Get current user error:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Server error'
-    });
-  }
-});
-
-// @desc    Update user profile
-// @route   PUT /api/auth/profile
-// @access  Private
-router.put('/profile', protect, async (req, res) => {
-  try {
-    const allowedUpdates = [
-      'firstName', 'lastName', 'profile.bio', 'profile.phone', 
-      'profile.dateOfBirth', 'profile.gender', 'profile.address',
-      'profile.socialLinks', 'preferences'
-    ];
-
-    const updates = {};
-    Object.keys(req.body).forEach(key => {
-      if (allowedUpdates.includes(key)) {
-        updates[key] = req.body[key];
-      }
-    });
-
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
-      updates,
-      { new: true, runValidators: true }
-    ).select('-password');
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Profile updated successfully',
-      data: {
-        user
-      }
-    });
-  } catch (error) {
-    console.error('Update profile error:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Server error during profile update'
-    });
-  }
-});
-
-// @desc    Change password
-// @route   PUT /api/auth/change-password
-// @access  Private
-router.put('/change-password', protect, async (req, res) => {
-  try {
-    const { currentPassword, newPassword } = req.body;
-
-    // Get user with password
-    const user = await User.findById(req.user.id).select('+password');
-
-    // Check current password
-    const isCurrentPasswordValid = await user.comparePassword(currentPassword);
-    if (!isCurrentPasswordValid) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Current password is incorrect'
-      });
-    }
-
-    // Update password
-    user.password = newPassword;
-    await user.save();
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Password changed successfully'
-    });
-  } catch (error) {
-    console.error('Change password error:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Server error during password change'
-    });
-  }
-});
-
-// @desc    Refresh token
-// @route   POST /api/auth/refresh
-// @access  Public
-router.post('/refresh', async (req, res) => {
-  try {
-    const { refreshToken } = req.body;
-
-    if (!refreshToken) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'Refresh token is required'
-      });
-    }
-
-    // Verify refresh token
-    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-    
-    // Get user
-    const user = await User.findById(decoded.id);
-    if (!user || !user.isActive) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'Invalid refresh token'
-      });
-    }
-
-    // Generate new token response
-    const tokenResponse = generateTokenResponse(user, res);
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Token refreshed successfully',
-      data: tokenResponse
-    });
-  } catch (error) {
-    console.error('Refresh token error:', error);
-    res.status(401).json({
-      status: 'error',
-      message: 'Invalid refresh token'
-    });
-  }
-});
-
-// @desc    Check email availability
-// @route   GET /api/auth/check-email/:email
-// @access  Public
-router.get('/check-email/:email', async (req, res) => {
-  try {
-    const { email } = req.params;
-
     const user = await User.findOne({ email });
-    
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) return res.status(401).json({ message: "Invalid password" });
+
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: JWT_EXPIRE });
+
     res.status(200).json({
-      status: 'success',
-      data: {
-        available: !user
-      }
+      user: { id: user._id, firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role, avatar: user.avatar },
+      token,
     });
-  } catch (error) {
-    console.error('Check email error:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Server error'
-    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// --- GET CURRENT USER ---
+router.get("/me", async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ message: "Unauthorized" });
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json({ user });
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ message: "Invalid token" });
   }
 });
 

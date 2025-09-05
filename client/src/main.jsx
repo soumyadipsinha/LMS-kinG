@@ -1,14 +1,18 @@
-// src/main.jsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
-import "./index.css";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import './index.css'; // tailwind import
+import { Toaster } from "react-hot-toast";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <App />
+        <Toaster position="top-right" />
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
