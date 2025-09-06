@@ -1,9 +1,12 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext.jsx";
+import { toast } from "react-hot-toast";
 
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -16,17 +19,9 @@ export default function Login() {
     const email = formData.get("email");
     const password = formData.get("password");
 
-    // Simulate login process (no backend required)
     try {
-      // Store user data in localStorage for session management
-      const userData = {
-        email: email,
-        name: email.split('@')[0], // Extract name from email
-        loginTime: new Date().toISOString(),
-        isAuthenticated: true
-      };
-      
-      localStorage.setItem('user', JSON.stringify(userData));
+      // Use proper authentication from AuthContext
+      await login(email, password);
       
       // Show success message briefly
       setTimeout(() => {
@@ -37,14 +32,15 @@ export default function Login() {
         setTimeout(() => {
           setIsRedirecting(true);
           setTimeout(() => {
-            const from = location.state?.from?.pathname || "/dashboard";
-            navigate(from, { replace: true });
+            // Always redirect to dashboard after login
+            navigate("/dashboard", { replace: true });
           }, 1000);
         }, 1000);
       }, 1500);
       
     } catch (error) {
       console.error('Login error:', error);
+      toast.error(error.response?.data?.message || "Login failed");
       setIsLoading(false);
     }
   };

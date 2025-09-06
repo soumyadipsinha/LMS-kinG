@@ -18,6 +18,7 @@ import Notifications from "./pages/Notifications.jsx";
 import Profile from "./pages/Profile.jsx";
 import Billing from "./pages/Billing.jsx";
 import Logout from "./pages/Logout.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
 import SelectedCourse from "./pages/SelectedCouse.jsx";
 import LaunchPad from "./pages/LaunchPad.jsx";
 import LaunchPadDetails from "./pages/LaunchPadDetails.jsx";
@@ -47,7 +48,7 @@ export default function App() {
       </Route>
 
       <Route path="/dashboard" element={<DashboardLayout />}>
-        <Route index element={<Navigate to="subscription" replace />} />
+        <Route index element={<Dashboard />} />
         <Route path="subscription" element={<Subscription />} />
         <Route path="live" element={<Live />} />
         <Route path="recordings" element={<Recordings />} />

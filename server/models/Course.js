@@ -15,6 +15,11 @@ const lessonSchema = new mongoose.Schema({
     required: [true, 'Lesson content is required']
   },
   videoUrl: String,
+  videoFile: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'File',
+    default: null
+  },
   duration: {
     type: Number, // in minutes
     default: 0
@@ -144,6 +149,11 @@ const courseSchema = new mongoose.Schema({
   thumbnail: {
     type: String,
     required: [true, 'Course thumbnail is required']
+  },
+  thumbnailFile: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'File',
+    default: null
   },
   images: [String],
   videos: [String],

@@ -1,10 +1,12 @@
 // src/components/LoginModal.jsx
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { toast } from "react-hot-toast";
 
 export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -25,6 +27,8 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }) {
       await login(formData.email, formData.password);
       toast.success("Logged in successfully!");
       onClose();
+      // Redirect to dashboard after successful login
+      navigate("/dashboard");
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed");
     } finally {

@@ -50,18 +50,18 @@ export default function Navbar() {
                     <span className="absolute top-1 right-1 w-2 h-2 bg-red-600 rounded-full"></span>
                   </button>
 
-                  <div className="relative">
+                  <div className="relative group">
                     <img
-                      src={user.avatar || "/src/assets/default-avatar.png"}
+                      src={user.avatar || "https://i.pravatar.cc/200?img=8"}
                       alt="Profile"
                       className="w-10 h-10 rounded-full border cursor-pointer"
                       onClick={handleProfileClick}
                     />
-                    <div className="absolute right-0 mt-2 bg-white shadow rounded p-2 min-w-[120px]">
-                      <p className="px-4 py-2 text-gray-700">{user.firstName}</p>
+                    <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg p-2 min-w-[120px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                      <p className="px-4 py-2 text-gray-700 font-medium">{user.firstName || user.email?.split('@')[0]}</p>
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-red-600 hover:bg-slate-100 rounded"
+                        className="w-full text-left px-4 py-2 text-red-600 hover:bg-slate-100 rounded transition-colors"
                       >
                         Logout
                       </button>
