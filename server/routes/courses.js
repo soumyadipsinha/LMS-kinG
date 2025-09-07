@@ -25,7 +25,7 @@ const router = express.Router();
 // @desc    Get all courses
 // @route   GET /api/courses
 // @access  Public
-router.get('/', optionalAuth, validatePagination, validateSearch, getCourses);
+router.get('/', getCourses);
 
 // @desc    Get featured courses
 // @route   GET /api/courses/featured
@@ -40,31 +40,31 @@ router.get('/categories/list', getCourseCategories);
 // @desc    Get course by ID
 // @route   GET /api/courses/:id
 // @access  Public
-router.get('/:id', optionalAuth, validateObjectId('id'), getCourseById);
+router.get('/:id', getCourseById);
 
 // @desc    Create new course
 // @route   POST /api/courses
 // @access  Private/Instructor
-router.post('/', protect, authorize('instructor', 'admin'), validateCourseCreation, createCourse);
+router.post('/',  createCourse);
 
 // @desc    Update course
 // @route   PUT /api/courses/:id
 // @access  Private/Instructor/Admin
-router.put('/:id', protect, validateObjectId('id'), validateCourseUpdate, updateCourse);
+router.put('/:id',  updateCourse);
 
 // @desc    Delete course
 // @route   DELETE /api/courses/:id
 // @access  Private/Instructor/Admin
-router.delete('/:id', protect, validateObjectId('id'), deleteCourse);
+router.delete('/:id',  deleteCourse);
 
 // @desc    Enroll in course
 // @route   POST /api/courses/:id/enroll
 // @access  Private
-router.post('/:id/enroll', protect, validateObjectId('id'), enrollInCourse);
+router.post('/:id/enroll',  enrollInCourse);
 
 // @desc    Add course review
 // @route   POST /api/courses/:id/reviews
 // @access  Private
-router.post('/:id/reviews', protect, validateObjectId('id'), validateReview, addCourseReview);
+router.post('/:id/reviews',addCourseReview);
 
 export default router;

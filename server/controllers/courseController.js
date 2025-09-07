@@ -154,7 +154,7 @@ export const createCourse = async (req, res) => {
   try {
     const courseData = {
       ...req.body,
-      instructor: req.user.id
+      // instructor: req.user.id
     };
 
     const course = await Course.create(courseData);

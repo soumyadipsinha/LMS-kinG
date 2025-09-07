@@ -15,6 +15,8 @@ import courses2 from "../assets/courses2.jpg";
 import courses3 from "../assets/courses3.jpg";
 import courses4 from "../assets/courses4.jpg";
 import courses5 from "../assets/courses5.jpg";
+import { useEffect, useState } from "react";
+import { listCourses } from "../services/courseServices";
 
 export default function Courses() {
   const categories = [
@@ -218,6 +220,46 @@ export default function Courses() {
     }
   ];
 
+  const [fetchedCourses, setFetchedCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await listCourses({ page: 1, limit: 24, sort: "-createdAt" });
+        const items = res?.data?.courses ?? [];
+        // 3) Map BE -> FE card shape
+        const mapped = items.map((c) => ({
+          id: c._id,
+          title: c.title,
+          sub: c.shortDescription || c.description || "",
+          author: c.instructor
+            ? `By ${[c.instructor.firstName, c.instructor.lastName].filter(Boolean).join(" ")}`
+            : "By Instructor",
+          price: `₹${Number(c.price ?? 0).toLocaleString()}`,
+          img: c.thumbnail || courses1, // fallback image
+          level:
+            (c.level === "beginner" && "Beginner") ||
+            (c.level === "intermediate" && "Intermediate") ||
+            (c.level === "advanced" && "Advanced") ||
+            "Beginner",
+          duration: `${c.duration}h`,
+          students: c.enrollmentCount ?? 0,
+          rating: c.rating?.average ?? 0,
+          category: c.category,
+        }));
+        setFetchedCourses(mapped);
+      } catch (e) {
+        console.error("Failed to load courses:", e);
+        setLoadError(e.message || "Failed to load courses");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, []);
+
   return (
     <div className="bg-white">
       <div className="max-w-6xl mx-auto px-4 py-10 md:py-12">
@@ -328,7 +370,7 @@ export default function Courses() {
         {/* Courses Grid */}
         <section>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {courses.map((course) => (
+            {fetchedCourses.map((course) => (
               <div key={course.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group hover:scale-105">
                 {/* Course Image */}
                 <div className="relative overflow-hidden">

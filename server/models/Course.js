@@ -99,11 +99,11 @@ const courseSchema = new mongoose.Schema({
   instructor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: [true, 'Instructor is required']
+    // required: [true, 'Instructor is required']
   },
   category: {
     type: String,
-    required: [true, 'Category is required'],
+    // required: [true, 'Category is required'],
     enum: [
       'programming',
       'data-science',
