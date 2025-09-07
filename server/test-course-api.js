@@ -14,7 +14,7 @@ const testCourse = {
   price: 2999,
   originalPrice: 3999,
   currency: "INR",
-  thumbnail: "https://via.placeholder.com/800x450/4F46E5/FFFFFF?text=React+Course",
+  thumbnail: "https://placehold.co/800x450/4F46E5/FFFFFF?text=" + encodeURIComponent("React Course"),
   isPublished: true,
   isFeatured: false,
   tags: ["react", "javascript", "frontend"],

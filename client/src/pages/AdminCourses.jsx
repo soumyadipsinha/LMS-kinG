@@ -221,6 +221,7 @@ export default function AdminCourses() {
       "Beginner",
     duration: `${c.duration}h`,
     price: c.price,
+    thumbnail: c.thumbnail || null,
     students: c.enrollmentCount ?? 0,
     rating: c.rating?.average ?? 0,
     status: c.isPublished ? "published" : "draft",
@@ -374,9 +375,10 @@ return (
             <div className="absolute inset-0 flex items-center justify-center">
               {/* If any module has a thumbnailPreview or image type, show a visual hint */}
               {(() => {
+                const explicitThumb = course.thumbnail || null;
                 const firstThumb = course.modules?.find(m => m.thumbnailPreview)?.thumbnailPreview;
                 const firstImage = course.modules?.find(m => m.type === "image" && m.filePreview)?.filePreview;
-                const cover = firstThumb || firstImage;
+                const cover = explicitThumb || firstThumb || firstImage;
                 if (cover) {
                   return <img src={cover} alt="cover" className="w-full h-full object-cover" />;
                 }

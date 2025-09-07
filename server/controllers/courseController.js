@@ -152,8 +152,32 @@ export const getCourseById = async (req, res) => {
 // @access  Private/Instructor
 export const createCourse = async (req, res) => {
   try {
+    const body = req.body || {};
+    const normalized = { ...body };
+
+    // Ensure required text fields
+    if (!normalized.shortDescription && normalized.description) {
+      normalized.shortDescription = String(normalized.description).slice(0, 300);
+    }
+
+    // Provide a safe default thumbnail to satisfy schema requirement
+    if (!normalized.thumbnail) {
+      normalized.thumbnail = 'https://placehold.co/600x400?text=Course+Thumbnail';
+    }
+
+    // Normalize arrays if client sends comma-separated strings
+    if (normalized.tags && !Array.isArray(normalized.tags)) {
+      normalized.tags = String(normalized.tags).split(',').map(t => t.trim()).filter(Boolean);
+    }
+    if (normalized.requirements && !Array.isArray(normalized.requirements)) {
+      normalized.requirements = String(normalized.requirements).split(',').map(t => t.trim()).filter(Boolean);
+    }
+    if (normalized.learningOutcomes && !Array.isArray(normalized.learningOutcomes)) {
+      normalized.learningOutcomes = String(normalized.learningOutcomes).split(',').map(t => t.trim()).filter(Boolean);
+    }
+
     const courseData = {
-      ...req.body,
+      ...normalized,
       // instructor: req.user.id
     };
 

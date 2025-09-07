@@ -146,6 +146,12 @@ export const createCourse = async (req, res) => {
       thumbnailUrl = imageUrl;
     }
 
+    // Ensure we have at least some thumbnail to satisfy schema requirement
+    if (!thumbnailUrl) {
+      // Fallback placeholder to avoid validation error (schema requires thumbnail)
+      thumbnailUrl = 'https://placehold.co/600x400?text=Course+Thumbnail';
+    }
+
     // Handle video uploads
     if (req.files && req.files.videos) {
       for (const video of req.files.videos) {
@@ -181,9 +187,10 @@ export const createCourse = async (req, res) => {
       currency: currency || 'USD',
       thumbnail: thumbnailUrl,
       videos: videoUrls,
-      tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
-      requirements: requirements ? requirements.split(',').map(req => req.trim()) : [],
-      learningOutcomes: learningOutcomes ? learningOutcomes.split(',').map(outcome => outcome.trim()) : [],
+      // Support either comma-separated strings or arrays
+      tags: Array.isArray(tags) ? tags : (tags ? String(tags).split(',').map(tag => tag.trim()) : []),
+      requirements: Array.isArray(requirements) ? requirements : (requirements ? String(requirements).split(',').map(req => req.trim()) : []),
+      learningOutcomes: Array.isArray(learningOutcomes) ? learningOutcomes : (learningOutcomes ? String(learningOutcomes).split(',').map(outcome => outcome.trim()) : []),
       isPublished: isPublished === 'true' || isPublished === true,
       isFeatured: isFeatured === 'true' || isFeatured === true
     });

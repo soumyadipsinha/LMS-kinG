@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { courseService } from "../services/courseService";
 
 function Star({ filled }) {
   return (
@@ -17,108 +19,71 @@ function Star({ filled }) {
 export default function CourseDetails() {
   const { id } = useParams();
   const location = useLocation();
-  
-  // Dummy course data - in a real app, this would come from an API
-  const allCourses = [
-    { 
-      id: 1, 
-      title: "Advanced Machine Learning", 
-      sub: "Dive deep into machine learning algorithms and neural networks", 
-      author: "By Dr. John Doe", 
-      price: "₹7,999", 
-      img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop",
-      level: "Advanced",
-      duration: "8 weeks",
-      students: 1247,
-      rating: 4.8,
-      category: "Machine Learning",
-      description: "This comprehensive course covers everything from basic machine learning concepts to advanced neural network architectures. You'll learn to build, train, and deploy ML models for real-world applications."
-    },
-    { 
-      id: 2, 
-      title: "React for Beginners", 
-      sub: "Learn React from scratch with hands-on projects", 
-      author: "By Jane Smith", 
-      price: "₹5,999", 
-      img: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=250&fit=crop",
-      level: "Beginner",
-      duration: "6 weeks",
-      students: 2156,
-      rating: 4.9,
-      category: "Web Development",
-      description: "Start your React journey with this beginner-friendly course. Learn component-based architecture, hooks, state management, and build real projects from scratch."
-    },
-    { 
-      id: 3, 
-      title: "Node.js & Express Mastery", 
-      sub: "Build scalable backend APIs with Node.js and Express", 
-      author: "By Mike Johnson", 
-      price: "₹6,999", 
-      img: "https://images.unsplash.com/photo-1555066931-4365d308bab7?w=400&h=250&fit=crop",
-      level: "Intermediate",
-      duration: "7 weeks",
-      students: 1893,
-      rating: 4.7,
-      category: "Web Development",
-      description: "Master backend development with Node.js and Express. Learn to build RESTful APIs, handle authentication, work with databases, and deploy your applications."
-    },
-    { 
-      id: 4, 
-      title: "Next.js & Server-Side Rendering", 
-      sub: "Master modern React with Next.js and SSR", 
-      author: "By Sarah Lee", 
-      price: "₹8,999", 
-      img: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400&h=250&fit=crop",
-      level: "Intermediate",
-      duration: "6 weeks",
-      students: 1567,
-      rating: 4.8,
-      category: "Web Development",
-      description: "Take your React skills to the next level with Next.js. Learn server-side rendering, static generation, API routes, and build production-ready applications."
-    },
-    { 
-      id: 5, 
-      title: "Full Stack Web Development", 
-      sub: "Complete web development from frontend to backend", 
-      author: "By David Kim", 
-      price: "₹9,999", 
-      img: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=250&fit=crop",
-      level: "Advanced",
-      duration: "10 weeks",
-      students: 2341,
-      rating: 4.9,
-      category: "Web Development",
-      description: "Become a full-stack developer with this comprehensive course. Cover frontend, backend, databases, deployment, and build complete web applications."
-    },
-    { 
-      id: 6, 
-      title: "JavaScript Deep Dive", 
-      sub: "Master JavaScript fundamentals and modern ES6+ features", 
-      author: "By Emily Clark", 
-      price: "₹4,999", 
-      img: "https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?w=400&h=250&fit=crop",
-      level: "Beginner",
-      duration: "5 weeks",
-      students: 3124,
-      rating: 4.6,
-      category: "Web Development",
-      description: "Build a solid foundation in JavaScript with this comprehensive course. Learn ES6+ features, async programming, and modern JavaScript patterns."
-    }
-  ];
+  const [course, setCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [similarCourses, setSimilarCourses] = useState([]);
 
-  // Try to get course from location state first, then find by ID
-  let course = location.state?.course;
-  if (!course) {
-    course = allCourses.find(c => c.id === parseInt(id));
+  useEffect(() => {
+    const existing = location.state?.course;
+    if (existing) {
+      setCourse(existing);
+      setLoading(false);
+      return;
+    }
+    (async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const resp = await courseService.getCourseById(id);
+        const c = resp?.data?.course || resp?.data;
+        if (!c) throw new Error("Course not found");
+        setCourse(c);
+      } catch (e) {
+        setError(e.message || "Failed to load course");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [id, location.state]);
+
+  // Load similar courses once the main course is available
+  useEffect(() => {
+    (async () => {
+      if (!course?._id && !course?.id) return;
+      try {
+        const resp = await courseService.getCourses({
+          limit: 6,
+          category: course.category,
+        });
+        const items = resp?.data?.courses || [];
+        const currentId = String(course._id || course.id);
+        const filtered = items.filter(c => String(c._id) !== currentId).slice(0, 3);
+        setSimilarCourses(filtered);
+      } catch (e) {
+        setSimilarCourses([]);
+      }
+    })();
+  }, [course]);
+
+  if (loading) {
+    return (
+      <div className="bg-white min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading course...</p>
+        </div>
+      </div>
+    );
   }
 
-  if (!course) {
+  if (error || !course) {
     return (
       <div className="bg-white min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">😕</div>
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Course Not Found</h1>
-          <p className="text-gray-600 mb-8">The course you're looking for doesn't exist or has been removed.</p>
+          <p className="text-gray-600 mb-8">{error || "The course you're looking for doesn't exist or has been removed."}</p>
           <Link
             to="/courses"
             className="inline-flex items-center justify-center bg-[#1B4A8B] text-white font-semibold px-6 py-3 rounded-lg hover:bg-[#153a6f] transition-colors duration-300"
@@ -130,8 +95,22 @@ export default function CourseDetails() {
     );
   }
 
-  // Different similar courses with unique data
-  const similar = allCourses.filter(c => c.id !== course.id).slice(0, 3);
+  const display = {
+    id: course._id || course.id,
+    title: course.title,
+    description: course.description || course.shortDescription,
+    thumbnail: course.thumbnail || "https://placehold.co/800x450?text=Course+Thumbnail",
+    price: `₹${Number(course.price ?? 0).toLocaleString("en-IN")}`,
+    level: course.level ? (course.level.charAt(0).toUpperCase() + course.level.slice(1)) : "Beginner",
+    duration: `${course.duration || 0} hours`,
+    students: course.enrollmentCount || 0,
+    rating: course.rating?.average || 0,
+    category: course.category?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Other',
+    instructor: `${course.instructor?.firstName || ''} ${course.instructor?.lastName || ''}`.trim() || 'Instructor',
+    requirements: course.requirements || [],
+    learningOutcomes: course.learningOutcomes || [],
+    modules: course.modules || [],
+  };
 
   return (
     <div className="bg-white">
@@ -143,36 +122,54 @@ export default function CourseDetails() {
             <li><span>/</span></li>
             <li><Link to="/courses" className="hover:text-[#1B4A8B]">Courses</Link></li>
             <li><span>/</span></li>
-            <li className="text-gray-900 font-medium">{course.title}</li>
+            <li className="text-gray-900 font-medium">{display.title}</li>
           </ol>
         </nav>
 
         {/* Title and rating */}
         <div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#1b3b6b]">
-            {course.title}
-          </h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#1b3b6b]">{display.title}</h1>
           <div className="mt-2 flex items-center gap-2">
             <div className="flex">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} filled={i < Math.floor(course.rating)} />
+                <Star key={i} filled={i < Math.floor(display.rating)} />
               ))}
             </div>
-            <span className="text-sm font-semibold text-emerald-600">{course.rating}</span>
-            <span className="text-xs text-slate-500">{course.students} students enrolled</span>
+            <span className="text-sm font-semibold text-emerald-600">{display.rating}</span>
+            <span className="text-xs text-slate-500">{display.students} students enrolled</span>
           </div>
         </div>
 
         {/* Overview + Right preview */}
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           {/* Left column */}
           <div>
             <h2 className="text-3xl font-semibold text-slate-900">
               Course Overview
             </h2>
-            <p className="mt-4 text-slate-600 leading-relaxed">
-              {course.description}
-            </p>
+            <p className="mt-4 text-slate-600 leading-relaxed">{display.description}</p>
+
+            {display.learningOutcomes.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">What you'll learn</h3>
+                <ul className="list-disc ml-6 text-slate-700 space-y-1">
+                  {display.learningOutcomes.map((o, idx) => (
+                    <li key={idx}>{o}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {display.requirements.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">Requirements</h3>
+                <ul className="list-disc ml-6 text-slate-700 space-y-1">
+                  {display.requirements.map((r, idx) => (
+                    <li key={idx}>{r}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             
             <div className="mt-6 space-y-3">
               <div className="flex items-center gap-3">
@@ -203,31 +200,27 @@ export default function CourseDetails() {
           {/* Right preview card */}
           <aside>
             <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-lg sticky top-6">
-              <img
-                src={course.img}
-                alt={course.title}
-                className="aspect-[16/10] w-full rounded-xl object-cover mb-4"
-              />
+              <img src={display.thumbnail} alt={display.title} className="aspect-[16/10] w-full rounded-xl object-cover mb-4" />
               
               <div className="space-y-4">
-                <div className="text-3xl font-bold text-[#1b3b6b]">{course.price}</div>
+                <div className="text-3xl font-bold text-[#1b3b6b]">{display.price}</div>
                 
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <div className="text-gray-500">Level</div>
-                    <div className="font-semibold">{course.level}</div>
+                    <div className="font-semibold">{display.level}</div>
                   </div>
                   <div>
                     <div className="text-gray-500">Duration</div>
-                    <div className="font-semibold">{course.duration}</div>
+                    <div className="font-semibold">{display.duration}</div>
                   </div>
                   <div>
                     <div className="text-gray-500">Category</div>
-                    <div className="font-semibold">{course.category}</div>
+                    <div className="font-semibold">{display.category}</div>
                   </div>
                   <div>
                     <div className="text-gray-500">Instructor</div>
-                    <div className="font-semibold">{course.author}</div>
+                    <div className="font-semibold">{display.instructor}</div>
                   </div>
                 </div>
                 
@@ -240,34 +233,30 @@ export default function CourseDetails() {
         </div>
 
         {/* Similar Courses */}
-        <section className="mt-16">
-          <h2 className="text-2xl font-bold text-slate-900 mb-6">Similar Courses</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {similar.map((similarCourse) => (
-              <Link
-                key={similarCourse.id}
-                to={`/courses/${similarCourse.id}`}
-                className="group"
-              >
-                <article className="cursor-pointer rounded-xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 group-hover:scale-105">
-                  <img
-                    src={similarCourse.img}
-                    alt={similarCourse.title}
-                    className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="p-5">
-                    <h3 className="text-sm font-semibold text-slate-800 group-hover:text-[#1b3b6b] transition-colors duration-300">
-                      {similarCourse.title}
-                    </h3>
-                    <p className="mt-1 text-sm text-slate-600">{similarCourse.sub}</p>
-                    <p className="mt-1 text-xs text-slate-500">{similarCourse.author}</p>
-                    <p className="mt-1 text-sm font-semibold text-slate-800">{similarCourse.price}</p>
-                  </div>
-                </article>
-              </Link>
-            ))}
-          </div>
-        </section>
+        {similarCourses.length > 0 && (
+          <section className="mt-16">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">Similar Courses</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {similarCourses.map((c) => (
+                <Link key={c._id} to={`/courses/${c._id}`} className="group">
+                  <article className="cursor-pointer rounded-xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 group-hover:scale-105">
+                    <img
+                      src={c.thumbnail || "https://placehold.co/600x400?text=Course"}
+                      alt={c.title}
+                      className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="p-5">
+                      <h3 className="text-sm font-semibold text-slate-800 group-hover:text-[#1b3b6b] transition-colors duration-300">{c.title}</h3>
+                      <p className="mt-1 text-sm text-slate-600">{c.shortDescription || c.description}</p>
+                      <p className="mt-1 text-xs text-slate-500">{`${c.instructor?.firstName ?? ''} ${c.instructor?.lastName ?? ''}`.trim()}</p>
+                      <p className="mt-1 text-sm font-semibold text-slate-800">₹{Number(c.price ?? 0).toLocaleString('en-IN')}</p>
+                    </div>
+                  </article>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );
