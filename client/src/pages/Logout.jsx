@@ -1,16 +1,19 @@
 // src/pages/Logout.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const brand = { blue: "#18457A", red: "#dc2626" };
 
 export default function Logout() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const handleLogout = () => {
-    // Here you would typically clear user session, tokens, etc.
-    // For now, we'll just navigate to the home page
+  const handleLogout = async () => {
+    // Use proper logout from AuthContext
+    await logout();
+    // Navigate to home page after logout
     navigate("/");
   };
 

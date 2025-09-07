@@ -2,421 +2,607 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import User from '../models/User.js';
 import Course from '../models/Course.js';
+import Category from '../models/Category.js';
+import Review from '../models/Review.js';
+import Notification from '../models/Notification.js';
 
-// Load environment variables
 dotenv.config();
 
-// Connect to MongoDB
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/lms-king');
-    console.log('✅ Connected to MongoDB');
+    console.log('✅ MongoDB Connected for seeding');
   } catch (error) {
-    console.error('❌ MongoDB connection error:', error);
+    console.error('❌ Database connection error:', error);
     process.exit(1);
   }
 };
 
-// Sample users data
-const usersData = [
-  {
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    password: 'password123',
-    role: 'student',
-    isEmailVerified: true,
-    profile: {
-      bio: 'Passionate learner and aspiring developer',
-      phone: '+1234567890',
-      gender: 'male'
-    }
-  },
-  {
-    firstName: 'Jane',
-    lastName: 'Smith',
-    email: 'jane.smith@example.com',
-    password: 'password123',
-    role: 'student',
-    isEmailVerified: true,
-    profile: {
-      bio: 'Data science enthusiast and machine learning practitioner',
-      phone: '+1234567891',
-      gender: 'female'
-    }
-  },
-  {
-    firstName: 'Dr. Michael',
-    lastName: 'Johnson',
-    email: 'michael.johnson@example.com',
-    password: 'password123',
-    role: 'instructor',
-    isEmailVerified: true,
-    profile: {
-      bio: 'Senior Software Engineer with 10+ years of experience in full-stack development',
-      phone: '+1234567892',
-      gender: 'male'
-    }
-  },
-  {
-    firstName: 'Sarah',
-    lastName: 'Wilson',
-    email: 'sarah.wilson@example.com',
-    password: 'password123',
-    role: 'instructor',
-    isEmailVerified: true,
-    profile: {
-      bio: 'AI/ML Expert and Research Scientist specializing in deep learning',
-      phone: '+1234567893',
-      gender: 'female'
-    }
-  },
-  {
-    firstName: 'Admin',
-    lastName: 'User',
-    email: 'admin@lms-king.com',
-    password: 'admin123',
-    role: 'admin',
-    isEmailVerified: true,
-    profile: {
-      bio: 'System Administrator for LMS-kinG Platform',
-      phone: '+1234567894',
-      gender: 'other'
-    }
-  }
-];
-
-// Sample courses data
-const coursesData = [
-  {
-    title: 'Complete Web Development Bootcamp',
-    description: 'Learn full-stack web development from scratch. This comprehensive course covers HTML, CSS, JavaScript, React, Node.js, and MongoDB. Perfect for beginners who want to become professional web developers.',
-    shortDescription: 'Master full-stack web development with HTML, CSS, JavaScript, React, Node.js, and MongoDB',
-    category: 'web-development',
-    level: 'beginner',
-    language: 'English',
-    duration: 120,
-    price: 199,
-    originalPrice: 299,
-    thumbnail: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500',
-    images: [
-      'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800',
-      'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800'
-    ],
-    tags: ['web-development', 'javascript', 'react', 'nodejs', 'mongodb'],
-    requirements: [
-      'Basic computer skills',
-      'No programming experience required',
-      'Willingness to learn'
-    ],
-    learningOutcomes: [
-      'Build responsive websites with HTML and CSS',
-      'Create interactive web applications with JavaScript',
-      'Develop modern web apps with React',
-      'Build backend APIs with Node.js and Express',
-      'Work with databases using MongoDB'
-    ],
-    isPublished: true,
-    isFeatured: true,
-    modules: [
+const seedUsers = async () => {
+  try {
+    // Clear existing users
+    await User.deleteMany({});
+    
+    const users = [
       {
-        title: 'Introduction to Web Development',
-        description: 'Get started with web development fundamentals',
-        order: 1,
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@example.com',
+        password: 'password123',
+        role: 'student',
+        profile: {
+          bio: 'Passionate learner and aspiring developer',
+          skills: ['JavaScript', 'HTML', 'CSS'],
+          socialLinks: {
+            github: 'https://github.com/johndoe',
+            linkedin: 'https://linkedin.com/in/johndoe'
+          }
+        },
+        subscription: {
+          plan: 'premium',
+          isActive: true
+        }
+      },
+      {
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane@example.com',
+        password: 'password123',
+        role: 'instructor',
+        profile: {
+          bio: 'Senior Full-Stack Developer with 10+ years experience',
+          skills: ['JavaScript', 'React', 'Node.js', 'Python', 'AWS'],
+          experience: [
+            {
+              title: 'Senior Developer',
+              company: 'Tech Corp',
+              duration: '5 years',
+              description: 'Led development of multiple web applications'
+            }
+          ]
+        }
+      },
+      {
+        firstName: 'Admin',
+        lastName: 'User',
+        email: 'admin@example.com',
+        password: 'admin123',
+        role: 'admin'
+      },
+      {
+        firstName: 'Alice',
+        lastName: 'Johnson',
+        email: 'alice@example.com',
+        password: 'password123',
+        role: 'student',
+        profile: {
+          bio: 'UI/UX Designer learning to code',
+          skills: ['Design', 'Figma', 'HTML', 'CSS']
+        }
+      },
+      {
+        firstName: 'Bob',
+        lastName: 'Wilson',
+        email: 'bob@example.com',
+        password: 'password123',
+        role: 'student',
+        profile: {
+          bio: 'Data Science enthusiast',
+          skills: ['Python', 'R', 'SQL', 'Machine Learning']
+        }
+      }
+    ];
+
+    for (const userData of users) {
+      const user = new User(userData);
+      await user.save();
+    }
+
+    console.log('✅ Users seeded successfully');
+  } catch (error) {
+    console.error('❌ Error seeding users:', error);
+  }
+};
+
+const seedCategories = async () => {
+  try {
+    await Category.deleteMany({});
+    
+    const categories = [
+      {
+        name: 'Web Development',
+        description: 'Learn to build modern web applications',
+        icon: '🌐',
+        color: '#3B82F6',
+        sortOrder: 1
+      },
+      {
+        name: 'Data Science',
+        description: 'Master data analysis and machine learning',
+        icon: '📊',
+        color: '#10B981',
+        sortOrder: 2
+      },
+      {
+        name: 'Mobile Development',
+        description: 'Create mobile apps for iOS and Android',
+        icon: '📱',
+        color: '#8B5CF6',
+        sortOrder: 3
+      },
+      {
+        name: 'Programming',
+        description: 'Learn programming fundamentals',
+        icon: '💻',
+        color: '#F59E0B',
+        sortOrder: 4
+      },
+      {
+        name: 'Design',
+        description: 'UI/UX and graphic design courses',
+        icon: '🎨',
+        color: '#EF4444',
+        sortOrder: 5
+      }
+    ];
+
+    for (const categoryData of categories) {
+      const category = new Category(categoryData);
+      await category.save();
+    }
+
+    console.log('✅ Categories seeded successfully');
+  } catch (error) {
+    console.error('❌ Error seeding categories:', error);
+  }
+};
+
+const seedCourses = async () => {
+  try {
+    await Course.deleteMany({});
+    
+    const instructor = await User.findOne({ role: 'instructor' });
+    
+    const courses = [
+      {
+        title: 'Complete Web Development Bootcamp',
+        description: 'Learn full-stack web development from scratch. This comprehensive course covers everything from HTML and CSS to advanced JavaScript frameworks, backend development with Node.js, and database management. Perfect for beginners who want to become professional web developers.',
+        shortDescription: 'Master HTML, CSS, JavaScript, React, Node.js and more in this comprehensive bootcamp',
+        instructor: instructor._id,
+        category: 'web-development',
+        level: 'beginner',
+        duration: 40,
+        price: 99.99,
+        originalPrice: 199.99,
+        thumbnail: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500',
+        tags: ['web development', 'javascript', 'react', 'nodejs', 'html', 'css'],
+        requirements: ['Basic computer skills', 'Internet connection', 'No prior programming experience required'],
+        learningOutcomes: [
+          'Build responsive websites with HTML and CSS',
+          'Create dynamic web applications with JavaScript',
+          'Develop full-stack applications with React and Node.js',
+          'Deploy applications to production',
+          'Understand modern development tools and workflows'
+        ],
         isPublished: true,
-        lessons: [
+        isFeatured: true,
+        modules: [
           {
-            title: 'What is Web Development?',
-            description: 'Introduction to web development concepts',
-            content: 'Web development is the process of building websites and web applications...',
-            duration: 15,
+            title: 'HTML & CSS Fundamentals',
+            description: 'Learn the basics of web markup and styling',
             order: 1,
-            isFree: true
+            isPublished: true,
+            lessons: [
+              {
+                title: 'Introduction to HTML',
+                description: 'Understanding HTML structure and elements',
+                content: 'HTML (HyperText Markup Language) is the foundation of web development. In this lesson, you will learn about HTML structure, semantic elements, and how to create well-formed documents.',
+                videoUrl: 'https://example.com/video1',
+                duration: 30,
+                order: 1,
+                isFree: true,
+                resources: [
+                  {
+                    title: 'HTML Cheat Sheet',
+                    url: 'https://example.com/html-cheatsheet.pdf',
+                    type: 'pdf'
+                  }
+                ]
+              },
+              {
+                title: 'CSS Styling Basics',
+                description: 'Learn how to style your HTML elements',
+                content: 'CSS (Cascading Style Sheets) allows you to control the appearance of your HTML elements. Learn about selectors, properties, and responsive design.',
+                videoUrl: 'https://example.com/video2',
+                duration: 45,
+                order: 2,
+                isFree: false
+              }
+            ]
           },
           {
-            title: 'Setting up Development Environment',
-            description: 'Install and configure necessary tools',
-            content: 'We will set up VS Code, Node.js, and other essential tools...',
-            duration: 20,
+            title: 'JavaScript Essentials',
+            description: 'Master JavaScript programming fundamentals',
             order: 2,
-            isFree: true
+            isPublished: true,
+            lessons: [
+              {
+                title: 'JavaScript Variables and Functions',
+                description: 'Understanding variables, data types, and functions',
+                content: 'Learn about JavaScript variables, different data types, and how to create and use functions effectively.',
+                videoUrl: 'https://example.com/video3',
+                duration: 50,
+                order: 1,
+                isFree: false
+              }
+            ]
           }
         ]
       },
       {
-        title: 'HTML Fundamentals',
-        description: 'Learn HTML structure and semantic elements',
-        order: 2,
+        title: 'React.js Complete Guide',
+        description: 'Master React.js from basics to advanced concepts. Learn component-based architecture, state management, hooks, routing, and building real-world applications.',
+        shortDescription: 'Learn React.js from scratch and build modern web applications',
+        instructor: instructor._id,
+        category: 'web-development',
+        level: 'intermediate',
+        duration: 25,
+        price: 79.99,
+        originalPrice: 149.99,
+        thumbnail: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=500',
+        tags: ['react', 'javascript', 'frontend', 'components', 'hooks'],
+        requirements: ['Basic JavaScript knowledge', 'HTML/CSS fundamentals'],
+        learningOutcomes: [
+          'Build reusable React components',
+          'Manage state with hooks and context',
+          'Implement routing with React Router',
+          'Integrate with APIs and external libraries',
+          'Deploy React applications'
+        ],
         isPublished: true,
-        lessons: [
+        isFeatured: true,
+        modules: [
           {
-            title: 'HTML Basics',
-            description: 'Understanding HTML structure and tags',
-            content: 'HTML (HyperText Markup Language) is the foundation of web pages...',
-            duration: 25,
+            title: 'React Fundamentals',
+            description: 'Learn the core concepts of React',
             order: 1,
-            isFree: true
-          },
-          {
-            title: 'HTML Forms and Input',
-            description: 'Creating interactive forms',
-            content: 'Forms are essential for user interaction on websites...',
-            duration: 30,
-            order: 2,
-            isFree: false
+            isPublished: true,
+            lessons: [
+              {
+                title: 'Introduction to React',
+                description: 'Understanding React and its benefits',
+                content: 'React is a powerful JavaScript library for building user interfaces. Learn about its component-based architecture and virtual DOM.',
+                videoUrl: 'https://example.com/react-intro',
+                duration: 40,
+                order: 1,
+                isFree: true
+              }
+            ]
           }
         ]
-      }
-    ]
-  },
-  {
-    title: 'Advanced Machine Learning & AI',
-    description: 'Dive deep into machine learning algorithms, neural networks, and artificial intelligence. This advanced course covers supervised and unsupervised learning, deep learning, computer vision, and natural language processing.',
-    shortDescription: 'Master advanced machine learning algorithms, neural networks, and AI applications',
-    category: 'data-science',
-    level: 'advanced',
-    language: 'English',
-    duration: 150,
-    price: 299,
-    originalPrice: 399,
-    thumbnail: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=500',
-    images: [
-      'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800',
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800'
-    ],
-    tags: ['machine-learning', 'ai', 'python', 'tensorflow', 'neural-networks'],
-    requirements: [
-      'Strong programming background in Python',
-      'Basic understanding of statistics and linear algebra',
-      'Previous experience with data analysis'
-    ],
-    learningOutcomes: [
-      'Implement various machine learning algorithms',
-      'Build and train neural networks',
-      'Work with computer vision and NLP',
-      'Deploy ML models to production',
-      'Understand AI ethics and best practices'
-    ],
-    isPublished: true,
-    isFeatured: true,
-    modules: [
+      },
       {
-        title: 'Introduction to Machine Learning',
-        description: 'Fundamentals of machine learning',
-        order: 1,
+        title: 'Python for Data Science',
+        description: 'Learn Python programming for data analysis, visualization, and machine learning. Perfect for beginners who want to enter the data science field.',
+        shortDescription: 'Master Python for data analysis and machine learning',
+        instructor: instructor._id,
+        category: 'data-science',
+        level: 'beginner',
+        duration: 35,
+        price: 89.99,
+        originalPrice: 179.99,
+        thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500',
+        tags: ['python', 'data science', 'pandas', 'numpy', 'matplotlib'],
+        requirements: ['Basic programming knowledge helpful but not required'],
+        learningOutcomes: [
+          'Master Python programming fundamentals',
+          'Analyze data with Pandas and NumPy',
+          'Create data visualizations',
+          'Build machine learning models',
+          'Work with real-world datasets'
+        ],
         isPublished: true,
-        lessons: [
+        isFeatured: false,
+        modules: [
           {
-            title: 'Supervised vs Unsupervised Learning',
-            description: 'Understanding different types of ML',
-            content: 'Machine learning can be broadly categorized into supervised and unsupervised learning...',
-            duration: 20,
+            title: 'Python Basics',
+            description: 'Learn Python programming fundamentals',
             order: 1,
-            isFree: true
-          },
-          {
-            title: 'Data Preprocessing',
-            description: 'Preparing data for ML algorithms',
-            content: 'Data preprocessing is crucial for successful machine learning...',
-            duration: 25,
-            order: 2,
-            isFree: false
+            isPublished: true,
+            lessons: [
+              {
+                title: 'Python Introduction',
+                description: 'Getting started with Python',
+                content: 'Python is a versatile programming language perfect for data science. Learn about variables, data types, and basic operations.',
+                videoUrl: 'https://example.com/python-intro',
+                duration: 35,
+                order: 1,
+                isFree: true
+              }
+            ]
           }
         ]
-      }
-    ]
-  },
-  {
-    title: 'Mobile App Development with React Native',
-    description: 'Build cross-platform mobile applications using React Native. Learn to create iOS and Android apps with a single codebase, including navigation, state management, and native features integration.',
-    shortDescription: 'Create cross-platform mobile apps with React Native for iOS and Android',
-    category: 'mobile-development',
-    level: 'intermediate',
-    language: 'English',
-    duration: 100,
-    price: 249,
-    originalPrice: 349,
-    thumbnail: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=500',
-    images: [
-      'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800',
-      'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800'
-    ],
-    tags: ['react-native', 'mobile-development', 'javascript', 'ios', 'android'],
-    requirements: [
-      'Basic knowledge of JavaScript and React',
-      'Understanding of mobile app concepts',
-      'Mac for iOS development (optional)'
-    ],
-    learningOutcomes: [
-      'Build cross-platform mobile apps',
-      'Implement navigation and state management',
-      'Integrate native device features',
-      'Deploy apps to app stores',
-      'Optimize app performance'
-    ],
-    isPublished: true,
-    isFeatured: false,
-    modules: [
+      },
       {
-        title: 'React Native Fundamentals',
-        description: 'Getting started with React Native',
-        order: 1,
+        title: 'Mobile App Development with React Native',
+        description: 'Build cross-platform mobile applications using React Native. Learn to create iOS and Android apps with a single codebase.',
+        shortDescription: 'Create mobile apps for iOS and Android with React Native',
+        instructor: instructor._id,
+        category: 'mobile-development',
+        level: 'intermediate',
+        duration: 30,
+        price: 119.99,
+        originalPrice: 199.99,
+        thumbnail: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=500',
+        tags: ['react native', 'mobile development', 'ios', 'android', 'javascript'],
+        requirements: ['React.js knowledge', 'JavaScript ES6+'],
+        learningOutcomes: [
+          'Build cross-platform mobile apps',
+          'Use React Native components and APIs',
+          'Handle navigation and state management',
+          'Deploy to app stores',
+          'Integrate with native device features'
+        ],
         isPublished: true,
-        lessons: [
+        isFeatured: true,
+        modules: [
           {
-            title: 'Setting up React Native Environment',
-            description: 'Install and configure React Native development environment',
-            content: 'We will set up the React Native development environment...',
-            duration: 30,
+            title: 'React Native Setup',
+            description: 'Setting up your development environment',
             order: 1,
-            isFree: true
+            isPublished: true,
+            lessons: [
+              {
+                title: 'Environment Setup',
+                description: 'Install and configure React Native development tools',
+                content: 'Learn how to set up your development environment for React Native development on both iOS and Android.',
+                videoUrl: 'https://example.com/rn-setup',
+                duration: 45,
+                order: 1,
+                isFree: true
+              }
+            ]
           }
         ]
-      }
-    ]
-  },
-  {
-    title: 'UI/UX Design Masterclass',
-    description: 'Learn professional UI/UX design principles, tools, and workflows. Create beautiful, user-friendly interfaces and understand the psychology behind great user experiences.',
-    shortDescription: 'Master UI/UX design principles and create stunning user interfaces',
-    category: 'design',
-    level: 'beginner',
-    language: 'English',
-    duration: 80,
-    price: 179,
-    originalPrice: 249,
-    thumbnail: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=500',
-    images: [
-      'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800',
-      'https://images.unsplash.com/photo-1558655146-d09347e92766?w=800'
-    ],
-    tags: ['ui-design', 'ux-design', 'figma', 'adobe-xd', 'user-research'],
-    requirements: [
-      'Basic computer skills',
-      'Creative mindset',
-      'Access to design software (Figma, Adobe XD)'
-    ],
-    learningOutcomes: [
-      'Understand UI/UX design principles',
-      'Create wireframes and prototypes',
-      'Conduct user research and testing',
-      'Design responsive interfaces',
-      'Work with design systems'
-    ],
-    isPublished: true,
-    isFeatured: false,
-    modules: [
+      },
       {
-        title: 'Design Fundamentals',
-        description: 'Core principles of good design',
-        order: 1,
+        title: 'UI/UX Design Fundamentals',
+        description: 'Learn the principles of user interface and user experience design. Create beautiful, functional designs that users love.',
+        shortDescription: 'Master UI/UX design principles and create stunning interfaces',
+        instructor: instructor._id,
+        category: 'design',
+        level: 'beginner',
+        duration: 20,
+        price: 69.99,
+        originalPrice: 129.99,
+        thumbnail: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=500',
+        tags: ['ui design', 'ux design', 'figma', 'design thinking', 'prototyping'],
+        requirements: ['No prior design experience required'],
+        learningOutcomes: [
+          'Understand design principles and psychology',
+          'Create wireframes and prototypes',
+          'Design user-friendly interfaces',
+          'Use design tools like Figma',
+          'Conduct user research and testing'
+        ],
         isPublished: true,
-        lessons: [
+        isFeatured: false,
+        modules: [
           {
-            title: 'Principles of Good Design',
-            description: 'Understanding fundamental design principles',
-            content: 'Good design follows certain principles that make interfaces intuitive and beautiful...',
-            duration: 20,
+            title: 'Design Principles',
+            description: 'Learn the fundamental principles of good design',
             order: 1,
-            isFree: true
+            isPublished: true,
+            lessons: [
+              {
+                title: 'Introduction to Design',
+                description: 'Understanding what makes good design',
+                content: 'Learn about the fundamental principles of design including typography, color theory, and layout.',
+                videoUrl: 'https://example.com/design-intro',
+                duration: 30,
+                order: 1,
+                isFree: true
+              }
+            ]
           }
         ]
       }
-    ]
-  }
-];
+    ];
 
-// Seed function
-const seedDatabase = async () => {
-  try {
-    console.log('🌱 Starting database seeding...');
-
-    // Clear existing data
-    await User.deleteMany({});
-    await Course.deleteMany({});
-    console.log('🗑️ Cleared existing data');
-
-    // Create users
-    console.log('👥 Creating users...');
-    const createdUsers = await User.insertMany(usersData);
-    console.log(`✅ Created ${createdUsers.length} users`);
-
-    // Get instructor IDs
-    const instructors = createdUsers.filter(user => user.role === 'instructor');
-    const students = createdUsers.filter(user => user.role === 'student');
-
-    // Create courses with instructor references
-    console.log('📚 Creating courses...');
-    const coursesWithInstructors = coursesData.map((course, index) => ({
-      ...course,
-      instructor: instructors[index % instructors.length]._id
-    }));
-
-    const createdCourses = await Course.insertMany(coursesWithInstructors);
-    console.log(`✅ Created ${createdCourses.length} courses`);
-
-    // Enroll some students in courses
-    console.log('🎓 Enrolling students in courses...');
-    for (const student of students) {
-      const randomCourses = createdCourses
-        .sort(() => 0.5 - Math.random())
-        .slice(0, Math.floor(Math.random() * 3) + 1);
-
-      for (const course of randomCourses) {
-        await student.enrollInCourse(course._id);
-        await course.incrementEnrollment();
-      }
+    for (const courseData of courses) {
+      const course = new Course(courseData);
+      await course.save();
     }
-    console.log('✅ Enrolled students in courses');
 
-    // Add some reviews
-    console.log('⭐ Adding reviews...');
-    for (const course of createdCourses) {
-      const enrolledStudents = students.filter(student => 
-        student.isEnrolledInCourse(course._id)
-      );
-
-      for (const student of enrolledStudents.slice(0, 2)) {
-        const rating = Math.floor(Math.random() * 2) + 4; // 4 or 5 stars
-        const comments = [
-          'Excellent course! Very well structured and easy to follow.',
-          'Great instructor and comprehensive content.',
-          'Learned a lot from this course. Highly recommended!',
-          'Perfect for beginners. Step-by-step explanations.',
-          'Amazing course with practical examples.'
-        ];
-        
-        await course.addReview(
-          student._id, 
-          rating, 
-          comments[Math.floor(Math.random() * comments.length)]
-        );
-      }
-    }
-    console.log('✅ Added reviews');
-
-    console.log('🎉 Database seeding completed successfully!');
-    console.log('\n📊 Summary:');
-    console.log(`- Users: ${createdUsers.length}`);
-    console.log(`- Courses: ${createdCourses.length}`);
-    console.log(`- Instructors: ${instructors.length}`);
-    console.log(`- Students: ${students.length}`);
-    
-    console.log('\n🔑 Test Accounts:');
-    console.log('Admin: admin@lms-king.com / admin123');
-    console.log('Instructor: michael.johnson@example.com / password123');
-    console.log('Student: john.doe@example.com / password123');
-
+    console.log('✅ Courses seeded successfully');
   } catch (error) {
-    console.error('❌ Seeding error:', error);
-  } finally {
-    await mongoose.connection.close();
-    console.log('🔌 Database connection closed');
-    process.exit(0);
+    console.error('❌ Error seeding courses:', error);
   }
 };
 
-// Run seeding
-connectDB().then(() => {
-  seedDatabase();
-});
+const seedEnrollments = async () => {
+  try {
+    const students = await User.find({ role: 'student' });
+    const courses = await Course.find({ isPublished: true });
+
+    for (const student of students) {
+      // Enroll each student in 2-3 random courses
+      const randomCourses = courses.sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * 3) + 2);
+      
+      for (const course of randomCourses) {
+        if (!student.isEnrolledInCourse(course._id)) {
+          await student.enrollInCourse(course._id);
+          
+          // Set random progress
+          const enrollment = student.enrolledCourses.find(e => e.course.toString() === course._id.toString());
+          if (enrollment) {
+            enrollment.progress = Math.floor(Math.random() * 100);
+            enrollment.lastAccessed = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
+            await student.save();
+          }
+        }
+      }
+    }
+
+    console.log('✅ Enrollments seeded successfully');
+  } catch (error) {
+    console.error('❌ Error seeding enrollments:', error);
+  }
+};
+
+const seedReviews = async () => {
+  try {
+    await Review.deleteMany({});
+    
+    const students = await User.find({ role: 'student' });
+    const courses = await Course.find({ isPublished: true });
+
+    const reviews = [
+      {
+        rating: 5,
+        title: 'Excellent Course!',
+        comment: 'This course exceeded my expectations. The instructor explains everything clearly and the projects are very practical.',
+        isVerified: true
+      },
+      {
+        rating: 4,
+        title: 'Great Learning Experience',
+        comment: 'Very comprehensive course with good examples. Would recommend to anyone starting their journey.',
+        isVerified: true
+      },
+      {
+        rating: 5,
+        title: 'Perfect for Beginners',
+        comment: 'As someone with no prior experience, this course was perfect. The step-by-step approach made learning easy.',
+        isVerified: true
+      },
+      {
+        rating: 4,
+        title: 'Good Content',
+        comment: 'The course content is well-structured and the instructor is knowledgeable. Some sections could be more detailed.',
+        isVerified: true
+      },
+      {
+        rating: 5,
+        title: 'Highly Recommended',
+        comment: 'This course helped me land my first developer job. The practical projects were exactly what I needed.',
+        isVerified: true
+      }
+    ];
+
+    for (const course of courses) {
+      const enrolledStudents = students.filter(student => student.isEnrolledInCourse(course._id));
+      
+      // Add 2-4 reviews per course
+      const numReviews = Math.floor(Math.random() * 3) + 2;
+      const selectedStudents = enrolledStudents.sort(() => 0.5 - Math.random()).slice(0, numReviews);
+      
+      for (const student of selectedStudents) {
+        const reviewData = reviews[Math.floor(Math.random() * reviews.length)];
+        const review = new Review({
+          user: student._id,
+          course: course._id,
+          ...reviewData
+        });
+        await review.save();
+        
+        // Update course rating
+        await course.addReview(student._id, reviewData.rating, reviewData.comment);
+      }
+    }
+
+    console.log('✅ Reviews seeded successfully');
+  } catch (error) {
+    console.error('❌ Error seeding reviews:', error);
+  }
+};
+
+const seedNotifications = async () => {
+  try {
+    await Notification.deleteMany({});
+    
+    const users = await User.find();
+    const courses = await Course.find({ isPublished: true });
+
+    const notificationTypes = [
+      {
+        type: 'course_enrollment',
+        title: 'Welcome to Your New Course!',
+        message: 'You have successfully enrolled in a new course. Start learning today!'
+      },
+      {
+        type: 'course_completion',
+        title: 'Congratulations! 🎉',
+        message: 'You have completed a course. Great job on your learning journey!'
+      },
+      {
+        type: 'new_lesson',
+        title: 'New Lesson Available',
+        message: 'A new lesson has been added to one of your enrolled courses.'
+      },
+      {
+        type: 'system_announcement',
+        title: 'Platform Update',
+        message: 'We have added new features to enhance your learning experience.'
+      }
+    ];
+
+    for (const user of users) {
+      // Create 3-5 random notifications per user
+      const numNotifications = Math.floor(Math.random() * 3) + 3;
+      
+      for (let i = 0; i < numNotifications; i++) {
+        const notificationData = notificationTypes[Math.floor(Math.random() * notificationTypes.length)];
+        const course = courses[Math.floor(Math.random() * courses.length)];
+        
+        const notification = new Notification({
+          user: user._id,
+          type: notificationData.type,
+          title: notificationData.title,
+          message: notificationData.message,
+          data: {
+            courseId: course._id
+          },
+          isRead: Math.random() > 0.5,
+          createdAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000) // Random time in last week
+        });
+        
+        await notification.save();
+      }
+    }
+
+    console.log('✅ Notifications seeded successfully');
+  } catch (error) {
+    console.error('❌ Error seeding notifications:', error);
+  }
+};
+
+const seedData = async () => {
+  try {
+    await connectDB();
+    await seedUsers();
+    await seedCategories();
+    await seedCourses();
+    await seedEnrollments();
+    await seedReviews();
+    await seedNotifications();
+    console.log('🎉 All data seeded successfully!');
+    console.log('\n📊 Seeded Data Summary:');
+    console.log('- Users: 5 (1 admin, 1 instructor, 3 students)');
+    console.log('- Categories: 5');
+    console.log('- Courses: 5 (all published)');
+    console.log('- Enrollments: Random enrollments for students');
+    console.log('- Reviews: 2-4 reviews per course');
+    console.log('- Notifications: 3-5 notifications per user');
+    console.log('\n🔑 Test Credentials:');
+    console.log('Admin: admin@example.com / admin123');
+    console.log('Instructor: jane@example.com / password123');
+    console.log('Student: john@example.com / password123');
+    process.exit(0);
+  } catch (error) {
+    console.error('❌ Error seeding data:', error);
+    process.exit(1);
+  }
+};
+
+seedData();

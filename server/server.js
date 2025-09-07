@@ -11,8 +11,9 @@ import cookieParser from 'cookie-parser';
 // Import routes
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
-// import courseRoutes from './routes/courses.js';
-// import dashboardRoutes from './routes/dashboard.js';
+import courseRoutes from './routes/courses.js';
+import dashboardRoutes from './routes/dashboard.js';
+import uploadRoutes from './routes/upload.js';
 
 // Load environment variables
 dotenv.config();
@@ -63,8 +64,9 @@ connectDB();
 // --- ROUTES ---
 app.use('/api/auth', authRoutes);        // Auth routes (register, login, logout, me)
 app.use('/api/users', userRoutes);       // User management routes
-// app.use('/api/courses', courseRoutes);   // Courses routes
-// app.use('/api/dashboard', dashboardRoutes); // Dashboard routes
+app.use('/api/courses', courseRoutes);   // Courses routes
+app.use('/api/dashboard', dashboardRoutes); // Dashboard routes
+app.use('/api/upload', uploadRoutes);    // File upload routes
 
 // --- HEALTH CHECK ---
 app.get('/api/health', (req, res) => {

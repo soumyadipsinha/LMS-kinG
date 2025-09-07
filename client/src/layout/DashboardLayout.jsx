@@ -1,8 +1,7 @@
 // src/layout/DashboardLayout.jsx
 import { NavLink, Outlet } from "react-router-dom";
-import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar.jsx";
-import { getCurrentUser } from "../utils/auth.js";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const BRAND = {
   blue: "#163D74",
@@ -21,12 +20,7 @@ const menu = [
 ];
 
 export default function DashboardLayout() {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const currentUser = getCurrentUser();
-    setUser(currentUser);
-  }, []);
+  const { user } = useAuth();
 
   return (
     <div className="h-screen w-full overflow-hidden bg-white text-slate-900">
@@ -46,7 +40,7 @@ export default function DashboardLayout() {
               <img className="w-full h-full object-cover" src="https://i.pravatar.cc/200?img=8" alt="profile" />
             </div>
             <p className="text-center mt-4 font-medium">
-              {user ? user.name || user.email?.split('@')[0] || 'User' : 'Loading...'}
+              {user ? user.firstName || user.email?.split('@')[0] || 'User' : 'Loading...'}
             </p>
           </div>
 
@@ -76,7 +70,7 @@ export default function DashboardLayout() {
 
           {/* Bottom action (refresh) */}
           <div className="p-4">
-            <button className="ml-auto block w-12 h-12 rounded-full bg-white/10 border-2 border-white grid place-items-center hover:bg-white/20 transition-colors">
+            <button className="ml-auto w-12 h-12 rounded-full bg-white/10 border-2 border-white flex items-center justify-center hover:bg-white/20 transition-colors">
               <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
                   d="M16 8a4 4 0 10-8 0v1H6l3 3 3-3h-2V8a2 2 0 114 0v2a6 6 0 11-6 6"/>
