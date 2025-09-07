@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { useState, useEffect } from 'react';
+import { courseService } from '../services/courseService';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -17,6 +19,11 @@ import courses4 from "../assets/courses4.jpg";
 import courses5 from "../assets/courses5.jpg";
 
 export default function Courses() {
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("All Courses");
+
   const categories = [
     "All Courses",
     "Web Development",
@@ -28,7 +35,42 @@ export default function Courses() {
     "Cybersecurity"
   ];
 
-  const courses = [
+  // Load courses from backend
+  useEffect(() => {
+    loadCourses();
+  }, []);
+
+  const loadCourses = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      console.log('Loading courses from backend...');
+      const response = await courseService.getCourses({ 
+        limit: 50,
+        isPublished: true 
+      });
+      
+      const coursesData = response.data.courses || [];
+      setCourses(coursesData);
+      
+      console.log('Courses loaded successfully:', coursesData.length, 'courses');
+      console.log('Sample course:', coursesData[0]);
+      
+    } catch (error) {
+      console.error('Error loading courses:', error);
+      setError('Failed to load courses. Please try again.');
+      
+      // Fallback to static courses if API fails
+      console.log('Falling back to static courses...');
+      setCourses(getStaticCourses());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fallback static courses
+  const getStaticCourses = () => [
     { 
       id: 1, 
       title: "Advanced Machine Learning", 
@@ -54,138 +96,165 @@ export default function Courses() {
       students: 2156,
       rating: 4.9,
       category: "Web Development"
-    },
-    { 
-      id: 3, 
-      title: "Node.js & Express Mastery", 
-      sub: "Build scalable backend APIs with Node.js and Express", 
-      author: "By Mike Johnson", 
-      price: "₹6,999", 
-      img: NodePic,
-      level: "Intermediate",
-      duration: "7 weeks",
-      students: 1893,
-      rating: 4.7,
-      category: "Web Development"
-    },
-    { 
-      id: 4, 
-      title: "Next.js & Server-Side Rendering", 
-      sub: "Master modern React with Next.js and SSR", 
-      author: "By Sarah Lee", 
-      price: "₹8,999", 
-      img: NextJSPic,
-      level: "Intermediate",
-      duration: "6 weeks",
-      students: 1567,
-      rating: 4.8,
-      category: "Web Development"
-    },
-    { 
-      id: 5, 
-      title: "Full Stack Web Development", 
-      sub: "Complete web development from frontend to backend", 
-      author: "By David Kim", 
-      price: "₹9,999", 
-      img: FullStackPic,
-      level: "Advanced",
-      duration: "10 weeks",
-      students: 2341,
-      rating: 4.9,
-      category: "Web Development"
-    },
-    { 
-      id: 6, 
-      title: "JavaScript Deep Dive", 
-      sub: "Master JavaScript fundamentals and modern ES6+ features", 
-      author: "By Emily Clark", 
-      price: "₹4,999", 
-      img: JSDeepPic,
-      level: "Beginner",
-      duration: "5 weeks",
-      students: 3124,
-      rating: 4.6,
-      category: "Web Development"
-    },
-    { 
-      id: 7, 
-      title: "Data Science Fundamentals", 
-      sub: "Introduction to data analysis and visualization", 
-      author: "By Dr. Alex Chen", 
-      price: "₹7,499", 
-      img: courses1,
-      level: "Beginner",
-      duration: "8 weeks",
-      students: 1876,
-      rating: 4.7,
-      category: "Data Science"
-    },
-    { 
-      id: 8, 
-      title: "Python for Data Analysis", 
-      sub: "Learn Python programming for data science", 
-      author: "By Maria Rodriguez", 
-      price: "₹6,499", 
-      img: courses2,
-      level: "Intermediate",
-      duration: "7 weeks",
-      students: 2234,
-      rating: 4.8,
-      category: "Data Science"
-    },
-    { 
-      id: 9, 
-      title: "Deep Learning with TensorFlow", 
-      sub: "Build neural networks and deep learning models", 
-      author: "By Dr. James Wilson", 
-      price: "₹9,499", 
-      img: courses3,
-      level: "Advanced",
-      duration: "9 weeks",
-      students: 1456,
-      rating: 4.9,
-      category: "Machine Learning"
-    },
-    { 
-      id: 10, 
-      title: "AWS Cloud Practitioner", 
-      sub: "Get certified in AWS cloud computing", 
-      author: "By Lisa Thompson", 
-      price: "₹11,999", 
-      img: courses4,
-      level: "Intermediate",
-      duration: "6 weeks",
-      students: 1678,
-      rating: 4.8,
-      category: "Cloud Computing"
-    },
-    { 
-      id: 11, 
-      title: "Mobile App Development", 
-      sub: "Build iOS and Android apps with React Native", 
-      author: "By Carlos Martinez", 
-      price: "₹9,999", 
-      img: courses5,
-      level: "Intermediate",
-      duration: "8 weeks",
-      students: 1987,
-      rating: 4.7,
-      category: "Mobile Development"
-    },
-    { 
-      id: 12, 
-      title: "Cybersecurity Essentials", 
-      sub: "Learn the fundamentals of cybersecurity", 
-      author: "By Dr. Sarah Johnson", 
-      price: "₹12,999", 
-      img: courses1,
-      level: "Beginner",
-      duration: "7 weeks",
-      students: 1345,
-      rating: 4.8,
-      category: "Cybersecurity"
     }
   ];
+  //   { 
+  //     id: 3, 
+  //     title: "Node.js & Express Mastery", 
+  //     sub: "Build scalable backend APIs with Node.js and Express", 
+  //     author: "By Mike Johnson", 
+  //     price: "₹6,999", 
+  //     img: NodePic,
+  //     level: "Intermediate",
+  //     duration: "7 weeks",
+  //     students: 1893,
+  //     rating: 4.7,
+  //     category: "Web Development"
+  //   },
+  //   { 
+  //     id: 4, 
+  //     title: "Next.js & Server-Side Rendering", 
+  //     sub: "Master modern React with Next.js and SSR", 
+  //     author: "By Sarah Lee", 
+  //     price: "₹8,999", 
+  //     img: NextJSPic,
+  //     level: "Intermediate",
+  //     duration: "6 weeks",
+  //     students: 1567,
+  //     rating: 4.8,
+  //     category: "Web Development"
+  //   },
+  //   { 
+  //     id: 5, 
+  //     title: "Full Stack Web Development", 
+  //     sub: "Complete web development from frontend to backend", 
+  //     author: "By David Kim", 
+  //     price: "₹9,999", 
+  //     img: FullStackPic,
+  //     level: "Advanced",
+  //     duration: "10 weeks",
+  //     students: 2341,
+  //     rating: 4.9,
+  //     category: "Web Development"
+  //   },
+  //   { 
+  //     id: 6, 
+  //     title: "JavaScript Deep Dive", 
+  //     sub: "Master JavaScript fundamentals and modern ES6+ features", 
+  //     author: "By Emily Clark", 
+  //     price: "₹4,999", 
+  //     img: JSDeepPic,
+  //     level: "Beginner",
+  //     duration: "5 weeks",
+  //     students: 3124,
+  //     rating: 4.6,
+  //     category: "Web Development"
+  //   },
+  //   { 
+  //     id: 7, 
+  //     title: "Data Science Fundamentals", 
+  //     sub: "Introduction to data analysis and visualization", 
+  //     author: "By Dr. Alex Chen", 
+  //     price: "₹7,499", 
+  //     img: courses1,
+  //     level: "Beginner",
+  //     duration: "8 weeks",
+  //     students: 1876,
+  //     rating: 4.7,
+  //     category: "Data Science"
+  //   },
+  //   { 
+  //     id: 8, 
+  //     title: "Python for Data Analysis", 
+  //     sub: "Learn Python programming for data science", 
+  //     author: "By Maria Rodriguez", 
+  //     price: "₹6,499", 
+  //     img: courses2,
+  //     level: "Intermediate",
+  //     duration: "7 weeks",
+  //     students: 2234,
+  //     rating: 4.8,
+  //     category: "Data Science"
+  //   },
+  //   { 
+  //     id: 9, 
+  //     title: "Deep Learning with TensorFlow", 
+  //     sub: "Build neural networks and deep learning models", 
+  //     author: "By Dr. James Wilson", 
+  //     price: "₹9,499", 
+  //     img: courses3,
+  //     level: "Advanced",
+  //     duration: "9 weeks",
+  //     students: 1456,
+  //     rating: 4.9,
+  //     category: "Machine Learning"
+  //   },
+  //   { 
+  //     id: 10, 
+  //     title: "AWS Cloud Practitioner", 
+  //     sub: "Get certified in AWS cloud computing", 
+  //     author: "By Lisa Thompson", 
+  //     price: "₹11,999", 
+  //     img: courses4,
+  //     level: "Intermediate",
+  //     duration: "6 weeks",
+  //     students: 1678,
+  //     rating: 4.8,
+  //     category: "Cloud Computing"
+  //   },
+  //   { 
+  //     id: 11, 
+  //     title: "Mobile App Development", 
+  //     sub: "Build iOS and Android apps with React Native", 
+  //     author: "By Carlos Martinez", 
+  //     price: "₹9,999", 
+  //     img: courses5,
+  //     level: "Intermediate",
+  //     duration: "8 weeks",
+  //     students: 1987,
+  //     rating: 4.7,
+  //     category: "Mobile Development"
+  //   },
+  //   { 
+  //     id: 12, 
+  //     title: "Cybersecurity Essentials", 
+  //     sub: "Learn the fundamentals of cybersecurity", 
+  //     author: "By Dr. Sarah Johnson", 
+  //     price: "₹12,999", 
+  //     img: courses1,
+  //     level: "Beginner",
+  //     duration: "7 weeks",
+  //     students: 1345,
+  //     rating: 4.8,
+  //     category: "Cybersecurity"
+  //   }
+  // ];
+
+  // Filter courses by category
+  const filteredCourses = selectedCategory === "All Courses" 
+    ? courses 
+    : courses.filter(course => course.category === selectedCategory);
+
+  // Format course data for display
+  const formatCourseData = (course) => {
+    if (course._id) {
+      // Backend course format
+      return {
+        id: course._id,
+        title: course.title,
+        sub: course.shortDescription || course.description,
+        author: `By ${course.instructor?.firstName || 'Unknown'} ${course.instructor?.lastName || 'Instructor'}`,
+        price: `₹${course.price?.toLocaleString() || '0'}`,
+        img: course.thumbnail || courses1,
+        level: course.level?.charAt(0).toUpperCase() + course.level?.slice(1) || 'Beginner',
+        duration: `${course.duration || 0} hours`,
+        students: course.enrollmentCount || 0,
+        rating: course.rating?.average || 0,
+        category: course.category?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Other'
+      };
+    }
+    return course; // Static course format
+  };
 
   const promoSlides = [
     {
@@ -223,12 +292,27 @@ export default function Courses() {
       <div className="max-w-6xl mx-auto px-4 py-10 md:py-12">
         {/* Page Header */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl font-black text-[#1B4A8B] mb-4">
-            🎓 Explore Our Courses
-          </h1>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <h1 className="text-5xl md:text-6xl font-black text-[#1B4A8B]">
+              🎓 Explore Our Courses
+            </h1>
+            <button
+              onClick={loadCourses}
+              disabled={loading}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors duration-200"
+              title="Refresh courses"
+            >
+              {loading ? '⏳' : '🔄'}
+            </button>
+          </div>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             From beginner to advanced, discover courses designed to accelerate your career in technology
           </p>
+          {courses.length > 0 && (
+            <p className="text-sm text-gray-500 mt-2">
+              Showing {courses.length} course{courses.length !== 1 ? 's' : ''}
+            </p>
+          )}
         </div>
 
         {/* Promo Banner with Swiper */}
@@ -291,8 +375,9 @@ export default function Courses() {
             {categories.map((category) => (
               <button
                 key={category}
+                onClick={() => setSelectedCategory(category)}
                 className={`rounded-full border-2 px-6 py-3 text-sm font-semibold transition-all duration-300 hover:scale-105 ${
-                  category === "All Courses"
+                  category === selectedCategory
                     ? "border-[#1B4A8B] bg-[#1B4A8B] text-white"
                     : "border-slate-300 bg-white text-slate-700 hover:border-[#1B4A8B] hover:text-[#1B4A8B]"
                 }`}
@@ -307,88 +392,123 @@ export default function Courses() {
         <section className="mb-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl border border-blue-200">
-              <div className="text-3xl font-black text-blue-600 mb-2">{courses.length}</div>
+              <div className="text-3xl font-black text-blue-600 mb-2">{filteredCourses.length}</div>
               <div className="text-sm font-semibold text-blue-800">Total Courses</div>
             </div>
             <div className="text-center p-6 bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl border border-green-200">
-              <div className="text-3xl font-black text-green-600 mb-2">12+</div>
+              <div className="text-3xl font-black text-green-600 mb-2">{categories.length - 1}+</div>
               <div className="text-sm font-semibold text-green-800">Categories</div>
             </div>
             <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-pink-100 rounded-2xl border border-purple-200">
-              <div className="text-3xl font-black text-purple-600 mb-2">50K+</div>
+              <div className="text-3xl font-black text-purple-600 mb-2">
+                {courses.reduce((acc, course) => acc + (course.enrollmentCount || course.students || 0), 0).toLocaleString()}
+              </div>
               <div className="text-sm font-semibold text-purple-800">Students</div>
             </div>
             <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-red-100 rounded-2xl border border-orange-200">
-              <div className="text-3xl font-black text-orange-600 mb-2">4.8</div>
+              <div className="text-3xl font-black text-orange-600 mb-2">
+                {courses.length > 0 
+                  ? (courses.reduce((acc, course) => acc + (course.rating?.average || course.rating || 0), 0) / courses.length).toFixed(1)
+                  : '0.0'
+                }
+              </div>
               <div className="text-sm font-semibold text-orange-800">Average Rating</div>
             </div>
           </div>
         </section>
 
-        {/* Courses Grid */}
-        <section>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {courses.map((course) => (
-              <div key={course.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group hover:scale-105">
-                {/* Course Image */}
-                <div className="relative overflow-hidden">
-                  <img 
-                    src={course.img} 
-                    alt={course.title} 
-                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  {/* Level Badge */}
-                  <div className="absolute top-3 left-3">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm ${
-                      course.level === 'Beginner' ? 'bg-green-500' :
-                      course.level === 'Intermediate' ? 'bg-yellow-500' :
-                      'bg-red-500'
-                    }`}>
-                      {course.level}
-                    </span>
-                  </div>
-                  {/* Price Badge */}
-                  <div className="absolute top-3 right-3">
-                    <span className="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm font-bold text-slate-700 shadow-sm">
-                      {course.price}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Course Content */}
-                <div className="p-6">
-                  <div className="text-sm font-semibold text-indigo-600 mb-2">{course.category}</div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-2 group-hover:text-indigo-600 transition-colors duration-300 line-clamp-2">
-                    {course.title}
-                  </h3>
-                  <p className="text-slate-600 text-sm mb-4 line-clamp-2">{course.sub}</p>
-                  
-                  {/* Course Meta */}
-                  <div className="flex items-center justify-between text-xs text-slate-500 mb-4">
-                    <span>👨‍🏫 {course.author}</span>
-                    <span>⏱️ {course.duration}</span>
-                  </div>
-                  
-                  {/* Rating and Students */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-1">
-                      <span className="text-yellow-500">⭐</span>
-                      <span className="text-sm font-semibold text-slate-700">{course.rating}</span>
-                    </div>
-                    <span className="text-sm text-slate-500">{course.students} students</span>
-                  </div>
-
-                  {/* View Course Button */}
-                  <Link to={`/courses/${course.id}`} className="block">
-                    <button className="w-full bg-[#1B4A8B] text-white font-semibold py-3 px-4 rounded-lg hover:bg-[#153a6f] transition-colors duration-300 transform hover:scale-105">
-                      View Course
-                    </button>
-                  </Link>
-                </div>
-              </div>
-            ))}
+        {/* Loading State */}
+        {loading && (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading courses...</p>
+            </div>
           </div>
-        </section>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <p className="text-red-600 mb-4">{error}</p>
+            <button 
+              onClick={loadCourses}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
+
+        {/* Courses Grid */}
+        {!loading && !error && (
+          <section>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredCourses.map((course) => {
+                const formattedCourse = formatCourseData(course);
+                return (
+                  <div key={formattedCourse.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group hover:scale-105">
+                    {/* Course Image */}
+                    <div className="relative overflow-hidden">
+                      <img 
+                        src={formattedCourse.img} 
+                        alt={formattedCourse.title} 
+                        className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      {/* Level Badge */}
+                      <div className="absolute top-3 left-3">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm ${
+                          formattedCourse.level === 'Beginner' ? 'bg-green-500' :
+                          formattedCourse.level === 'Intermediate' ? 'bg-yellow-500' :
+                          'bg-red-500'
+                        }`}>
+                          {formattedCourse.level}
+                        </span>
+                      </div>
+                      {/* Price Badge */}
+                      <div className="absolute top-3 right-3">
+                        <span className="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm font-bold text-slate-700 shadow-sm">
+                          {formattedCourse.price}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Course Content */}
+                    <div className="p-6">
+                      <div className="text-sm font-semibold text-indigo-600 mb-2">{formattedCourse.category}</div>
+                      <h3 className="text-lg font-bold text-slate-800 mb-2 group-hover:text-indigo-600 transition-colors duration-300 line-clamp-2">
+                        {formattedCourse.title}
+                      </h3>
+                      <p className="text-slate-600 text-sm mb-4 line-clamp-2">{formattedCourse.sub}</p>
+                      
+                      {/* Course Meta */}
+                      <div className="flex items-center justify-between text-xs text-slate-500 mb-4">
+                        <span>👨‍🏫 {formattedCourse.author}</span>
+                        <span>⏱️ {formattedCourse.duration}</span>
+                      </div>
+                      
+                      {/* Rating and Students */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-1">
+                          <span className="text-yellow-500">⭐</span>
+                          <span className="text-sm font-semibold text-slate-700">{formattedCourse.rating}</span>
+                        </div>
+                        <span className="text-sm text-slate-500">{formattedCourse.students} students</span>
+                      </div>
+
+                      {/* View Course Button */}
+                      <Link to={`/courses/${formattedCourse.id}`} className="block">
+                        <button className="w-full bg-[#1B4A8B] text-white font-semibold py-3 px-4 rounded-lg hover:bg-[#153a6f] transition-colors duration-300 transform hover:scale-105">
+                          View Course
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {/* Call to Action */}
         <section className="mt-16 text-center">

@@ -395,3 +395,43 @@ export const getCourseCategories = async (req, res) => {
     });
   }
 };
+
+// @desc    Get courses by instructor (for admin dashboard)
+// @route   GET /api/courses/instructor/:instructorId
+// @access  Private/Admin
+export const getCoursesByInstructor = async (req, res) => {
+  try {
+    const { instructorId } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12;
+    const skip = (page - 1) * limit;
+
+    const courses = await Course.find({ instructor: instructorId })
+      .populate('instructor', 'firstName lastName avatar')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Course.countDocuments({ instructor: instructorId });
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        courses,
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(total / limit),
+          totalCourses: total,
+          hasNext: page < Math.ceil(total / limit),
+          hasPrev: page > 1
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Get courses by instructor error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Server error'
+    });
+  }
+};

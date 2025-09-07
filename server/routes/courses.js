@@ -8,7 +8,8 @@ import {
   deleteCourse,
   enrollInCourse,
   addCourseReview,
-  getCourseCategories
+  getCourseCategories,
+  getCoursesByInstructor
 } from '../controllers/courseController.js';
 import { protect, authorize, optionalAuth } from '../middleware/auth.js';
 import { 
@@ -36,6 +37,11 @@ router.get('/featured', getFeaturedCourses);
 // @route   GET /api/courses/categories/list
 // @access  Public
 router.get('/categories/list', getCourseCategories);
+
+// @desc    Get courses by instructor
+// @route   GET /api/courses/instructor/:instructorId
+// @access  Private/Admin
+router.get('/instructor/:instructorId', protect, authorize('admin'), validateObjectId('instructorId'), getCoursesByInstructor);
 
 // @desc    Get course by ID
 // @route   GET /api/courses/:id
