@@ -79,7 +79,7 @@ Body:
 POST /api/upload/thumbnail
 Content-Type: multipart/form-data
 Authorization: Bearer <token>
-Role: instructor or admin
+Role: admin only
 
 Body:
 - thumbnail: <image file>
@@ -90,7 +90,7 @@ Body:
 POST /api/upload/video
 Content-Type: multipart/form-data
 Authorization: Bearer <token>
-Role: instructor or admin
+Role: admin only
 
 Body:
 - video: <video file>
@@ -150,6 +150,7 @@ Body:
 ```http
 POST /api/upload/:publicId/thumbnail
 Authorization: Bearer <token>
+Role: admin only
 
 Body:
 {
@@ -215,7 +216,7 @@ const uploadAvatar = async (file) => {
 };
 ```
 
-#### Upload Course Thumbnail
+#### Upload Course Thumbnail (Admin Only)
 ```javascript
 const uploadThumbnail = async (file) => {
   const formData = new FormData();
@@ -224,7 +225,7 @@ const uploadThumbnail = async (file) => {
   const response = await fetch('/api/upload/thumbnail', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${token}`
+      'Authorization': `Bearer ${adminToken}`
     },
     body: formData
   });

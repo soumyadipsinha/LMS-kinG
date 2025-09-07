@@ -44,13 +44,13 @@ router.post('/avatar', protect, uploadAvatarMiddleware, handleUploadError, uploa
 
 // @desc    Upload course thumbnail
 // @route   POST /api/upload/thumbnail
-// @access  Private/Instructor
-router.post('/thumbnail', protect, authorize('instructor', 'admin'), uploadThumbnailMiddleware, handleUploadError, uploadThumbnail);
+// @access  Private/Admin
+router.post('/thumbnail', protect, authorize('admin'), uploadThumbnailMiddleware, handleUploadError, uploadThumbnail);
 
 // @desc    Upload course video
 // @route   POST /api/upload/video
-// @access  Private/Instructor
-router.post('/video', protect, authorize('instructor', 'admin'), uploadVideoMiddleware, handleUploadError, uploadVideo);
+// @access  Private/Admin
+router.post('/video', protect, authorize('admin'), uploadVideoMiddleware, handleUploadError, uploadVideo);
 
 // @desc    Upload document
 // @route   POST /api/upload/document
@@ -84,8 +84,8 @@ router.put('/:publicId', protect, updateFileMetadata);
 
 // @desc    Generate video thumbnail
 // @route   POST /api/upload/:publicId/thumbnail
-// @access  Private
-router.post('/:publicId/thumbnail', protect, generateThumbnail);
+// @access  Private/Admin
+router.post('/:publicId/thumbnail', protect, authorize('admin'), generateThumbnail);
 
 // @desc    Get upload statistics
 // @route   GET /api/upload/stats

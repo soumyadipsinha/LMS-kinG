@@ -216,7 +216,7 @@ export const uploadAvatar = async (req, res) => {
 
 // @desc    Upload course thumbnail
 // @route   POST /api/upload/thumbnail
-// @access  Private/Instructor
+// @access  Private/Admin
 export const uploadThumbnail = async (req, res) => {
   try {
     if (!req.file) {
@@ -281,7 +281,7 @@ export const uploadThumbnail = async (req, res) => {
 
 // @desc    Upload course video
 // @route   POST /api/upload/video
-// @access  Private/Instructor
+// @access  Private/Admin
 export const uploadVideo = async (req, res) => {
   try {
     if (!req.file) {
@@ -599,7 +599,7 @@ export const updateFileMetadata = async (req, res) => {
 
 // @desc    Generate video thumbnail
 // @route   POST /api/upload/:publicId/thumbnail
-// @access  Private
+// @access  Private/Admin
 export const generateThumbnail = async (req, res) => {
   try {
     const { publicId } = req.params;
