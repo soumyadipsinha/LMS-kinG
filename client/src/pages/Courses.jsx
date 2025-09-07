@@ -17,6 +17,8 @@ import courses2 from "../assets/courses2.jpg";
 import courses3 from "../assets/courses3.jpg";
 import courses4 from "../assets/courses4.jpg";
 import courses5 from "../assets/courses5.jpg";
+import { useEffect, useState } from "react";
+import { listCourses } from "../services/courseServices";
 
 export default function Courses() {
   const [courses, setCourses] = useState([]);
@@ -287,6 +289,46 @@ export default function Courses() {
     }
   ];
 
+  const [fetchedCourses, setFetchedCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await listCourses({ page: 1, limit: 24, sort: "-createdAt" });
+        const items = res?.data?.courses ?? [];
+        // 3) Map BE -> FE card shape
+        const mapped = items.map((c) => ({
+          id: c._id,
+          title: c.title,
+          sub: c.shortDescription || c.description || "",
+          author: c.instructor
+            ? `By ${[c.instructor.firstName, c.instructor.lastName].filter(Boolean).join(" ")}`
+            : "By Instructor",
+          price: `₹${Number(c.price ?? 0).toLocaleString()}`,
+          img: c.thumbnail || courses1, // fallback image
+          level:
+            (c.level === "beginner" && "Beginner") ||
+            (c.level === "intermediate" && "Intermediate") ||
+            (c.level === "advanced" && "Advanced") ||
+            "Beginner",
+          duration: `${c.duration}h`,
+          students: c.enrollmentCount ?? 0,
+          rating: c.rating?.average ?? 0,
+          category: c.category,
+        }));
+        setFetchedCourses(mapped);
+      } catch (e) {
+        console.error("Failed to load courses:", e);
+        setLoadError(e.message || "Failed to load courses");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, []);
+
   return (
     <div className="bg-white">
       <div className="max-w-6xl mx-auto px-4 py-10 md:py-12">
@@ -441,37 +483,34 @@ export default function Courses() {
         )}
 
         {/* Courses Grid */}
-        {!loading && !error && (
-          <section>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredCourses.map((course) => {
-                const formattedCourse = formatCourseData(course);
-                return (
-                  <div key={formattedCourse.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group hover:scale-105">
-                    {/* Course Image */}
-                    <div className="relative overflow-hidden">
-                      <img 
-                        src={formattedCourse.img} 
-                        alt={formattedCourse.title} 
-                        className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                      {/* Level Badge */}
-                      <div className="absolute top-3 left-3">
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm ${
-                          formattedCourse.level === 'Beginner' ? 'bg-green-500' :
-                          formattedCourse.level === 'Intermediate' ? 'bg-yellow-500' :
-                          'bg-red-500'
-                        }`}>
-                          {formattedCourse.level}
-                        </span>
-                      </div>
-                      {/* Price Badge */}
-                      <div className="absolute top-3 right-3">
-                        <span className="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm font-bold text-slate-700 shadow-sm">
-                          {formattedCourse.price}
-                        </span>
-                      </div>
-                    </div>
+        <section>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {courses.map((course) => (
+              <div key={course.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group hover:scale-105">
+                {/* Course Image */}
+                <div className="relative overflow-hidden">
+                  <img 
+                    src={course.img} 
+                    alt={course.title} 
+                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  {/* Level Badge */}
+                  <div className="absolute top-3 left-3">
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm ${
+                      course.level === 'Beginner' ? 'bg-green-500' :
+                      course.level === 'Intermediate' ? 'bg-yellow-500' :
+                      'bg-red-500'
+                    }`}>
+                      {course.level}
+                    </span>
+                  </div>
+                  {/* Price Badge */}
+                  <div className="absolute top-3 right-3">
+                    <span className="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm font-bold text-slate-700 shadow-sm">
+                      {course.price}
+                    </span>
+                  </div>
+                </div>
 
                     {/* Course Content */}
                     <div className="p-6">
