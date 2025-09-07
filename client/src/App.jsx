@@ -27,6 +27,7 @@ import LaunchPadDetails from "./pages/LaunchPadDetails.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import AdminStudents from "./pages/AdminStudents.jsx";
 import AdminCourses from "./pages/AdminCourses.jsx";
+import AdminCourseManagement from "./pages/AdminCourseManagement.jsx";
 import AdminExams from "./pages/AdminExams.jsx";
 import AdminAnalytics from "./pages/AdminAnalytics.jsx";
 import AdminSettings from "./pages/AdminSettings.jsx";
@@ -65,7 +66,7 @@ export default function App() {
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="students" element={<AdminStudents />} />
-        <Route path="courses" element={<AdminCourses />} />
+        <Route path="courses" element={<AdminCourseManagement />} />
         <Route path="exams" element={<AdminExams />} />
         <Route path="analytics" element={<AdminAnalytics />} />
         <Route path="settings" element={<AdminSettings />} />

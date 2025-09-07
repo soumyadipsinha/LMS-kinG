@@ -1,31 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useAdminAuth } from "../context/AdminAuthContext.jsx";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [adminUser, setAdminUser] = useState(null);
+  const { admin, adminLogout, loading } = useAdminAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-    const user = localStorage.getItem("adminUser");
-    
-    if (!token || !user) {
-      navigate("/admin/login");
-      return;
+    // Check if admin is authenticated
+    if (!loading) {
+      if (!admin) {
+        navigate("/admin/login");
+        return;
+      }
     }
-    
-    try {
-      setAdminUser(JSON.parse(user));
-    } catch (error) {
-      navigate("/admin/login");
-    }
-  }, [navigate]);
+  }, [admin, loading, navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminUser");
+    adminLogout();
     navigate("/admin/login");
   };
 
@@ -38,8 +32,15 @@ export default function AdminLayout() {
     { name: "Settings", href: "/admin/settings", icon: "⚙️" },
   ];
 
-  if (!adminUser) {
-    return null;
+  if (loading || !admin) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading admin panel...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -68,11 +69,11 @@ export default function AdminLayout() {
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold">
-              {adminUser.name.charAt(0)}
+              {admin.firstName.charAt(0)}
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">{adminUser.name}</p>
-              <p className="text-xs text-gray-500 capitalize">{adminUser.role}</p>
+              <p className="text-sm font-semibold text-gray-900">{admin.firstName} {admin.lastName}</p>
+              <p className="text-xs text-gray-500 capitalize">{admin.role}</p>
             </div>
           </div>
         </div>
@@ -126,10 +127,10 @@ export default function AdminLayout() {
             
             <div className="flex items-center gap-4">
               <div className="text-sm text-gray-600">
-                Welcome back, <span className="font-semibold text-gray-900">{adminUser.name}</span>
+                Welcome back, <span className="font-semibold text-gray-900">{admin.firstName} {admin.lastName}</span>
               </div>
               <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                {adminUser.name.charAt(0)}
+                {admin.firstName.charAt(0)}
               </div>
             </div>
           </div>

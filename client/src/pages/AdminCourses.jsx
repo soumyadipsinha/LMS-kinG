@@ -52,7 +52,7 @@ export default function AdminCourses() {
 
   const [form, setForm] = useState(initialForm);
 
-  const categories = useMemo(
+  const availableCategories = useMemo(
     () => ["all", ...new Set(courses.map((c) => c.category).filter(Boolean))],
     [courses]
   );
@@ -345,7 +345,7 @@ return (
           onChange={(e) => setCategoryFilter(e.target.value)}
           className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-400"
         >
-          {categories.map(category => (
+          {availableCategories.map(category => (
             <option key={category} value={category}>
               {category === "all" ? "All Categories" : category}
             </option>

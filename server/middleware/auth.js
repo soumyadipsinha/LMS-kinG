@@ -50,7 +50,7 @@ export const protect = async (req, res, next) => {
 
     // 2) Fallback to Authorization header (Bearer)
     if (!token && req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-      token = req.headers.authorization.split(" ")[5];
+      token = req.headers.authorization.split(" ")[1];
     }
 
     if (!token) {

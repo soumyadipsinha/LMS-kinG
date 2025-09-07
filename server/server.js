@@ -14,6 +14,11 @@ import userRoutes from './routes/users.js';
 import courseRoutes from './routes/courses.js';
 import dashboardRoutes from './routes/dashboard.js';
 import uploadRoutes from './routes/upload.js';
+import adminRoutes from './routes/admin.js';
+import adminCourseRoutes from './routes/adminCourses.js';
+
+// Import Admin model
+import Admin from './models/Admin.js';
 
 // Load environment variables
 dotenv.config();
@@ -53,9 +58,49 @@ const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/lms-king');
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+    
+    // Create admin account if it doesn't exist
+    await createAdminIfNotExists();
   } catch (error) {
     console.error('❌ Database connection error:', error);
     process.exit(1);
+  }
+};
+
+// --- CREATE ADMIN ACCOUNT ---
+const createAdminIfNotExists = async () => {
+  try {
+    const existingAdmin = await Admin.findOne({ email: 'rahul12@gmail.com' });
+    
+    if (!existingAdmin) {
+      const admin = new Admin({
+        firstName: 'Rahul',
+        lastName: 'Admin',
+        email: 'rahul12@gmail.com',
+        password: 'rahul12',
+        role: 'admin',
+        isActive: true,
+        permissions: {
+          userManagement: true,
+          courseManagement: true,
+          analytics: true,
+          settings: true,
+          notifications: true
+        },
+        profile: {
+          bio: 'System Administrator',
+          department: 'IT',
+          position: 'Admin'
+        }
+      });
+
+      await admin.save();
+      console.log('✅ Admin account created: rahul12@gmail.com');
+    } else {
+      console.log('✅ Admin account already exists: rahul12@gmail.com');
+    }
+  } catch (error) {
+    console.error('❌ Error creating admin account:', error);
   }
 };
 
@@ -67,6 +112,8 @@ app.use('/api/users', userRoutes);       // User management routes
 app.use('/api/courses', courseRoutes);   // Courses routes
 app.use('/api/dashboard', dashboardRoutes); // Dashboard routes
 app.use('/api/upload', uploadRoutes);    // File upload routes
+app.use('/api/admin', adminRoutes);      // Admin authentication and management routes
+app.use('/api/admin/courses', adminCourseRoutes); // Admin course management routes
 
 // --- HEALTH CHECK ---
 app.get('/api/health', (req, res) => {

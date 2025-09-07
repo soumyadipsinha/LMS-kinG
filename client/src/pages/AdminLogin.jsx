@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAdminAuth } from "../context/AdminAuthContext.jsx";
+import { toast } from "react-hot-toast";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
+  const { adminLogin } = useAdminAuth();
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -20,21 +23,18 @@ export default function AdminLogin() {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate admin authentication
-    setTimeout(() => {
-      if (formData.username === "admin" && formData.password === "admin123") {
-        localStorage.setItem("adminToken", "dummy-admin-token");
-        localStorage.setItem("adminUser", JSON.stringify({
-          username: "admin",
-          role: "super-admin",
-          name: "Administrator"
-        }));
-        navigate("/admin/dashboard");
-      } else {
-        alert("Invalid admin credentials! Use: admin/admin123");
-      }
+    try {
+      // Use the dedicated admin authentication system
+      const response = await adminLogin(formData.email, formData.password);
+      
+      toast.success("Admin login successful!");
+      navigate("/admin/dashboard");
+    } catch (error) {
+      console.error('Admin login error:', error);
+      toast.error(error.response?.data?.message || "Login failed. Please check your credentials.");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -65,15 +65,15 @@ export default function AdminLogin() {
           <form onSubmit={handleAdminLogin} className="space-y-6">
             <div className="space-y-2">
               <label className="block text-sm font-semibold text-gray-700">
-                Admin Username
+                Admin Email
               </label>
               <input
-                type="text"
-                name="username"
-                value={formData.username}
+                type="email"
+                name="email"
+                value={formData.email}
                 onChange={handleInputChange}
                 className="w-full rounded-xl border-2 border-gray-200 bg-white/70 backdrop-blur-sm px-4 py-4 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-400 transition-all duration-300"
-                placeholder="Enter admin username"
+                placeholder="Enter admin email"
                 required
               />
             </div>
@@ -103,14 +103,6 @@ export default function AdminLogin() {
             </button>
           </form>
 
-          {/* Demo credentials */}
-          <div className="mt-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200">
-            <h3 className="text-sm font-semibold text-amber-800 mb-2">Demo Credentials:</h3>
-            <p className="text-xs text-amber-700">
-              <strong>Username:</strong> admin<br/>
-              <strong>Password:</strong> admin123
-            </p>
-          </div>
 
           {/* Back to main site */}
           <p className="mt-6 text-center text-sm text-gray-600">

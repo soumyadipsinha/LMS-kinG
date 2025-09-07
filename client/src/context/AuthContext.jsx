@@ -30,18 +30,28 @@ export const AuthProvider = ({ children }) => {
 
   // --- LOGIN ---
   const login = async (email, password) => {
-    const res = await axios.post(`${backendURL}/api/auth/login`, { email, password });
-    localStorage.setItem("token", res.data.token);
-    setUser(res.data.user);
-    return res.data;
+    try {
+      const res = await axios.post(`${backendURL}/api/auth/login`, { email, password });
+      localStorage.setItem("token", res.data.token);
+      setUser(res.data.user);
+      return res.data;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error; // Re-throw to let the component handle it
+    }
   };
 
   // --- SIGNUP ---
   const signup = async (data) => {
-    const res = await axios.post(`${backendURL}/api/auth/signup`, data);
-    localStorage.setItem("token", res.data.token);
-    setUser(res.data.user);
-    return res.data;
+    try {
+      const res = await axios.post(`${backendURL}/api/auth/signup`, data);
+      localStorage.setItem("token", res.data.token);
+      setUser(res.data.user);
+      return res.data;
+    } catch (error) {
+      console.error('Signup error:', error);
+      throw error; // Re-throw to let the component handle it
+    }
   };
 
   // --- LOGOUT ---
@@ -51,7 +61,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, loading,setUser }}>
       {children}
     </AuthContext.Provider>
   );

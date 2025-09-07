@@ -248,3 +248,4 @@ User-friendly loading indicators:
 ---
 
 **The complete workflow ensures that when an admin creates a course, it's properly stored in Cloudinary and immediately appears on the frontend! 🎉**
+
