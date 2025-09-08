@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { createExam as apiCreateExam, updateExam as apiUpdateExam, deleteExam as apiDeleteExam, updateExamStatus as apiUpdateExamStatus, fetchExams as apiFetchExams } from "../services/examService.js";
 
 export default function AdminExams() {
   const [exams, setExams] = useState([]);
@@ -28,8 +29,21 @@ export default function AdminExams() {
     avgScore: 0,
     createdAt: new Date().toISOString(),
     scheduledDate: new Date().toISOString(),
+    examUrl: "",
   };
   const [form, setForm] = useState(initialForm);
+
+  // Load exams from API
+  useEffect(() => {
+    (async () => {
+      try {
+        const list = await apiFetchExams();
+        setExams(list.map((e) => ({ ...e, id: e._id || e.id })));
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  }, []);
 
   const filteredExams = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
@@ -107,6 +121,7 @@ export default function AdminExams() {
       avgScore: exam.avgScore ?? 0,
       createdAt: exam.createdAt || new Date().toISOString(),
       scheduledDate: exam.scheduledDate || new Date().toISOString(),
+      examUrl: exam.examUrl || "",
     });
     setErrorMsg("");
     setShowModal(true);
@@ -119,14 +134,26 @@ export default function AdminExams() {
     setEditingExam(null);
   };
 
-  // Local CRUD
-  const handleDeleteExam = (id) => {
+  // CRUD via API
+  const handleDeleteExam = async (id) => {
     if (!window.confirm("Are you sure you want to delete this exam?")) return;
-    setExams((prev) => prev.filter((e) => e.id !== id));
+    try {
+      await apiDeleteExam(id);
+      setExams((prev) => prev.filter((e) => e.id !== id));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete exam");
+    }
   };
 
-  const handleStatusToggle = (id, newStatus) => {
-    setExams((prev) => prev.map((e) => (e.id === id ? { ...e, status: newStatus } : e)));
+  const handleStatusToggle = async (id, newStatus) => {
+    try {
+      const updated = await apiUpdateExamStatus(id, newStatus);
+      setExams((prev) => prev.map((e) => (e.id === id ? { ...e, status: updated?.status || newStatus } : e)));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update status");
+    }
   };
 
   // Form helpers
@@ -155,7 +182,7 @@ export default function AdminExams() {
     return null;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const err = validateForm();
     if (err) {
@@ -165,7 +192,6 @@ export default function AdminExams() {
     setSubmitting(true);
 
     const payload = {
-      id: editingExam ? editingExam.id : crypto.randomUUID(),
       title: form.title,
       description: form.description,
       course: form.course,
@@ -176,18 +202,27 @@ export default function AdminExams() {
       status: form.status,
       attempts: Number(form.attempts || 0),
       avgScore: Number(form.avgScore || 0),
-      createdAt: form.createdAt,
       scheduledDate: form.scheduledDate,
+      examUrl: form.examUrl || "",
     };
 
-    if (editingExam) {
-      setExams((prev) => prev.map((e) => (e.id === editingExam.id ? payload : e)));
-    } else {
-      setExams((prev) => [payload, ...prev]);
+    try {
+      if (editingExam) {
+        const updated = await apiUpdateExam(editingExam.id, payload);
+        const normalized = { ...updated, id: updated._id || editingExam.id };
+        setExams((prev) => prev.map((e) => (e.id === editingExam.id ? normalized : e)));
+      } else {
+        const created = await apiCreateExam(payload);
+        const normalized = { ...created, id: created._id };
+        setExams((prev) => [normalized, ...prev]);
+      }
+      setSubmitting(false);
+      closeModal();
+    } catch (error) {
+      console.error(error);
+      setSubmitting(false);
+      setErrorMsg("Failed to save exam");
     }
-
-    setSubmitting(false);
-    closeModal();
   };
 
   return (
@@ -505,6 +540,17 @@ export default function AdminExams() {
                     onChange={(e) => updateField("scheduledDate", new Date(e.target.value).toISOString())}
                     className="mt-1 w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500"
                     required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Exam URL</label>
+                  <input
+                    type="url"
+                    value={form.examUrl}
+                    onChange={(e) => updateField("examUrl", e.target.value)}
+                    className="mt-1 w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500"
+                    placeholder="https://example.com/exam/unique-id"
                   />
                 </div>
 

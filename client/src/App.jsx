@@ -22,6 +22,7 @@ import Dashboard from "./pages/Dashboard.jsx";
 import SelectedCourse from "./pages/SelectedCouse.jsx";
 import LaunchPad from "./pages/LaunchPad.jsx";
 import LaunchPadDetails from "./pages/LaunchPadDetails.jsx";
+import ExamDetails from "./pages/ExamDetails.jsx";
 
 // Admin Pages
 import AdminDashboard from "./pages/AdminDashboard.jsx";
@@ -54,6 +55,7 @@ export default function App() {
         <Route path="live" element={<Live />} />
         <Route path="recordings" element={<Recordings />} />
         <Route path="algobridge" element={<AlgoBridge />} />
+        <Route path="exam/:id" element={<ExamDetails />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="profile" element={<Profile />} />
         <Route path="billing" element={<Billing />} />
