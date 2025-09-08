@@ -1,5 +1,5 @@
 // src/pages/LaunchPad.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react"; // Icons
 import pic6 from "../assets/pic6.png";
@@ -7,9 +7,36 @@ import Aipic from "../assets/Ai-pic.jpg";
 import Microsoft1 from "../assets/Microsoft1.jpg";
 import Google1 from "../assets/Google1.jpg";
 import Meta1 from "../assets/Meta1.jpg";
+import { courseService } from "../services/courseService";
 
 
 const LaunchPad = () => {
+  const [launchPadCourses, setLaunchPadCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch LaunchPad courses from backend
+  useEffect(() => {
+    const fetchLaunchPadCourses = async () => {
+      try {
+        setLoading(true);
+        console.log('Fetching LaunchPad courses...');
+        const response = await courseService.getLaunchPadCourses();
+        console.log('LaunchPad courses response:', response);
+        const courses = response.data.courses || [];
+        console.log('LaunchPad courses:', courses);
+        setLaunchPadCourses(courses);
+      } catch (error) {
+        console.error('Error fetching LaunchPad courses:', error);
+        setError('Failed to load LaunchPad courses');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLaunchPadCourses();
+  }, []);
+
   const phases = [
     {
       bg: Aipic,
@@ -195,6 +222,132 @@ const LaunchPad = () => {
           ))}
         </div>
       </section>
+
+      {/* LaunchPad Courses Section */}
+      {console.log('Rendering LaunchPad section. Courses count:', launchPadCourses.length, 'Loading:', loading, 'Error:', error)}
+      {launchPadCourses.length > 0 && (
+        <section className="relative bg-white py-20 px-6 max-w-6xl mx-auto rounded-3xl overflow-hidden mt-16">
+          <h2
+            className="text-center text-5xl font-extrabold mb-6"
+            style={{
+              background: "linear-gradient(90deg, #2337fc 15%, #e545fc 45%, #2cc1ff 90%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            LaunchPad Courses
+          </h2>
+
+          <p className="text-center max-w-3xl mx-auto text-xl text-gray-700 mb-12 leading-relaxed">
+            Discover our specially curated courses designed to accelerate your learning journey.
+          </p>
+
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-red-600 text-lg">{error}</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {launchPadCourses.map((course) => (
+                <Link
+                  key={course._id}
+                  to={`/launchpad/details`}
+                  state={{ 
+                    course: course,
+                    bg: course.thumbnail || Aipic,
+                    title: course.title,
+                    desc: course.shortDescription || course.description
+                  }}
+                  className="group"
+                >
+                  <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                    <div className="aspect-video bg-gray-100">
+                      {course.thumbnail ? (
+                        <img
+                          src={course.thumbnail}
+                          alt={course.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          onError={(e) => {
+                            console.log('Image failed to load:', course.thumbnail);
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <div 
+                        className="w-full h-full flex items-center justify-center text-gray-400"
+                        style={{ display: course.thumbnail ? 'none' : 'flex' }}
+                      >
+                        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                    </div>
+                    
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className="font-bold text-xl text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                          {course.title}
+                        </h3>
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 ml-2">
+                          LaunchPad
+                        </span>
+                      </div>
+                      
+                      <p className="text-gray-600 mb-4 line-clamp-3">
+                        {course.shortDescription || course.description}
+                      </p>
+                      
+                      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                        <span className="capitalize">{course.level}</span>
+                        <span>{course.duration}h</span>
+                        <span className="font-semibold text-green-600">
+                          ₹{course.price?.toLocaleString() || '0'}
+                        </span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center text-sm text-gray-600">
+                          <span>By {course.instructor?.firstName || 'Unknown'} {course.instructor?.lastName || 'Instructor'}</span>
+                        </div>
+                        <div className="flex items-center text-sm text-yellow-600">
+                          <span>★ {course.rating?.average?.toFixed(1) || '0.0'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Debug Section - Show when no LaunchPad courses */}
+      {!loading && !error && launchPadCourses.length === 0 && (
+        <section className="relative bg-white py-20 px-6 max-w-6xl mx-auto rounded-3xl overflow-hidden mt-16">
+          <h2
+            className="text-center text-3xl font-extrabold mb-6 text-gray-600"
+          >
+            No LaunchPad Courses Found
+          </h2>
+          <p className="text-center text-gray-500 mb-6">
+            No courses have been marked for LaunchPad yet. Admin needs to create courses and mark them as LaunchPad courses.
+          </p>
+          <div className="text-center">
+            <Link
+              to="/courses"
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
+            >
+              View All Courses
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* Credentials */}
       <section className="relative bg-white py-5 px-6 max-w-6xl mx-auto rounded-3xl overflow-hidden mt-16">

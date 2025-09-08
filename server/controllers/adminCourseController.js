@@ -118,6 +118,7 @@ export const createCourse = async (req, res) => {
       learningOutcomes,
       isPublished,
       isFeatured,
+      isLaunchPad,
       videoUrl,
       imageUrl
     } = req.body;
@@ -149,7 +150,7 @@ export const createCourse = async (req, res) => {
     // Ensure we have at least some thumbnail to satisfy schema requirement
     if (!thumbnailUrl) {
       // Fallback placeholder to avoid validation error (schema requires thumbnail)
-      thumbnailUrl = 'https://placehold.co/600x400?text=Course+Thumbnail';
+      thumbnailUrl = 'https://picsum.photos/600/400?random=1';
     }
 
     // Handle video uploads
@@ -192,7 +193,8 @@ export const createCourse = async (req, res) => {
       requirements: Array.isArray(requirements) ? requirements : (requirements ? String(requirements).split(',').map(req => req.trim()) : []),
       learningOutcomes: Array.isArray(learningOutcomes) ? learningOutcomes : (learningOutcomes ? String(learningOutcomes).split(',').map(outcome => outcome.trim()) : []),
       isPublished: isPublished === 'true' || isPublished === true,
-      isFeatured: isFeatured === 'true' || isFeatured === true
+      isFeatured: isFeatured === 'true' || isFeatured === true,
+      isLaunchPad: isLaunchPad === 'true' || isLaunchPad === true
     });
 
     await course.save();
@@ -246,6 +248,7 @@ export const updateCourse = async (req, res) => {
       learningOutcomes,
       isPublished,
       isFeatured,
+      isLaunchPad,
       videoUrl,
       imageUrl
     } = req.body;
@@ -310,7 +313,8 @@ export const updateCourse = async (req, res) => {
       requirements: requirements ? requirements.split(',').map(req => req.trim()) : course.requirements,
       learningOutcomes: learningOutcomes ? learningOutcomes.split(',').map(outcome => outcome.trim()) : course.learningOutcomes,
       isPublished: isPublished !== undefined ? (isPublished === 'true' || isPublished === true) : course.isPublished,
-      isFeatured: isFeatured !== undefined ? (isFeatured === 'true' || isFeatured === true) : course.isFeatured
+      isFeatured: isFeatured !== undefined ? (isFeatured === 'true' || isFeatured === true) : course.isFeatured,
+      isLaunchPad: isLaunchPad !== undefined ? (isLaunchPad === 'true' || isLaunchPad === true) : course.isLaunchPad
     };
 
     const updatedCourse = await Course.findByIdAndUpdate(

@@ -2,6 +2,7 @@ import express from 'express';
 import { 
   getCourses,
   getFeaturedCourses,
+  getLaunchPadCourses,
   getCourseById,
   createCourse,
   updateCourse,
@@ -37,6 +38,11 @@ router.get('/featured', getFeaturedCourses);
 // @route   GET /api/courses/categories/list
 // @access  Public
 router.get('/categories/list', getCourseCategories);
+
+// @desc    Get LaunchPad courses
+// @route   GET /api/courses/launchpad
+// @access  Public
+router.get('/launchpad', getLaunchPadCourses);
 
 // @desc    Get courses by instructor
 // @route   GET /api/courses/instructor/:instructorId

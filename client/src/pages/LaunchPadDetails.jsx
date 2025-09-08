@@ -3,12 +3,35 @@ import { useLocation, Link } from "react-router-dom";
 
 const LaunchPadDetails = () => {
   const location = useLocation();
-  const { bg, logo, title, desc } = location.state || {};
+  const { course, bg, logo, title, desc } = location.state || {};
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
 
-  // Dummy course data - you can replace this with actual data from your backend
-  const courseData = {
+  // Use real course data if available, otherwise fallback to dummy data
+  const courseData = course ? {
+    title: course.title,
+    instructor: `${course.instructor?.firstName || 'Unknown'} ${course.instructor?.lastName || 'Instructor'}`,
+    duration: `${course.duration} hours`,
+    level: course.level?.charAt(0).toUpperCase() + course.level?.slice(1) || 'Beginner',
+    progress: 0, // This would come from user enrollment data
+    modules: course.learningOutcomes || [
+      "Introduction to Modern Web Development",
+      "React.js Fundamentals",
+      "Node.js Backend Development",
+      "Database Design & Management",
+      "API Development & Integration",
+      "Deployment & DevOps"
+    ],
+    nextLesson: "Start Learning",
+    certificate: `${course.title} Certificate`,
+    price: course.price,
+    currency: course.currency || 'INR',
+    description: course.description,
+    shortDescription: course.shortDescription,
+    thumbnail: course.thumbnail,
+    rating: course.rating?.average || 0,
+    enrollmentCount: course.enrollmentCount || 0
+  } : {
     title: title || "Advanced Web Development",
     instructor: "Dr. Sarah Johnson",
     duration: "12 weeks",
@@ -86,7 +109,7 @@ const LaunchPadDetails = () => {
                 <div>
                   <h1 className="text-4xl font-bold text-gray-900 mb-4">{courseData.title}</h1>
                   <p className="text-gray-600 text-lg mb-6">
-                    Master modern web development with hands-on projects and real-world applications
+                    {courseData.shortDescription || courseData.description || "Master modern web development with hands-on projects and real-world applications"}
                   </p>
                 </div>
                 {logo && (
@@ -115,24 +138,46 @@ const LaunchPadDetails = () => {
                   <div className="text-sm text-gray-600">Modules</div>
                 </div>
                 <div className="bg-orange-50 p-4 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-orange-600">{courseData.instructor.split(' ')[0]}</div>
-                  <div className="text-sm text-gray-600">Instructor</div>
+                  <div className="text-2xl font-bold text-orange-600">
+                    {courseData.price ? `₹${courseData.price.toLocaleString()}` : 'Free'}
+                  </div>
+                  <div className="text-sm text-gray-600">Price</div>
                 </div>
               </div>
 
-              {/* Progress Bar */}
-              <div className="mb-6">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-gray-700">Course Progress</span>
-                  <span className="text-sm font-medium text-gray-700">{courseData.progress}%</span>
+              {/* Additional Stats */}
+              {courseData.enrollmentCount > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                  <div className="bg-yellow-50 p-4 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-yellow-600">{courseData.enrollmentCount}</div>
+                    <div className="text-sm text-gray-600">Students</div>
+                  </div>
+                  <div className="bg-red-50 p-4 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-red-600">★ {courseData.rating.toFixed(1)}</div>
+                    <div className="text-sm text-gray-600">Rating</div>
+                  </div>
+                  <div className="bg-indigo-50 p-4 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-indigo-600">{courseData.instructor.split(' ')[0]}</div>
+                    <div className="text-sm text-gray-600">Instructor</div>
+                  </div>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div 
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-300"
-                    style={{ width: `${courseData.progress}%` }}
-                  ></div>
+              )}
+
+              {/* Progress Bar - Only show if user has progress */}
+              {courseData.progress > 0 && (
+                <div className="mb-6">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium text-gray-700">Course Progress</span>
+                    <span className="text-sm font-medium text-gray-700">{courseData.progress}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div 
+                      className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-300"
+                      style={{ width: `${courseData.progress}%` }}
+                    ></div>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-4">
@@ -140,7 +185,7 @@ const LaunchPadDetails = () => {
                   onClick={handleResumeCourse}
                   className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
-                  ▶ Resume Course
+                  {courseData.progress > 0 ? '▶ Resume Course' : '🚀 Enroll Now'}
                 </button>
                 <button
                   onClick={handleDownloadCertificate}
@@ -188,20 +233,22 @@ const LaunchPadDetails = () => {
 
           {/* Course Details & Actions */}
           <div className="space-y-6">
-            {/* Next Lesson */}
-            <div className="bg-white rounded-2xl shadow-xl p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Next Lesson</h3>
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="font-semibold text-blue-900 mb-2">{courseData.nextLesson}</h4>
-                <p className="text-sm text-blue-700 mb-3">Continue where you left off</p>
-                <button
-                  onClick={handleResumeCourse}
-                  className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Continue Learning
-                </button>
+            {/* Next Lesson - Only show if user has progress */}
+            {courseData.progress > 0 && (
+              <div className="bg-white rounded-2xl shadow-xl p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Next Lesson</h3>
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h4 className="font-semibold text-blue-900 mb-2">{courseData.nextLesson}</h4>
+                  <p className="text-sm text-blue-700 mb-3">Continue where you left off</p>
+                  <button
+                    onClick={handleResumeCourse}
+                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Continue Learning
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Certificate Section */}
             <div className="bg-white rounded-2xl shadow-xl p-6">

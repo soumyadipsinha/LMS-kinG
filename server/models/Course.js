@@ -169,6 +169,10 @@ const courseSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  isLaunchPad: {
+    type: Boolean,
+    default: false
+  },
   rating: {
     average: {
       type: Number,

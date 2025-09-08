@@ -64,6 +64,17 @@ export const courseService = {
     }
   },
 
+  // Get LaunchPad courses
+  getLaunchPadCourses: async () => {
+    try {
+      const response = await api.get('/courses/launchpad');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching LaunchPad courses:', error);
+      throw error.response?.data || { message: 'Failed to fetch LaunchPad courses' };
+    }
+  },
+
   // Get course by ID
   getCourseById: async (id) => {
     try {

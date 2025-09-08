@@ -100,6 +100,34 @@ export const getFeaturedCourses = async (req, res) => {
   }
 };
 
+// @desc    Get LaunchPad courses
+// @route   GET /api/courses/launchpad
+// @access  Public
+export const getLaunchPadCourses = async (req, res) => {
+  try {
+    const courses = await Course.find({ 
+      isPublished: true, 
+      isLaunchPad: true 
+    })
+      .populate('instructor', 'firstName lastName avatar')
+      .sort({ 'rating.average': -1, enrollmentCount: -1 })
+      .limit(12);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        courses
+      }
+    });
+  } catch (error) {
+    console.error('Get LaunchPad courses error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Server error'
+    });
+  }
+};
+
 // @desc    Get course by ID
 // @route   GET /api/courses/:id
 // @access  Public

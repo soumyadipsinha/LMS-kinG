@@ -27,6 +27,7 @@ export default function AdminCourseManagement() {
     learningOutcomes: '',
     isPublished: false,
     isFeatured: false,
+    isLaunchPad: false,
     videoUrl: '',
     imageUrl: ''
   });
@@ -158,6 +159,7 @@ export default function AdminCourseManagement() {
       learningOutcomes: '',
       isPublished: false,
       isFeatured: false,
+      isLaunchPad: false,
       videoUrl: '',
       imageUrl: ''
     });
@@ -183,6 +185,7 @@ export default function AdminCourseManagement() {
       learningOutcomes: course.learningOutcomes ? course.learningOutcomes.join(', ') : '',
       isPublished: course.isPublished || false,
       isFeatured: course.isFeatured || false,
+      isLaunchPad: course.isLaunchPad || false,
       videoUrl: '',
       imageUrl: course.thumbnail || ''
     });
@@ -524,6 +527,17 @@ export default function AdminCourseManagement() {
                     />
                     <span className="ml-2 text-sm text-gray-700">Featured Course</span>
                   </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="isLaunchPad"
+                      checked={formData.isLaunchPad}
+                      onChange={handleInputChange}
+                      className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">LaunchPad Course</span>
+                  </label>
                 </div>
 
                 {/* Submit Buttons */}
@@ -592,6 +606,11 @@ export default function AdminCourseManagement() {
                         {course.isFeatured && (
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                             Featured
+                          </span>
+                        )}
+                        {course.isLaunchPad && (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            LaunchPad
                           </span>
                         )}
                       </div>
