@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 // Import company logo images
 import GoogleLogo from "../assets/Google1.jpg";
 import MetaLogo from "../assets/Meta1.jpg";
@@ -282,102 +283,23 @@ function SkillRequirement({ skill, icon, color }) {
 
 export default function AlgoBridge() {
   const [activeTab, setActiveTab] = useState('exams');
-
-  const exams = useMemo(
-    () => [
-      {
-        id: 1,
-        title: "Data Structures & Algorithms Mastery",
-        description: "Comprehensive assessment covering arrays, linked lists, trees, graphs, and advanced algorithmic techniques. Test your problem-solving skills with real-world scenarios.",
-        duration: "3 hours",
-        questions: 35,
-        difficulty: "Hard",
-        type: "Exam",
-        category: "Algorithms",
-        startDate: "Dec 15, 2024",
-        endDate: "Dec 20, 2024",
-        isActive: true,
-        maxScore: 100,
-        attempts: 3
-      },
-      {
-        id: 2,
-        title: "Dynamic Programming Deep Dive",
-        description: "Advanced problem-solving with dynamic programming techniques. Master memoization, tabulation, and optimization strategies for complex algorithmic challenges.",
-        duration: "4 hours",
-        questions: 20,
-        difficulty: "Expert",
-        type: "Challenge",
-        category: "Dynamic Programming",
-        startDate: "Dec 18, 2024",
-        endDate: "Dec 25, 2024",
-        isActive: true,
-        maxScore: 150,
-        attempts: 2
-      },
-      {
-        id: 3,
-        title: "Graph Theory & Network Analysis",
-        description: "Comprehensive test on graph algorithms, traversal methods, shortest paths, and network flow optimization. Perfect for advanced algorithm enthusiasts.",
-        duration: "2.5 hours",
-        questions: 25,
-        difficulty: "Medium",
-        type: "Practice",
-        category: "Graph Theory",
-        startDate: "Dec 22, 2024",
-        endDate: "Dec 29, 2024",
-        isActive: false,
-        maxScore: 80,
-        attempts: 5
-      },
-      {
-        id: 4,
-        title: "Competitive Programming Fundamentals",
-        description: "Introduction to competitive programming concepts, time complexity analysis, and efficient algorithm design. Build your foundation for coding competitions.",
-        duration: "3.5 hours",
-        questions: 40,
-        difficulty: "Medium",
-        type: "Contest",
-        category: "Algorithms",
-        startDate: "Dec 25, 2024",
-        endDate: "Dec 30, 2024",
-        isActive: false,
-        maxScore: 120,
-        attempts: 1
-      },
-      {
-        id: 5,
-        title: "String Algorithms & Pattern Matching",
-        description: "Master string processing algorithms, pattern matching techniques, and text analysis methods. Essential for data science and NLP applications.",
-        duration: "2 hours",
-        questions: 30,
-        difficulty: "Easy",
-        type: "Quiz",
-        category: "Strings",
-        startDate: "Dec 28, 2024",
-        endDate: "Jan 5, 2025",
-        isActive: false,
-        maxScore: 60,
-        attempts: 10
-      },
-      {
-        id: 6,
-        title: "Tree Data Structures & Algorithms",
-        description: "Deep dive into binary trees, AVL trees, B-trees, and tree traversal algorithms. Learn efficient tree operations and balancing techniques.",
-        duration: "2.5 hours",
-        questions: 28,
-        difficulty: "Medium",
-        type: "Practice",
-        category: "Trees",
-        startDate: "Jan 2, 2025",
-        endDate: "Jan 10, 2025",
-        isActive: false,
-        maxScore: 90,
-        attempts: 4
+  const [exams, setExams] = useState([]);
+  const navigate = useNavigate();
+  useEffect(() => {
+    (async () => {
+      try {
+        const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const res = await fetch(`${API_BASE}/exams/available`);
+        if (res.ok) {
+          const json = await res.json();
+          const data = json.data?.exams || [];
+          setExams(data.map((e) => ({ ...e, id: e.id || e._id })));
+        }
+      } catch (e) {
+        console.error(e);
       }
-    ],
-    []
-  );
+    })();
+  }, []);
 
         const contests = useMemo(
         () => [
@@ -438,8 +360,7 @@ export default function AlgoBridge() {
       );
 
   const handleStartExam = (examId) => {
-    alert(`🚀 Starting Exam #${examId}! Redirecting to exam interface...`);
-    // Navigate to exam interface
+    navigate(`/dashboard/exam/${examId}`);
   };
 
   const handleJoinContest = (contestId) => {

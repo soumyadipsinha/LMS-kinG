@@ -16,6 +16,7 @@ import dashboardRoutes from './routes/dashboard.js';
 import uploadRoutes from './routes/upload.js';
 import adminRoutes from './routes/admin.js';
 import adminCourseRoutes from './routes/adminCourses.js';
+import examRoutes from './routes/exams.js';
 
 // Import Admin model
 import Admin from './models/Admin.js';
@@ -114,6 +115,7 @@ app.use('/api/dashboard', dashboardRoutes); // Dashboard routes
 app.use('/api/upload', uploadRoutes);    // File upload routes
 app.use('/api/admin', adminRoutes);      // Admin authentication and management routes
 app.use('/api/admin/courses', adminCourseRoutes); // Admin course management routes
+app.use('/api/exams', examRoutes); // Exams routes
 
 // --- HEALTH CHECK ---
 app.get('/api/health', (req, res) => {

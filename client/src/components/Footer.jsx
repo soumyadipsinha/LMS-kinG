@@ -3,6 +3,8 @@ import { FaFacebook } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
 import { FaLinkedin } from "react-icons/fa";
 
+import Logo from "../assets/kinglogo.png"
+
 
 
 import { Link } from "react-router-dom";
@@ -17,6 +19,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Brand + blurb + CTA */}
           <div>
+            <img src={Logo} alt="Logo" className="h-20 w-20" />
             <div className="text-4xl font-extrabold tracking-wide">LITERA</div>
             <p className="mt-4 text-sm leading-relaxed text-indigo-100">
               A Best Platform Enroll in your Special Course A Best Platform Enroll
