@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { Bell } from "lucide-react";
 import LoginModal from "./LoginModal.jsx";
 import SignupModal from "./SignupModal.jsx";
+import Logo from "../assets/kinglogo.png"
 
 const navLink = "uppercase text-lg font-bold text-slate-700 hover:text-[#1B4A8B] px-4 py-2";
 
@@ -29,7 +30,7 @@ export default function Navbar() {
           <div className="h-16 flex items-center justify-between">
             {/* Logo */}
             <Link to="/">
-              <img src="/src/assets/kinglogo.jpg" alt="Logo" className="h-12" />
+              <img src={Logo} alt="Logo" className="h-12 w-15 invert" />
             </Link>
 
             {/* Nav Links */}
