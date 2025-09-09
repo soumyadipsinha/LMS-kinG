@@ -6,7 +6,10 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const backendURL = "http://localhost:5000"; // change if needed
+  const apiEnv = import.meta?.env?.VITE_API_URL || "http://localhost:5000/api";
+  const normalizedApi = apiEnv.endsWith("/api") ? apiEnv : `${apiEnv.replace(/\/$/, "")}/api`;
+  const backendURL = normalizedApi.replace(/\/api$/, "");
+  const http = axios.create({ baseURL: backendURL, timeout: 15000, headers: { 'Content-Type': 'application/json' } });
 
   // Fetch current user on load
   useEffect(() => {
@@ -15,7 +18,7 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem("token");
         if (!token) return setLoading(false);
 
-        const res = await axios.get(`${backendURL}/api/auth/me`, {
+        const res = await http.get(`/api/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data.user);
@@ -31,7 +34,7 @@ export const AuthProvider = ({ children }) => {
   // --- LOGIN ---
   const login = async (email, password) => {
     try {
-      const res = await axios.post(`${backendURL}/api/auth/login`, { email, password });
+      const res = await http.post(`/api/auth/login`, { email, password });
       localStorage.setItem("token", res.data.token);
       setUser(res.data.user);
       return res.data;
@@ -44,7 +47,7 @@ export const AuthProvider = ({ children }) => {
   // --- SIGNUP ---
   const signup = async (data) => {
     try {
-      const res = await axios.post(`${backendURL}/api/auth/signup`, data);
+      const res = await http.post(`/api/auth/signup`, data);
       localStorage.setItem("token", res.data.token);
       setUser(res.data.user);
       return res.data;
