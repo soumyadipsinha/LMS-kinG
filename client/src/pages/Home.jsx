@@ -1,6 +1,7 @@
 // src/pages/Home.jsx
 import StatCard from "../components/StatCard.jsx";
 import CourseCard from "../components/CourseCard.jsx";
+import { useEffect, useState } from "react";
 import TestimonialCard from "../components/TestimonialCard.jsx";
 import { Link } from "react-router-dom";
 import pic5 from "../assets/pic5.png"; 
@@ -19,6 +20,22 @@ import fullstackPic from "../assets/FullStack-pic.jpg";
 
 
 export default function Home() {
+  const [featuredCourses, setFeaturedCourses] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const res = await fetch(`${API_BASE}/courses?limit=4`);
+        if (!res.ok) return;
+        const json = await res.json();
+        const list = json.data?.courses || [];
+        setFeaturedCourses(list.slice(0, 4));
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  }, []);
   return (
     <div>
       {/* Hero */}
@@ -96,34 +113,49 @@ export default function Home() {
           </div>
 
           <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <CourseCard
-              imgSrc={javascriptPic}
-              title="Intro to JavaScript"
-              level="Beginner Level"
-              desc="Kickstart coding with JS fundamentals."
-              id="javascript-basics"
-            />
-            <CourseCard
-              imgSrc={reactPic}
-              title="React for Web"
-              level="Intermediate"
-              desc="Build real apps with components & hooks."
-              id="react-web"
-            />
-            <CourseCard
-              imgSrc={nodePic}
-              title="Node & APIs"
-              level="Intermediate"
-              desc="Create secure REST APIs with Node/Express."
-              id="node-apis"
-            />
-            <CourseCard
-              imgSrc={fullstackPic}
-              title="Full Stack Development"
-              level="Advanced"
-              desc="Master both frontend and backend development."
-              id="fullstack-dev"
-            />
+            {featuredCourses.length > 0 ? (
+              featuredCourses.map((c) => (
+                <CourseCard
+                  key={c._id}
+                  imgSrc={c.thumbnail}
+                  title={c.title}
+                  level={c.level?.charAt(0).toUpperCase() + c.level?.slice(1) || 'Beginner'}
+                  desc={c.shortDescription || c.description?.slice(0, 120) || ''}
+                  id={c._id}
+                />
+              ))
+            ) : (
+              <>
+                <CourseCard
+                  imgSrc={javascriptPic}
+                  title="Intro to JavaScript"
+                  level="Beginner Level"
+                  desc="Kickstart coding with JS fundamentals."
+                  id="javascript-basics"
+                />
+                <CourseCard
+                  imgSrc={reactPic}
+                  title="React for Web"
+                  level="Intermediate"
+                  desc="Build real apps with components & hooks."
+                  id="react-web"
+                />
+                <CourseCard
+                  imgSrc={nodePic}
+                  title="Node & APIs"
+                  level="Intermediate"
+                  desc="Create secure REST APIs with Node/Express."
+                  id="node-apis"
+                />
+                <CourseCard
+                  imgSrc={fullstackPic}
+                  title="Full Stack Development"
+                  level="Advanced"
+                  desc="Master both frontend and backend development."
+                  id="fullstack-dev"
+                />
+              </>
+            )}
           </div>
 
           {/* View All Courses Button */}
