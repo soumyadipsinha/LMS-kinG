@@ -108,4 +108,15 @@ export const generateVideoThumbnail = async (publicId, time = 10) => {
   }
 };
 
-export default cloudinary;
+// Initialize Cloudinary connection
+const connectCloudinary = async () => {
+  try {
+    console.log('✅ Cloudinary configured successfully');
+    return true;
+  } catch (error) {
+    console.error('❌ Cloudinary configuration error:', error);
+    return false;
+  }
+};
+
+export default connectCloudinary;

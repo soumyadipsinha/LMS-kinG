@@ -111,7 +111,8 @@ export default function Courses() {
         duration: `${course.duration || 0} hours`,
         students: course.enrollmentCount || 0,
         rating: course.rating?.average || 0,
-        category: course.category?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Other'
+        category: course.category?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Other',
+        videos: course.videos || []
       };
     }
     return course; // Static course format
@@ -347,6 +348,13 @@ export default function Courses() {
                       <span>👨‍🏫 {formattedCourse.author}</span>
                       <span>⏱️ {formattedCourse.duration}</span>
                     </div>
+                    
+                    {/* Video Count */}
+                    {formattedCourse.videos && formattedCourse.videos.length > 0 && (
+                      <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full mb-4 inline-block">
+                        {formattedCourse.videos.some(video => video.startsWith('http')) ? '🔗' : '📹'} {formattedCourse.videos.length} video{formattedCourse.videos.length > 1 ? 's' : ''}
+                      </div>
+                    )}
                     
                     {/* Rating and Students */}
                     <div className="flex items-center justify-between mb-4">

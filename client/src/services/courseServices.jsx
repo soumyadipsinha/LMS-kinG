@@ -179,7 +179,7 @@ export async function createCourse(coursePayload, { useMultipart = false } = {})
       language: coursePayload.language || "English",
       isPublished: coursePayload.status === "published",
       // Thumbnail URL; switch to upload if needed via multipart
-      thumbnail: coursePayload.thumbnail || "https://placehold.co/600x400",
+      thumbnail: coursePayload.thumbnail || "",
       modules: (coursePayload.modules || []).map((m, idx) => ({
         title: m.title || `Module ${idx + 1}`,
         description: m.description || "",
@@ -233,7 +233,7 @@ export async function updateCourse(id, coursePayload, { useMultipart = false } =
       currency: coursePayload.currency || "INR",
       language: coursePayload.language || "English",
       isPublished: coursePayload.status === "published",
-      thumbnail: coursePayload.thumbnail || "https://placehold.co/600x400",
+      thumbnail: coursePayload.thumbnail || "",
       modules: (coursePayload.modules || []).map((m, idx) => ({
         title: m.title || `Module ${idx + 1}`,
         description: m.description || "",

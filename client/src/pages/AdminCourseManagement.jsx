@@ -413,6 +413,19 @@ export default function AdminCourseManagement() {
                       onChange={handleFileChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     />
+                    {/* Thumbnail Preview */}
+                    {(files.thumbnail || (editingCourse && editingCourse.thumbnail)) && (
+                      <div className="mt-3">
+                        <p className="text-sm text-gray-600 mb-2">Preview:</p>
+                        <div className="w-full h-32 border border-gray-200 rounded-lg overflow-hidden">
+                          <img
+                            src={files.thumbnail ? URL.createObjectURL(files.thumbnail) : editingCourse.thumbnail}
+                            alt="Thumbnail preview"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -427,6 +440,72 @@ export default function AdminCourseManagement() {
                       onChange={handleFileChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     />
+                    {/* Video Preview */}
+                    {(files.videos && files.videos.length > 0) || (editingCourse && editingCourse.videos && editingCourse.videos.length > 0) ? (
+                      <div className="mt-3">
+                        <p className="text-sm text-gray-600 mb-2">Video Preview:</p>
+                        <div className="space-y-2">
+                          {/* New videos */}
+                          {files.videos && files.videos.map((video, index) => (
+                            <div key={`new-${index}`} className="w-full h-32 border border-gray-200 rounded-lg overflow-hidden">
+                              <video
+                                src={URL.createObjectURL(video)}
+                                controls
+                                className="w-full h-full object-cover"
+                              />
+                              <p className="text-xs text-gray-500 p-2">{video.name}</p>
+                            </div>
+                          ))}
+                          {/* Existing videos */}
+                          {editingCourse && editingCourse.videos && editingCourse.videos.map((videoUrl, index) => {
+                            const isUrl = videoUrl.startsWith('http');
+                            
+                            return (
+                              <div key={`existing-${index}`} className="w-full h-32 border border-gray-200 rounded-lg overflow-hidden">
+                                {isUrl ? (
+                                  // For URLs, show a clickable preview
+                                  <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col items-center justify-center">
+                                    <a
+                                      href={videoUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-blue-600 hover:text-blue-800 transition-colors duration-300"
+                                    >
+                                      <svg className="w-8 h-8 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                      </svg>
+                                      <p className="text-xs text-center">Click to open</p>
+                                    </a>
+                                  </div>
+                                ) : (
+                                  // For uploaded files, show video player
+                                  <video
+                                    src={videoUrl}
+                                    controls
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      e.target.style.display = 'none';
+                                      e.target.nextSibling.style.display = 'flex';
+                                    }}
+                                  />
+                                )}
+                                <div className="w-full h-full items-center justify-center text-gray-400 hidden">
+                                  <div className="text-center">
+                                    <svg className="w-8 h-8 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                    <p className="text-xs text-gray-500">Video not available</p>
+                                  </div>
+                                </div>
+                                <p className="text-xs text-gray-500 p-2">
+                                  Existing {isUrl ? 'Video Link' : 'Video'} {index + 1}
+                                </p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
 
@@ -454,8 +533,29 @@ export default function AdminCourseManagement() {
                       name="videoUrl"
                       value={formData.videoUrl}
                       onChange={handleInputChange}
+                      placeholder="https://example.com/video.mp4"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     />
+                    {/* Video URL Preview */}
+                    {formData.videoUrl && formData.videoUrl.trim() !== '' && (
+                      <div className="mt-3">
+                        <p className="text-sm text-gray-600 mb-2">URL Preview:</p>
+                        <div className="w-full h-24 border border-gray-200 rounded-lg overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100">
+                          <a
+                            href={formData.videoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full h-full flex flex-col items-center justify-center text-blue-600 hover:bg-blue-100 transition-colors duration-300 cursor-pointer"
+                          >
+                            <svg className="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            <p className="text-xs text-center">Click to preview</p>
+                          </a>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1 truncate">{formData.videoUrl}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -579,19 +679,25 @@ export default function AdminCourseManagement() {
               {courses.map((course) => (
                 <div key={course._id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                   <div className="aspect-video bg-gray-100">
-                    {course.thumbnail ? (
+                    {course.thumbnail && course.thumbnail.trim() !== '' ? (
                       <img
                         src={course.thumbnail}
                         alt={course.title}
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
                       />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    ) : null}
+                    <div className={`w-full h-full flex items-center justify-center text-gray-400 ${course.thumbnail && course.thumbnail.trim() !== '' ? 'hidden' : ''}`}>
+                      <div className="text-center">
+                        <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
+                        <p className="text-xs text-gray-500">No thumbnail</p>
                       </div>
-                    )}
+                    </div>
                   </div>
                   
                   <div className="p-4">
@@ -623,6 +729,13 @@ export default function AdminCourseManagement() {
                       <span>{course.duration}h</span>
                       <span>${course.price}</span>
                     </div>
+                    
+                    {/* Show video count if available */}
+                    {course.videos && course.videos.length > 0 && (
+                      <div className="text-xs text-blue-600 mb-2">
+                        {course.videos.some(video => video.startsWith('http')) ? '🔗' : '📹'} {course.videos.length} video{course.videos.length > 1 ? 's' : ''}
+                      </div>
+                    )}
                     
                     <div className="flex space-x-2">
                       <button

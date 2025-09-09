@@ -147,11 +147,7 @@ export const createCourse = async (req, res) => {
       thumbnailUrl = imageUrl;
     }
 
-    // Ensure we have at least some thumbnail to satisfy schema requirement
-    if (!thumbnailUrl) {
-      // Fallback placeholder to avoid validation error (schema requires thumbnail)
-      thumbnailUrl = 'https://picsum.photos/600/400?random=1';
-    }
+    // Thumbnail is optional - no fallback needed
 
     // Handle video uploads
     if (req.files && req.files.videos) {

@@ -17,6 +17,7 @@ import uploadRoutes from './routes/upload.js';
 import adminRoutes from './routes/admin.js';
 import adminCourseRoutes from './routes/adminCourses.js';
 import examRoutes from './routes/exams.js';
+import connectCloudinary from './utils/cloudinary.js';
 
 // Import Admin model
 import Admin from './models/Admin.js';
@@ -105,7 +106,8 @@ const createAdminIfNotExists = async () => {
   }
 };
 
-connectDB();
+await connectDB();
+await connectCloudinary();
 
 // --- ROUTES ---
 app.use('/api/auth', authRoutes);        // Auth routes (register, login, logout, me)

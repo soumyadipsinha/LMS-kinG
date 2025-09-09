@@ -310,6 +310,13 @@ const LaunchPad = () => {
                         </span>
                       </div>
                       
+                      {/* Video Count */}
+                      {course.videos && course.videos.length > 0 && (
+                        <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full mb-4 inline-block">
+                          {course.videos.some(video => video.startsWith('http')) ? '🔗' : '📹'} {course.videos.length} video{course.videos.length > 1 ? 's' : ''}
+                        </div>
+                      )}
+                      
                       <div className="flex items-center justify-between">
                         <div className="flex items-center text-sm text-gray-600">
                           <span>By {course.instructor?.firstName || 'Unknown'} {course.instructor?.lastName || 'Instructor'}</span>

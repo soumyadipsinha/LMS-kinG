@@ -30,7 +30,8 @@ const LaunchPadDetails = () => {
     shortDescription: course.shortDescription,
     thumbnail: course.thumbnail,
     rating: course.rating?.average || 0,
-    enrollmentCount: course.enrollmentCount || 0
+    enrollmentCount: course.enrollmentCount || 0,
+    videos: course.videos || []
   } : {
     title: title || "Advanced Web Development",
     instructor: "Dr. Sarah Johnson",
@@ -145,6 +146,20 @@ const LaunchPadDetails = () => {
                 </div>
               </div>
 
+              {/* Video Count */}
+              {courseData.videos && courseData.videos.length > 0 && (
+                <div className="mb-6">
+                  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 rounded-lg text-center border border-indigo-200">
+                    <div className="text-2xl font-bold text-indigo-600 mb-1">
+                      {courseData.videos.some(video => video.startsWith('http')) ? '🔗' : '📹'} {courseData.videos.length}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {courseData.videos.some(video => video.startsWith('http')) ? 'Video Links' : 'Course Videos'}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Additional Stats */}
               {courseData.enrollmentCount > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
@@ -229,6 +244,75 @@ const LaunchPadDetails = () => {
                 ))}
               </div>
             </div>
+
+            {/* Course Videos Section */}
+            {courseData.videos && courseData.videos.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-xl p-8 mt-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Course Videos</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {courseData.videos.map((videoUrl, index) => {
+                    // Check if it's a URL (starts with http) or a file path
+                    const isUrl = videoUrl.startsWith('http');
+                    
+                    return (
+                      <div key={index} className="bg-gray-50 rounded-lg p-4">
+                        {isUrl ? (
+                          // For URLs, show a clickable link
+                          <div className="aspect-video bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg overflow-hidden mb-2 border-2 border-dashed border-blue-300">
+                            <a
+                              href={videoUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full h-full flex flex-col items-center justify-center text-blue-600 hover:bg-blue-100 transition-colors duration-300 cursor-pointer"
+                            >
+                              <svg className="w-16 h-16 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                              </svg>
+                              <p className="text-sm font-semibold mb-1">Click to Watch Video</p>
+                              <p className="text-xs text-blue-500">Opens in new tab</p>
+                            </a>
+                          </div>
+                        ) : (
+                          // For uploaded files, show video player
+                          <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden mb-2">
+                            <video
+                              src={videoUrl}
+                              controls
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                              }}
+                            />
+                            <div className="w-full h-full items-center justify-center text-gray-400 hidden">
+                              <div className="text-center">
+                                <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                                <p className="text-sm text-gray-500">Video not available</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm text-gray-600">Video {index + 1}</p>
+                          {isUrl && (
+                            <a
+                              href={videoUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-blue-600 hover:text-blue-800 underline"
+                            >
+                              Open Link
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Course Details & Actions */}

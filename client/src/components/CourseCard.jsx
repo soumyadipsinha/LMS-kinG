@@ -1,7 +1,7 @@
 // src/components/CourseCard.jsx
 import { Link } from "react-router-dom";
 
-export default function CourseCard({ imgSrc, title, level, desc, id }) {
+export default function CourseCard({ imgSrc, title, level, desc, id, videos, price, duration }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group hover:scale-105">
       {/* Image Section */}
@@ -26,9 +26,22 @@ export default function CourseCard({ imgSrc, title, level, desc, id }) {
 
       {/* Content Section */}
       <div className="p-6">
-        <div className="text-sm font-semibold text-indigo-600 mb-2">{level}</div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-sm font-semibold text-indigo-600">{level}</div>
+          {videos && videos.length > 0 && (
+            <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+              {videos.some(video => video.startsWith('http')) ? '🔗' : '📹'} {videos.length} video{videos.length > 1 ? 's' : ''}
+            </div>
+          )}
+        </div>
         <h3 className="text-xl font-bold text-slate-800 mb-3 group-hover:text-indigo-600 transition-colors duration-300">{title}</h3>
         <p className="text-slate-600 text-sm leading-relaxed mb-4">{desc}</p>
+        
+        {/* Course Info */}
+        <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+          {duration && <span>⏱️ {duration}h</span>}
+          {price && <span className="font-semibold text-green-600">₹{price}</span>}
+        </div>
         
         <Link to={`/courses/${id}`}>
           <button className="w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 text-white text-sm font-semibold px-4 py-3 hover:bg-indigo-700 hover:shadow-lg transition-all duration-300 transform hover:scale-105">

@@ -148,7 +148,7 @@ const courseSchema = new mongoose.Schema({
   },
   thumbnail: {
     type: String,
-    required: [true, 'Course thumbnail is required']
+    default: ''
   },
   thumbnailFile: {
     type: mongoose.Schema.Types.ObjectId,

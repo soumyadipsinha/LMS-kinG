@@ -190,7 +190,7 @@ export const createCourse = async (req, res) => {
 
     // Provide a safe default thumbnail to satisfy schema requirement
     if (!normalized.thumbnail) {
-      normalized.thumbnail = 'https://placehold.co/600x400?text=Course+Thumbnail';
+      normalized.thumbnail = course.thumbnail || '';
     }
 
     // Normalize arrays if client sends comma-separated strings
