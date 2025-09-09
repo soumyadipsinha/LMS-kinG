@@ -1,69 +1,56 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function AdminStudents() {
-  const [students, setStudents] = useState([
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john.doe@example.com",
-      phone: "+91 98765 43210",
-      course: "React for Web Development",
-      status: "active",
-      joinDate: "2024-01-15",
-      progress: 75,
-      lastActive: "2 hours ago"
-    },
-    {
-      id: 2,
-      name: "Sarah Wilson",
-      email: "sarah.wilson@example.com",
-      phone: "+91 98765 43211",
-      course: "JavaScript Fundamentals",
-      status: "active",
-      joinDate: "2024-01-10",
-      progress: 90,
-      lastActive: "1 hour ago"
-    },
-    {
-      id: 3,
-      name: "Mike Johnson",
-      email: "mike.johnson@example.com",
-      phone: "+91 98765 43212",
-      course: "Node.js & APIs",
-      status: "inactive",
-      joinDate: "2023-12-20",
-      progress: 45,
-      lastActive: "5 days ago"
-    },
-    {
-      id: 4,
-      name: "Emily Brown",
-      email: "emily.brown@example.com",
-      phone: "+91 98765 43213",
-      course: "Machine Learning Basics",
-      status: "active",
-      joinDate: "2024-01-05",
-      progress: 60,
-      lastActive: "30 minutes ago"
-    },
-    {
-      id: 5,
-      name: "David Lee",
-      email: "david.lee@example.com",
-      phone: "+91 98765 43214",
-      course: "Full Stack Development",
-      status: "active",
-      joinDate: "2024-01-12",
-      progress: 30,
-      lastActive: "3 hours ago"
-    }
-  ]);
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
+
+  useEffect(() => {
+    const transformUser = (u) => {
+      const fullName = [u.firstName, u.lastName].filter(Boolean).join(" ") || u.name || "Unknown";
+      const firstEnrollment = (u.enrolledCourses && u.enrolledCourses[0]) || null;
+      return {
+        id: u._id,
+        name: fullName,
+        email: u.email,
+        phone: u.profile?.phone || "",
+        course: firstEnrollment?.course?.title || "-",
+        status: u.isActive ? "active" : "inactive",
+        joinDate: u.createdAt,
+        progress: 0,
+        lastActive: ""
+      };
+    };
+
+    (async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const token = localStorage.getItem('adminToken');
+        const res = await fetch(`${API_BASE}/users?role=student&limit=200`, {
+          method: 'GET',
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          credentials: 'include'
+        });
+        if (!res.ok) throw new Error('Failed to load students');
+        const json = await res.json();
+        const users = json.data?.users || [];
+        setStudents(users.map(transformUser));
+      } catch (e) {
+        console.error(e);
+        setError('Failed to load students');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
   const filteredStudents = students.filter(student => {
     const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -72,6 +59,8 @@ export default function AdminStudents() {
     const matchesStatus = statusFilter === "all" || student.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  const enrolledStudentsOnly = filteredStudents.filter(s => s.course && s.course !== "-");
 
   const handleDeleteStudent = (id) => {
     if (window.confirm("Are you sure you want to delete this student?")) {
@@ -116,6 +105,13 @@ export default function AdminStudents() {
         </button>
       </div>
 
+      {loading ? (
+        <div className="p-3 bg-blue-50 text-blue-700 rounded-md border border-blue-200">Loading students...</div>
+      ) : null}
+      {error ? (
+        <div className="p-3 bg-red-50 text-red-700 rounded-md border border-red-200">{error}</div>
+      ) : null}
+
       {/* Filters and Search */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <div className="flex flex-col md:flex-row gap-4">
@@ -137,6 +133,52 @@ export default function AdminStudents() {
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
+        </div>
+      </div>
+
+      {/* Students Enrolled In Courses */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900">Students Enrolled In Courses</h2>
+          <span className="text-sm text-gray-600">{enrolledStudentsOnly.length} students</span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Join Date</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {enrolledStudentsOnly.map((student) => (
+                <tr key={`enrolled-${student.id}`} className="hover:bg-gray-50 transition-colors duration-200">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                        {student.name.charAt(0)}
+                      </div>
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900">{student.name}</div>
+                        <div className="text-sm text-gray-500">{student.email}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{student.course}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {getStatusBadge(student.status)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {new Date(student.joinDate).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 

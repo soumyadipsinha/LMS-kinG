@@ -10,6 +10,7 @@ import {
   deleteAdmin
 } from '../controllers/adminController.js';
 import { adminAuth, superAdminAuth, requirePermission } from '../middleware/adminAuth.js';
+import { listStudents } from '../controllers/adminUsersController.js';
 
 const router = express.Router();
 
@@ -70,5 +71,10 @@ router.get('/verify', adminAuth, (req, res) => {
     }
   });
 });
+
+// @desc    Get all students (Admin)
+// @route   GET /api/admin/students
+// @access  Private/Admin
+router.get('/students', adminAuth, listStudents);
 
 export default router;

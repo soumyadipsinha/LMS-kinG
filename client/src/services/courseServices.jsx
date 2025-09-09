@@ -321,6 +321,7 @@ export function mapAdminFormToBackend(form) {
     target: form.target, // not used by backend unless added
     students: Number(form.students || 0),
     rating: Number(form.rating || 0),
+    thumbnail: form.thumbnail,
     createdAt: form.createdAt,
     modules: (form.modules || []).map(m => ({
       title: m.title,

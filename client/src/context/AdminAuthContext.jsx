@@ -6,7 +6,17 @@ const AdminAuthContext = createContext();
 export const AdminAuthProvider = ({ children }) => {
   const [admin, setAdmin] = useState(null);
   const [loading, setLoading] = useState(true);
-  const backendURL = "http://localhost:5000"; // change if needed
+  // Prefer env if provided; accept VITE_API_URL with or without /api suffix
+  const apiEnv = import.meta?.env?.VITE_API_URL || "http://localhost:5000/api";
+  const normalizedApi = apiEnv.endsWith("/api") ? apiEnv : `${apiEnv.replace(/\/$/, "")}/api`;
+  const backendURL = normalizedApi.replace(/\/api$/, "");
+
+  const http = axios.create({
+    baseURL: backendURL,
+    timeout: 15000,
+    withCredentials: false,
+    headers: { "Content-Type": "application/json" }
+  });
 
   // Fetch current admin on load
   useEffect(() => {
@@ -18,12 +28,12 @@ export const AdminAuthProvider = ({ children }) => {
           return;
         }
 
-        const res = await axios.get(`${backendURL}/api/admin/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
+        const res = await http.get(`/api/admin/profile`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
         setAdmin(res.data.data.admin);
       } catch (err) {
-        console.error('Admin fetch error:', err);
+        console.error('Admin fetch error:', err?.response?.data || err?.message || err);
         // If token is invalid, remove it
         localStorage.removeItem("adminToken");
         setAdmin(null);
@@ -37,10 +47,7 @@ export const AdminAuthProvider = ({ children }) => {
   // --- ADMIN LOGIN ---
   const adminLogin = async (email, password) => {
     try {
-      const res = await axios.post(`${backendURL}/api/admin/login`, { 
-        email, 
-        password 
-      });
+      const res = await http.post(`/api/admin/login`, { email, password });
       
       const { admin: adminData, token } = res.data.data;
       
@@ -50,7 +57,7 @@ export const AdminAuthProvider = ({ children }) => {
       
       return res.data;
     } catch (error) {
-      console.error('Admin login error:', error);
+      console.error('Admin login error:', error?.response?.data || error?.message || error);
       throw error; // Re-throw to let the component handle it
     }
   };
@@ -65,14 +72,14 @@ export const AdminAuthProvider = ({ children }) => {
   const updateAdminProfile = async (profileData) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await axios.put(`${backendURL}/api/admin/profile`, profileData, {
-        headers: { Authorization: `Bearer ${token}` },
+      const res = await http.put(`/api/admin/profile`, profileData, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       
       setAdmin(res.data.data.admin);
       return res.data;
     } catch (error) {
-      console.error('Update admin profile error:', error);
+      console.error('Update admin profile error:', error?.response?.data || error?.message || error);
       throw error;
     }
   };
@@ -81,16 +88,14 @@ export const AdminAuthProvider = ({ children }) => {
   const changeAdminPassword = async (currentPassword, newPassword) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await axios.put(`${backendURL}/api/admin/change-password`, {
+      const res = await http.put(`/api/admin/change-password`, {
         currentPassword,
         newPassword
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      }, { headers: { Authorization: `Bearer ${token}` } });
       
       return res.data;
     } catch (error) {
-      console.error('Change admin password error:', error);
+      console.error('Change admin password error:', error?.response?.data || error?.message || error);
       throw error;
     }
   };
@@ -101,13 +106,13 @@ export const AdminAuthProvider = ({ children }) => {
       const token = localStorage.getItem("adminToken");
       if (!token) return false;
 
-      const res = await axios.get(`${backendURL}/api/admin/verify`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const res = await http.get(`/api/admin/verify`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       
       return res.data.status === 'success';
     } catch (error) {
-      console.error('Admin token verification error:', error);
+      console.error('Admin token verification error:', error?.response?.data || error?.message || error);
       return false;
     }
   };
