@@ -1,10 +1,13 @@
-# Dependencies
+# Node
 node_modules/
 
-# Environment files
+# Env files (root and subfolders)
 .env
 .env.local
 .env.*.local
+**/.env
+**/.env.local
+**/.env.*.local
 
 # Logs
 logs/
@@ -15,17 +18,15 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Build outputs
-dist/
-build/
-coverage/
+/dist/
+/build/
+/coverage/
 .tmp/
 
 # OS / Editor
 .DS_Store
 Thumbs.db
 
-# Uploads (generated at runtime)
-uploads/**
-!uploads/.gitkeep
-
-.env
+# Runtime uploads
+**/uploads/**
+!**/uploads/.gitkeep

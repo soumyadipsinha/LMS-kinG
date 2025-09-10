@@ -381,23 +381,39 @@ export default function AdminCourseManagement() {
                     value={formData.shortDescription}
                     onChange={handleInputChange}
                     rows="3"
+                    placeholder="1–2 line summary shown in listings. Example: Master React with hands‑on projects and real‑world patterns."
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     required
                   />
+                  <p className="mt-1 text-xs text-gray-500">Tip: Keep it concise (under 300 characters). Shown on course cards and LaunchPad lists.</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Full Description *
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Detailed Description *
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({
+                        ...prev,
+                        description: `Who this course is for\n• Beginners to ${formData.category || 'the topic'}\n• Professionals upskilling to ${formData.level || 'beginner'} level\n\nWhat you'll learn\n• Build real projects step‑by‑step\n• Master core concepts and best practices\n• Learn modern tools and workflows\n\nCourse overview\n• Clear learning path from basics to advanced\n• Hands‑on assignments and quizzes\n• Lifetime access and updates\n\nOutcomes\n• Build production‑ready apps\n• Strengthen your portfolio\n• Interview‑ready confidence`
+                      }))}
+                      className="text-xs text-blue-600 hover:text-blue-800 underline"
+                    >
+                      Use description template
+                    </button>
+                  </div>
                   <textarea
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
-                    rows="5"
+                    rows="8"
+                    placeholder={"Write a compelling course description. Suggested sections:\n• Who this course is for\n• What you'll learn (bullets)\n• Course overview\n• Outcomes/benefits"}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     required
                   />
+                  <p className="mt-1 text-xs text-gray-500">Shown on the Course Details and LaunchPad details pages.</p>
                 </div>
 
                 {/* Media Uploads */}

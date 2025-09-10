@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { courseService } from "../services/courseService";
+import { useAuth } from "../context/AuthContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 function Star({ filled }) {
   return (
@@ -19,10 +21,14 @@ function Star({ filled }) {
 export default function CourseDetails() {
   const { id } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [similarCourses, setSimilarCourses] = useState([]);
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [orderInfo, setOrderInfo] = useState(null);
 
   useEffect(() => {
     const existing = location.state?.course;
@@ -112,6 +118,65 @@ export default function CourseDetails() {
     modules: course.modules || [],
   };
 
+  // Render description as paragraphs and bullet lists based on admin formatting
+  const renderDescription = (text) => {
+    if (!text) return null;
+    const blocks = String(text).split(/\n\n+/);
+    return blocks.map((block, idx) => {
+      const lines = block.split(/\n/).map(l => l.trim()).filter(Boolean);
+      const bulletLines = lines.filter(l => /^(\-|\*|•)\s+/.test(l));
+      if (bulletLines.length === lines.length && lines.length > 0) {
+        return (
+          <ul key={idx} className="list-disc ml-6 text-slate-700 space-y-1">
+            {bulletLines.map((l, i) => (
+              <li key={i}>{l.replace(/^(\-|\*|•)\s+/, '')}</li>
+            ))}
+          </ul>
+        );
+      }
+      return (
+        <p key={idx} className="mt-4 text-slate-600 leading-relaxed">{block}</p>
+      );
+    });
+  };
+
+  // Enroll/Register handlers
+  const handleEnrollClick = async () => {
+    const token =
+    if (!user) {
+      navigate('/login', { replace: true, state: { from: `/courses/${display.id}` } });
+      return;
+    }
+    try {
+      const result = await courseService.createOrder(display.id);
+      setOrderInfo(result.data);
+      setShowCheckout(true);
+    } catch (e) {
+      alert(e.message || 'Failed to initiate payment');
+    }
+  };
+
+  const launchRazorpay = () => {
+    if (!orderInfo?.order) return;
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: orderInfo.order.amount,
+      currency: orderInfo.order.currency,
+      name: display.title,
+      description: 'Course Enrollment',
+      order_id: orderInfo.order.id,
+      notes: orderInfo.order.notes,
+      handler: function () {
+        // After payment success, redirect to subscription/dashboard
+        navigate('/subscription');
+      },
+      prefill: {},
+      theme: { color: '#1B4A8B' }
+    };
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  };
+
   return (
     <div className="bg-white">
       <div className="max-w-6xl mx-auto px-4 py-10 md:py-12">
@@ -147,7 +212,7 @@ export default function CourseDetails() {
             <h2 className="text-3xl font-semibold text-slate-900">
               Course Overview
             </h2>
-            <p className="mt-4 text-slate-600 leading-relaxed">{display.description}</p>
+            {renderDescription(display.description)}
 
             {display.learningOutcomes.length > 0 && (
               <div className="mt-6">
@@ -240,7 +305,7 @@ export default function CourseDetails() {
               </div>
             )}
             
-            <div className="mt-6 space-y-3">
+            {/* <div className="mt-6 space-y-3">
               <div className="flex items-center gap-3">
                 <span className="text-emerald-500">✅</span>
                 <span className="text-slate-700">Real-time Corporate Projects</span>
@@ -257,10 +322,10 @@ export default function CourseDetails() {
                 <span className="text-emerald-500">✅</span>
                 <span className="text-slate-700">Direct Referrals to Top MNCs</span>
               </div>
-            </div>
+            </div> */}
             
             <div className="mt-8">
-              <button className="inline-flex items-center justify-center rounded-full bg-[#1b3b6b] text-white font-semibold px-6 py-2.5 shadow hover:bg-[#163257] transition-colors duration-300">
+              <button onClick={handleEnrollClick} className="inline-flex items-center justify-center rounded-full bg-[#1b3b6b] text-white font-semibold px-6 py-2.5 shadow hover:bg-[#163257] transition-colors duration-300">
                 Register Now
               </button>
             </div>
@@ -349,6 +414,30 @@ export default function CourseDetails() {
           </section>
         )}
       </div>
+
+      {/* Checkout Modal */}
+      {showCheckout && orderInfo && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Confirm Purchase</h3>
+              <button onClick={() => setShowCheckout(false)} className="text-gray-500 hover:text-gray-700">✖</button>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-600">Original Price</span>
+                <span className="text-sm line-through text-slate-400">{orderInfo.course.originalPrice ? `₹${Number(orderInfo.course.originalPrice).toLocaleString('en-IN')}` : ''}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-700">You Pay</span>
+                <span className="text-xl font-bold text-[#1b3b6b]">₹{Number(orderInfo.course.price).toLocaleString('en-IN')}</span>
+              </div>
+            </div>
+            <button onClick={launchRazorpay} className="mt-6 w-full bg-[#1b3b6b] text-white font-semibold py-3 px-4 rounded-lg hover:bg-[#163257] transition-colors">Pay Now</button>
+            <p className="text-xs text-slate-500 mt-3 text-center">Secure payments by Razorpay</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
