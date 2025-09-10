@@ -64,7 +64,9 @@ export default function CourseDetails() {
         });
         const items = resp?.data?.courses || [];
         const currentId = String(course._id || course.id);
-        const filtered = items.filter(c => String(c._id) !== currentId).slice(0, 3);
+        const filtered = items
+          .filter((c) => String(c._id) !== currentId)
+          .slice(0, 3);
         setSimilarCourses(filtered);
       } catch (e) {
         setSimilarCourses([]);
@@ -88,8 +90,13 @@ export default function CourseDetails() {
       <div className="bg-white min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">😕</div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Course Not Found</h1>
-          <p className="text-gray-600 mb-8">{error || "The course you're looking for doesn't exist or has been removed."}</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            Course Not Found
+          </h1>
+          <p className="text-gray-600 mb-8">
+            {error ||
+              "The course you're looking for doesn't exist or has been removed."}
+          </p>
           <Link
             to="/courses"
             className="inline-flex items-center justify-center bg-[#1B4A8B] text-white font-semibold px-6 py-3 rounded-lg hover:bg-[#153a6f] transition-colors duration-300"
@@ -107,12 +114,20 @@ export default function CourseDetails() {
     description: course.description || course.shortDescription,
     thumbnail: course.thumbnail || "",
     price: `₹${Number(course.price ?? 0).toLocaleString("en-IN")}`,
-    level: course.level ? (course.level.charAt(0).toUpperCase() + course.level.slice(1)) : "Beginner",
+    level: course.level
+      ? course.level.charAt(0).toUpperCase() + course.level.slice(1)
+      : "Beginner",
     duration: `${course.duration || 0} hours`,
     students: course.enrollmentCount || 0,
     rating: course.rating?.average || 0,
-    category: course.category?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Other',
-    instructor: `${course.instructor?.firstName || ''} ${course.instructor?.lastName || ''}`.trim() || 'Instructor',
+    category:
+      course.category
+        ?.replace("-", " ")
+        .replace(/\b\w/g, (l) => l.toUpperCase()) || "Other",
+    instructor:
+      `${course.instructor?.firstName || ""} ${
+        course.instructor?.lastName || ""
+      }`.trim() || "Instructor",
     requirements: course.requirements || [],
     learningOutcomes: course.learningOutcomes || [],
     modules: course.modules || [],
@@ -123,28 +138,35 @@ export default function CourseDetails() {
     if (!text) return null;
     const blocks = String(text).split(/\n\n+/);
     return blocks.map((block, idx) => {
-      const lines = block.split(/\n/).map(l => l.trim()).filter(Boolean);
-      const bulletLines = lines.filter(l => /^(\-|\*|•)\s+/.test(l));
+      const lines = block
+        .split(/\n/)
+        .map((l) => l.trim())
+        .filter(Boolean);
+      const bulletLines = lines.filter((l) => /^(\-|\*|•)\s+/.test(l));
       if (bulletLines.length === lines.length && lines.length > 0) {
         return (
           <ul key={idx} className="list-disc ml-6 text-slate-700 space-y-1">
             {bulletLines.map((l, i) => (
-              <li key={i}>{l.replace(/^(\-|\*|•)\s+/, '')}</li>
+              <li key={i}>{l.replace(/^(\-|\*|•)\s+/, "")}</li>
             ))}
           </ul>
         );
       }
       return (
-        <p key={idx} className="mt-4 text-slate-600 leading-relaxed">{block}</p>
+        <p key={idx} className="mt-4 text-slate-600 leading-relaxed">
+          {block}
+        </p>
       );
     });
   };
 
   // Enroll/Register handlers
   const handleEnrollClick = async () => {
-    const token =
     if (!user) {
-      navigate('/login', { replace: true, state: { from: `/courses/${display.id}` } });
+      navigate("/login", {
+        replace: true,
+        state: { from: `/courses/${display.id}` },
+      });
       return;
     }
     try {
@@ -152,7 +174,7 @@ export default function CourseDetails() {
       setOrderInfo(result.data);
       setShowCheckout(true);
     } catch (e) {
-      alert(e.message || 'Failed to initiate payment');
+      alert(e.message || "Failed to initiate payment");
     }
   };
 
@@ -163,15 +185,15 @@ export default function CourseDetails() {
       amount: orderInfo.order.amount,
       currency: orderInfo.order.currency,
       name: display.title,
-      description: 'Course Enrollment',
+      description: "Course Enrollment",
       order_id: orderInfo.order.id,
       notes: orderInfo.order.notes,
       handler: function () {
         // After payment success, redirect to subscription/dashboard
-        navigate('/subscription');
+        navigate("/subscription");
       },
       prefill: {},
-      theme: { color: '#1B4A8B' }
+      theme: { color: "#1B4A8B" },
     };
     const rzp = new window.Razorpay(options);
     rzp.open();
@@ -183,25 +205,43 @@ export default function CourseDetails() {
         {/* Breadcrumb */}
         <nav className="mb-8">
           <ol className="flex items-center space-x-2 text-sm text-gray-500">
-            <li><Link to="/" className="hover:text-[#1B4A8B]">Home</Link></li>
-            <li><span>/</span></li>
-            <li><Link to="/courses" className="hover:text-[#1B4A8B]">Courses</Link></li>
-            <li><span>/</span></li>
+            <li>
+              <Link to="/" className="hover:text-[#1B4A8B]">
+                Home
+              </Link>
+            </li>
+            <li>
+              <span>/</span>
+            </li>
+            <li>
+              <Link to="/courses" className="hover:text-[#1B4A8B]">
+                Courses
+              </Link>
+            </li>
+            <li>
+              <span>/</span>
+            </li>
             <li className="text-gray-900 font-medium">{display.title}</li>
           </ol>
         </nav>
 
         {/* Title and rating */}
         <div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#1b3b6b]">{display.title}</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#1b3b6b]">
+            {display.title}
+          </h1>
           <div className="mt-2 flex items-center gap-2">
             <div className="flex">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} filled={i < Math.floor(display.rating)} />
               ))}
             </div>
-            <span className="text-sm font-semibold text-emerald-600">{display.rating}</span>
-            <span className="text-xs text-slate-500">{display.students} students enrolled</span>
+            <span className="text-sm font-semibold text-emerald-600">
+              {display.rating}
+            </span>
+            <span className="text-xs text-slate-500">
+              {display.students} students enrolled
+            </span>
           </div>
         </div>
 
@@ -216,7 +256,9 @@ export default function CourseDetails() {
 
             {display.learningOutcomes.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-xl font-semibold text-slate-900 mb-2">What you'll learn</h3>
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                  What you'll learn
+                </h3>
                 <ul className="list-disc ml-6 text-slate-700 space-y-1">
                   {display.learningOutcomes.map((o, idx) => (
                     <li key={idx}>{o}</li>
@@ -227,7 +269,9 @@ export default function CourseDetails() {
 
             {display.requirements.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-xl font-semibold text-slate-900 mb-2">Requirements</h3>
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                  Requirements
+                </h3>
                 <ul className="list-disc ml-6 text-slate-700 space-y-1">
                   {display.requirements.map((r, idx) => (
                     <li key={idx}>{r}</li>
@@ -239,12 +283,14 @@ export default function CourseDetails() {
             {/* Course Videos Section */}
             {course.videos && course.videos.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-xl font-semibold text-slate-900 mb-4">Course Videos</h3>
+                <h3 className="text-xl font-semibold text-slate-900 mb-4">
+                  Course Videos
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {course.videos.map((videoUrl, index) => {
                     // Check if it's a URL (starts with http) or a file path
-                    const isUrl = videoUrl.startsWith('http');
-                    
+                    const isUrl = videoUrl.startsWith("http");
+
                     return (
                       <div key={index} className="bg-gray-50 rounded-lg p-4">
                         {isUrl ? (
@@ -256,11 +302,25 @@ export default function CourseDetails() {
                               rel="noopener noreferrer"
                               className="w-full h-full flex flex-col items-center justify-center text-blue-600 hover:bg-blue-100 transition-colors duration-300 cursor-pointer"
                             >
-                              <svg className="w-16 h-16 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                              <svg
+                                className="w-16 h-16 mb-3"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                />
                               </svg>
-                              <p className="text-sm font-semibold mb-1">Click to Watch Video</p>
-                              <p className="text-xs text-blue-500">Opens in new tab</p>
+                              <p className="text-sm font-semibold mb-1">
+                                Click to Watch Video
+                              </p>
+                              <p className="text-xs text-blue-500">
+                                Opens in new tab
+                              </p>
                             </a>
                           </div>
                         ) : (
@@ -271,22 +331,36 @@ export default function CourseDetails() {
                               controls
                               className="w-full h-full object-cover"
                               onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.nextSibling.style.display = 'flex';
+                                e.target.style.display = "none";
+                                e.target.nextSibling.style.display = "flex";
                               }}
                             />
                             <div className="w-full h-full items-center justify-center text-gray-400 hidden">
                               <div className="text-center">
-                                <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                <svg
+                                  className="w-12 h-12 mx-auto mb-2"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                  />
                                 </svg>
-                                <p className="text-sm text-gray-500">Video not available</p>
+                                <p className="text-sm text-gray-500">
+                                  Video not available
+                                </p>
                               </div>
                             </div>
                           </div>
                         )}
                         <div className="flex items-center justify-between">
-                          <p className="text-sm text-gray-600">Video {index + 1}</p>
+                          <p className="text-sm text-gray-600">
+                            Video {index + 1}
+                          </p>
                           {isUrl && (
                             <a
                               href={videoUrl}
@@ -304,7 +378,7 @@ export default function CourseDetails() {
                 </div>
               </div>
             )}
-            
+
             {/* <div className="mt-6 space-y-3">
               <div className="flex items-center gap-3">
                 <span className="text-emerald-500">✅</span>
@@ -323,9 +397,12 @@ export default function CourseDetails() {
                 <span className="text-slate-700">Direct Referrals to Top MNCs</span>
               </div>
             </div> */}
-            
+
             <div className="mt-8">
-              <button onClick={handleEnrollClick} className="inline-flex items-center justify-center rounded-full bg-[#1b3b6b] text-white font-semibold px-6 py-2.5 shadow hover:bg-[#163257] transition-colors duration-300">
+              <button
+                onClick={handleEnrollClick}
+                className="inline-flex items-center justify-center rounded-full bg-[#1b3b6b] text-white font-semibold px-6 py-2.5 shadow hover:bg-[#163257] transition-colors duration-300"
+              >
                 Register Now
               </button>
             </div>
@@ -334,22 +411,38 @@ export default function CourseDetails() {
           {/* Right preview card */}
           <aside>
             <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-lg sticky top-6">
-              {display.thumbnail && display.thumbnail.trim() !== '' ? (
-                <img src={display.thumbnail} alt={display.title} className="aspect-[16/10] w-full rounded-xl object-cover mb-4" />
+              {display.thumbnail && display.thumbnail.trim() !== "" ? (
+                <img
+                  src={display.thumbnail}
+                  alt={display.title}
+                  className="aspect-[16/10] w-full rounded-xl object-cover mb-4"
+                />
               ) : (
                 <div className="aspect-[16/10] w-full rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center mb-4">
                   <div className="text-center">
-                    <svg className="w-16 h-16 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <svg
+                      className="w-16 h-16 mx-auto text-gray-400 mb-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
                     </svg>
                     <p className="text-sm text-gray-500">No thumbnail</p>
                   </div>
                 </div>
               )}
-              
+
               <div className="space-y-4">
-                <div className="text-3xl font-bold text-[#1b3b6b]">{display.price}</div>
-                
+                <div className="text-3xl font-bold text-[#1b3b6b]">
+                  {display.price}
+                </div>
+
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <div className="text-gray-500">Level</div>
@@ -368,7 +461,7 @@ export default function CourseDetails() {
                     <div className="font-semibold">{display.instructor}</div>
                   </div>
                 </div>
-                
+
                 <button className="w-full bg-[#1b3b6b] text-white font-semibold py-3 px-4 rounded-lg hover:bg-[#163257] transition-colors duration-300">
                   Enroll Now
                 </button>
@@ -380,12 +473,14 @@ export default function CourseDetails() {
         {/* Similar Courses */}
         {similarCourses.length > 0 && (
           <section className="mt-16">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">Similar Courses</h2>
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">
+              Similar Courses
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {similarCourses.map((c) => (
                 <Link key={c._id} to={`/courses/${c._id}`} className="group">
                   <article className="cursor-pointer rounded-xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 group-hover:scale-105">
-                    {c.thumbnail && c.thumbnail.trim() !== '' ? (
+                    {c.thumbnail && c.thumbnail.trim() !== "" ? (
                       <img
                         src={c.thumbnail}
                         alt={c.title}
@@ -394,18 +489,38 @@ export default function CourseDetails() {
                     ) : (
                       <div className="w-full h-40 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                         <div className="text-center">
-                          <svg className="w-12 h-12 mx-auto text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          <svg
+                            className="w-12 h-12 mx-auto text-gray-400 mb-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
                           </svg>
                           <p className="text-xs text-gray-500">No thumbnail</p>
                         </div>
                       </div>
                     )}
                     <div className="p-5">
-                      <h3 className="text-sm font-semibold text-slate-800 group-hover:text-[#1b3b6b] transition-colors duration-300">{c.title}</h3>
-                      <p className="mt-1 text-sm text-slate-600">{c.shortDescription || c.description}</p>
-                      <p className="mt-1 text-xs text-slate-500">{`${c.instructor?.firstName ?? ''} ${c.instructor?.lastName ?? ''}`.trim()}</p>
-                      <p className="mt-1 text-sm font-semibold text-slate-800">₹{Number(c.price ?? 0).toLocaleString('en-IN')}</p>
+                      <h3 className="text-sm font-semibold text-slate-800 group-hover:text-[#1b3b6b] transition-colors duration-300">
+                        {c.title}
+                      </h3>
+                      <p className="mt-1 text-sm text-slate-600">
+                        {c.shortDescription || c.description}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        {`${c.instructor?.firstName ?? ""} ${
+                          c.instructor?.lastName ?? ""
+                        }`.trim()}
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-slate-800">
+                        ₹{Number(c.price ?? 0).toLocaleString("en-IN")}
+                      </p>
                     </div>
                   </article>
                 </Link>
@@ -421,20 +536,42 @@ export default function CourseDetails() {
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Confirm Purchase</h3>
-              <button onClick={() => setShowCheckout(false)} className="text-gray-500 hover:text-gray-700">✖</button>
+              <button
+                onClick={() => setShowCheckout(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✖
+              </button>
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-slate-600">Original Price</span>
-                <span className="text-sm line-through text-slate-400">{orderInfo.course.originalPrice ? `₹${Number(orderInfo.course.originalPrice).toLocaleString('en-IN')}` : ''}</span>
+                <span className="text-sm line-through text-slate-400">
+                  {orderInfo.course.originalPrice
+                    ? `₹${Number(orderInfo.course.originalPrice).toLocaleString(
+                        "en-IN"
+                      )}`
+                    : ""}
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-700">You Pay</span>
-                <span className="text-xl font-bold text-[#1b3b6b]">₹{Number(orderInfo.course.price).toLocaleString('en-IN')}</span>
+                <span className="text-sm font-medium text-slate-700">
+                  You Pay
+                </span>
+                <span className="text-xl font-bold text-[#1b3b6b]">
+                  ₹{Number(orderInfo.course.price).toLocaleString("en-IN")}
+                </span>
               </div>
             </div>
-            <button onClick={launchRazorpay} className="mt-6 w-full bg-[#1b3b6b] text-white font-semibold py-3 px-4 rounded-lg hover:bg-[#163257] transition-colors">Pay Now</button>
-            <p className="text-xs text-slate-500 mt-3 text-center">Secure payments by Razorpay</p>
+            <button
+              onClick={launchRazorpay}
+              className="mt-6 w-full bg-[#1b3b6b] text-white font-semibold py-3 px-4 rounded-lg hover:bg-[#163257] transition-colors"
+            >
+              Pay Now
+            </button>
+            <p className="text-xs text-slate-500 mt-3 text-center">
+              Secure payments by Razorpay
+            </p>
           </div>
         </div>
       )}
