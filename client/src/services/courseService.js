@@ -161,6 +161,17 @@ export const courseService = {
       console.error('Error fetching instructor courses:', error);
       throw error.response?.data || { message: 'Failed to fetch instructor courses' };
     }
+  },
+
+  // Payments
+  createOrder: async (courseId) => {
+    try {
+      const response = await api.post('/payments/create-order', { courseId });
+      return response.data; // { status, data: { order, course } }
+    } catch (error) {
+      console.error('Error creating order:', error);
+      throw error.response?.data || { message: 'Failed to create order' };
+    }
   }
 };
 

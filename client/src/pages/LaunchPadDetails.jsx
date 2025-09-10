@@ -1,11 +1,17 @@
 import React, { useState } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
+import { courseService } from "../services/courseService";
 
 const LaunchPadDetails = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const { course, bg, logo, title, desc } = location.state || {};
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [orderInfo, setOrderInfo] = useState(null);
 
   // Use real course data if available, otherwise fallback to dummy data
   const courseData = course ? {
@@ -50,6 +56,28 @@ const LaunchPadDetails = () => {
     certificate: "Web Development Professional Certificate"
   };
 
+  // Render long description as bullets/paragraphs based on lines starting with -, *, •
+  const renderLongDescription = (text) => {
+    if (!text) return null;
+    const blocks = String(text).split(/\n\n+/);
+    return blocks.map((block, idx) => {
+      const lines = block.split(/\n/).map(l => l.trim()).filter(Boolean);
+      const bulletLines = lines.filter(l => /^(\-|\*|•)\s+/.test(l));
+      if (bulletLines.length === lines.length && lines.length > 0) {
+        return (
+          <ul key={idx} className="list-disc ml-6 text-gray-700 space-y-1">
+            {bulletLines.map((l, i) => (
+              <li key={i}>{l.replace(/^(\-|\*|•)\s+/, '')}</li>
+            ))}
+          </ul>
+        );
+      }
+      return (
+        <p key={idx} className="text-gray-700 mb-3">{block}</p>
+      );
+    });
+  };
+
   if (!title) {
     return (
       <div className="text-center mt-20 text-2xl font-semibold">
@@ -82,6 +110,40 @@ const LaunchPadDetails = () => {
   const handleResumeCourse = () => {
     // Navigate to the next lesson or current progress
     alert(`Resuming course: ${courseData.nextLesson}`);
+  };
+
+  const handleEnrollClick = async () => {
+    if (!user) {
+      navigate('/login', { replace: true, state: { from: '/launchpad' } });
+      return;
+    }
+    try {
+      const result = await courseService.createOrder(course?._id);
+      setOrderInfo(result.data);
+      setShowCheckout(true);
+    } catch (e) {
+      alert(e.message || 'Failed to initiate payment');
+    }
+  };
+
+  const launchRazorpay = () => {
+    if (!orderInfo?.order) return;
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: orderInfo.order.amount,
+      currency: orderInfo.order.currency,
+      name: courseData.title,
+      description: 'Course Enrollment',
+      order_id: orderInfo.order.id,
+      notes: orderInfo.order.notes,
+      handler: function () {
+        navigate('/subscription');
+      },
+      prefill: {},
+      theme: { color: '#1B4A8B' }
+    };
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   };
 
   return (
@@ -197,7 +259,7 @@ const LaunchPadDetails = () => {
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-4">
                 <button
-                  onClick={handleResumeCourse}
+                  onClick={course ? handleEnrollClick : handleResumeCourse}
                   className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
                   {courseData.progress > 0 ? '▶ Resume Course' : '🚀 Enroll Now'}
@@ -357,7 +419,9 @@ const LaunchPadDetails = () => {
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-4">About This Course</h3>
               <div className="space-y-3">
-                {Array.isArray(desc) ? (
+                {courseData.description ? (
+                  renderLongDescription(courseData.description)
+                ) : Array.isArray(desc) ? (
                   desc.map((point, i) => (
                     <div key={i} className="flex items-start">
                       <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
@@ -382,6 +446,28 @@ const LaunchPadDetails = () => {
           </Link>
         </div>
       </div>
+      {showCheckout && orderInfo && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Confirm Purchase</h3>
+              <button onClick={() => setShowCheckout(false)} className="text-gray-500 hover:text-gray-700">✖</button>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-600">Original Price</span>
+                <span className="text-sm line-through text-slate-400">{orderInfo.course.originalPrice ? `₹${Number(orderInfo.course.originalPrice).toLocaleString('en-IN')}` : ''}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-700">You Pay</span>
+                <span className="text-xl font-bold text-[#1b3b6b]">₹{Number(orderInfo.course.price).toLocaleString('en-IN')}</span>
+              </div>
+            </div>
+            <button onClick={launchRazorpay} className="mt-6 w-full bg-[#1b3b6b] text-white font-semibold py-3 px-4 rounded-lg hover:bg-[#163257] transition-colors">Pay Now</button>
+            <p className="text-xs text-slate-500 mt-3 text-center">Secure payments by Razorpay</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
