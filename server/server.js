@@ -83,7 +83,7 @@ if (process.env.NODE_ENV === "development") {
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(
-      process.env.MONGODB_URI || "mongodb://localhost:27017/lms-king"
+      process.env.MONGODB_URI || ""
     );
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
 
