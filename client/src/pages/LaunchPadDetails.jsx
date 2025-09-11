@@ -12,6 +12,9 @@ const LaunchPadDetails = () => {
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [showCheckout, setShowCheckout] = useState(false);
   const [orderInfo, setOrderInfo] = useState(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [refundAccepted, setRefundAccepted] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
   // Use real course data if available, otherwise fallback to dummy data
   const courseData = course ? {
@@ -128,6 +131,12 @@ const LaunchPadDetails = () => {
 
   const launchRazorpay = () => {
     if (!orderInfo?.order) return;
+
+    if (!termsAccepted || !refundAccepted || !privacyAccepted) {
+      alert("Please accept all Terms & Conditions, Refund Policy, and Privacy Policy to continue with payment.");
+      return;
+    }
+
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
       amount: orderInfo.order.amount,
@@ -451,7 +460,17 @@ const LaunchPadDetails = () => {
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Confirm Purchase</h3>
-              <button onClick={() => setShowCheckout(false)} className="text-gray-500 hover:text-gray-700">✖</button>
+              <button 
+                onClick={() => {
+                  setShowCheckout(false);
+                  setTermsAccepted(false);
+                  setRefundAccepted(false);
+                  setPrivacyAccepted(false);
+                }} 
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✖
+              </button>
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -463,11 +482,89 @@ const LaunchPadDetails = () => {
                 <span className="text-xl font-bold text-[#1b3b6b]">₹{Number(orderInfo.course.price).toLocaleString('en-IN')}</span>
               </div>
             </div>
-            <button onClick={launchRazorpay} className="mt-6 w-full bg-[#1b3b6b] text-white font-semibold py-3 px-4 rounded-lg hover:bg-[#163257] transition-colors">Pay Now</button>
+
+            {/* Terms and Conditions Checkboxes */}
+            <div className="mt-4 space-y-3">
+              {/* Terms & Conditions Checkbox */}
+              <div className="p-3 bg-gray-50 rounded-lg border">
+                <label className="flex items-start space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                    className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-600"
+                  />
+                  <span className="text-xs text-gray-700">
+                    I agree to the{" "}
+                    <Link
+                      to="/terms-conditions"
+                      className="text-blue-600 hover:underline font-medium"
+                    >
+                      Terms & Conditions
+                    </Link>
+                  </span>
+                </label>
+              </div>
+
+              {/* Refund Policy Checkbox */}
+              <div className="p-3 bg-gray-50 rounded-lg border">
+                <label className="flex items-start space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={refundAccepted}
+                    onChange={(e) => setRefundAccepted(e.target.checked)}
+                    className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-600"
+                  />
+                  <span className="text-xs text-gray-700">
+                    I agree to the{" "}
+                    <Link
+                      to="/refund-policy"
+                      className="text-blue-600 hover:underline font-medium"
+                    >
+                      Refund Policy
+                    </Link>
+                  </span>
+                </label>
+              </div>
+
+              {/* Privacy Policy Checkbox */}
+              <div className="p-3 bg-gray-50 rounded-lg border">
+                <label className="flex items-start space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={privacyAccepted}
+                    onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                    className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-600"
+                  />
+                  <span className="text-xs text-gray-700">
+                    I agree to the{" "}
+                    <Link
+                      to="/privacy-policy"
+                      className="text-blue-600 hover:underline font-medium"
+                    >
+                      Privacy Policy
+                    </Link>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <button 
+              onClick={launchRazorpay} 
+              disabled={!termsAccepted || !refundAccepted || !privacyAccepted}
+              className={`mt-6 w-full font-semibold py-3 px-4 rounded-lg transition-colors ${
+                termsAccepted && refundAccepted && privacyAccepted
+                  ? "bg-[#1b3b6b] text-white hover:bg-[#163257]"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              Pay Now
+            </button>
             <p className="text-xs text-slate-500 mt-3 text-center">Secure payments by Razorpay</p>
           </div>
         </div>
       )}
+
     </div>
   );
 };

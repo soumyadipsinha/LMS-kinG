@@ -23,6 +23,9 @@ import SelectedCourse from "./pages/SelectedCouse.jsx";
 import LaunchPad from "./pages/LaunchPad.jsx";
 import LaunchPadDetails from "./pages/LaunchPadDetails.jsx";
 import ExamDetails from "./pages/ExamDetails.jsx";
+import TermsConditions from "./pages/TermsConditions.jsx";
+import RefundPolicy from "./pages/RefundPolicy.jsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 
 // Admin Pages
 import AdminDashboard from "./pages/AdminDashboard.jsx";
@@ -44,6 +47,9 @@ export default function App() {
         <Route path="launchpad/details" element={<LaunchPadDetails />} />
         <Route path="about" element={<About />} />
         <Route path="faq" element={<Faq />} />
+        <Route path="terms-conditions" element={<TermsConditions />} />
+        <Route path="refund-policy" element={<RefundPolicy />} />
+        <Route path="privacy-policy" element={<PrivacyPolicy />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
         <Route path="admin/login" element={<AdminLogin />} />

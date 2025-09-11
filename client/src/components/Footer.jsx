@@ -80,8 +80,9 @@ export default function Footer() {
         <div className="mt-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-sm text-indigo-100">
           <div>© {year} Kin-G Technologies Pvt. Ltd. All rights reserved.</div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            <Link to="#" className="hover:underline">Privacy Policy</Link>
-            <Link to="#" className="hover:underline">Terms of Service</Link>
+            <Link to="/privacy-policy" className="hover:underline">Privacy Policy</Link>
+            <Link to="/terms-conditions" className="hover:underline">Terms & Conditions</Link>
+            <Link to="/refund-policy" className="hover:underline">Refund Policy</Link>
             <Link to="#" className="hover:underline">Contact Us</Link>
           </div>
         </div>

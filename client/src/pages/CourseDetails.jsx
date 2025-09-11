@@ -29,6 +29,9 @@ export default function CourseDetails() {
   const [similarCourses, setSimilarCourses] = useState([]);
   const [showCheckout, setShowCheckout] = useState(false);
   const [orderInfo, setOrderInfo] = useState(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [refundAccepted, setRefundAccepted] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
   useEffect(() => {
     const existing = location.state?.course;
@@ -201,6 +204,11 @@ export default function CourseDetails() {
     if (!orderInfo?.order) {
       console.error("No order info available");
       alert("Order information not available");
+      return;
+    }
+
+    if (!termsAccepted || !refundAccepted || !privacyAccepted) {
+      alert("Please accept all Terms & Conditions, Refund Policy, and Privacy Policy to continue with payment.");
       return;
     }
 
@@ -597,6 +605,9 @@ export default function CourseDetails() {
                 onClick={() => {
                   setShowCheckout(false);
                   setOrderInfo(null);
+                  setTermsAccepted(false);
+                  setRefundAccepted(false);
+                  setPrivacyAccepted(false);
                 }}
                 className="text-gray-500 hover:text-gray-700"
               >
@@ -623,9 +634,81 @@ export default function CourseDetails() {
                 </span>
               </div>
             </div>
+
+            {/* Terms and Conditions Checkboxes */}
+            <div className="mt-4 space-y-3">
+              {/* Terms & Conditions Checkbox */}
+              <div className="p-3 bg-gray-50 rounded-lg border">
+                <label className="flex items-start space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                    className="mt-1 h-4 w-4 text-[#1b3b6b] border-gray-300 rounded focus:ring-[#1b3b6b]"
+                  />
+                  <span className="text-xs text-gray-700">
+                    I agree to the{" "}
+                    <Link
+                      to="/terms-conditions"
+                      className="text-[#1b3b6b] hover:underline font-medium"
+                    >
+                      Terms & Conditions
+                    </Link>
+                  </span>
+                </label>
+              </div>
+
+              {/* Refund Policy Checkbox */}
+              <div className="p-3 bg-gray-50 rounded-lg border">
+                <label className="flex items-start space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={refundAccepted}
+                    onChange={(e) => setRefundAccepted(e.target.checked)}
+                    className="mt-1 h-4 w-4 text-[#1b3b6b] border-gray-300 rounded focus:ring-[#1b3b6b]"
+                  />
+                  <span className="text-xs text-gray-700">
+                    I agree to the{" "}
+                    <Link
+                      to="/refund-policy"
+                      className="text-[#1b3b6b] hover:underline font-medium"
+                    >
+                      Refund Policy
+                    </Link>
+                  </span>
+                </label>
+              </div>
+
+              {/* Privacy Policy Checkbox */}
+              <div className="p-3 bg-gray-50 rounded-lg border">
+                <label className="flex items-start space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={privacyAccepted}
+                    onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                    className="mt-1 h-4 w-4 text-[#1b3b6b] border-gray-300 rounded focus:ring-[#1b3b6b]"
+                  />
+                  <span className="text-xs text-gray-700">
+                    I agree to the{" "}
+                    <Link
+                      to="/privacy-policy"
+                      className="text-[#1b3b6b] hover:underline font-medium"
+                    >
+                      Privacy Policy
+                    </Link>
+                  </span>
+                </label>
+              </div>
+            </div>
+
             <button
               onClick={launchRazorpay}
-              className="mt-6 w-full bg-[#1b3b6b] text-white font-semibold py-3 px-4 rounded-lg hover:bg-[#163257] transition-colors"
+              disabled={!termsAccepted || !refundAccepted || !privacyAccepted}
+              className={`mt-6 w-full font-semibold py-3 px-4 rounded-lg transition-colors ${
+                termsAccepted && refundAccepted && privacyAccepted
+                  ? "bg-[#1b3b6b] text-white hover:bg-[#163257]"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
             >
               Pay Now
             </button>
@@ -635,6 +718,7 @@ export default function CourseDetails() {
           </div>
         </div>
       )}
+
     </div>
   );
 }
