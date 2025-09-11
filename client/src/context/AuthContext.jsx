@@ -6,10 +6,17 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const apiEnv = import.meta?.env?.VITE_API_URL || "http://localhost:5000/api";
-  const normalizedApi = apiEnv.endsWith("/api") ? apiEnv : `${apiEnv.replace(/\/$/, "")}/api`;
+  const apiEnv = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  const normalizedApi = apiEnv.endsWith("/api")
+    ? apiEnv
+    : `${apiEnv.replace(/\/$/, "")}/api`;
   const backendURL = normalizedApi.replace(/\/api$/, "");
-  const http = axios.create({ baseURL: backendURL, timeout: 15000, headers: { 'Content-Type': 'application/json' } });
+  const http = axios.create({
+    baseURL: backendURL,
+    timeout: 15000,
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true, // Include cookies in requests
+  });
 
   // Fetch current user on load
   useEffect(() => {
@@ -39,7 +46,7 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data.user);
       return res.data;
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       throw error; // Re-throw to let the component handle it
     }
   };
@@ -52,7 +59,7 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data.user);
       return res.data;
     } catch (error) {
-      console.error('Signup error:', error);
+      console.error("Signup error:", error);
       throw error; // Re-throw to let the component handle it
     }
   };
@@ -64,7 +71,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, loading,setUser }}>
+    <AuthContext.Provider
+      value={{ user, login, signup, logout, loading, setUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

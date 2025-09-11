@@ -181,7 +181,7 @@ export const createCourse = async (req, res) => {
       duration,
       price,
       originalPrice: originalPrice || price,
-      currency: currency || 'USD',
+      currency: currency || 'INR',
       thumbnail: thumbnailUrl,
       videos: videoUrls,
       // Support either comma-separated strings or arrays

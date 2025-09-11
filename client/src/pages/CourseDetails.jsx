@@ -169,34 +169,88 @@ export default function CourseDetails() {
       });
       return;
     }
+
+    // Debug: Test authentication first
     try {
+      console.log("Testing authentication...");
+      const authTest = await courseService.testAuth();
+      console.log("Auth test result:", authTest);
+    } catch (authError) {
+      console.error("Auth test failed:", authError);
+      alert("Authentication failed. Please login again.");
+      return;
+    }
+
+    try {
+      console.log("Creating order for course:", display.id);
       const result = await courseService.createOrder(display.id);
       setOrderInfo(result.data);
       setShowCheckout(true);
     } catch (e) {
+      console.error("Order creation error:", e);
       alert(e.message || "Failed to initiate payment");
     }
   };
 
   const launchRazorpay = () => {
-    if (!orderInfo?.order) return;
-    const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-      amount: orderInfo.order.amount,
-      currency: orderInfo.order.currency,
-      name: display.title,
-      description: "Course Enrollment",
-      order_id: orderInfo.order.id,
-      notes: orderInfo.order.notes,
-      handler: function () {
-        // After payment success, redirect to subscription/dashboard
-        navigate("/subscription");
-      },
-      prefill: {},
-      theme: { color: "#1B4A8B" },
-    };
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+    console.log("launchRazorpay called");
+    console.log("orderInfo:", orderInfo);
+    console.log("window.Razorpay:", window.Razorpay);
+    console.log("VITE_RAZORPAY_KEY_ID:", import.meta.env.VITE_RAZORPAY_KEY_ID);
+    
+    if (!orderInfo?.order) {
+      console.error("No order info available");
+      alert("Order information not available");
+      return;
+    }
+
+    if (!window.Razorpay) {
+      console.error("Razorpay script not loaded");
+      alert("Payment system not loaded. Please refresh the page.");
+      return;
+    }
+
+    if (!import.meta.env.VITE_RAZORPAY_KEY_ID) {
+      console.error("Razorpay key not configured");
+      alert("Payment configuration error. Please contact support.");
+      return;
+    }
+
+    try {
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: orderInfo.order.amount,
+        currency: orderInfo.order.currency,
+        name: display.title,
+        description: "Course Enrollment",
+        order_id: orderInfo.order.id,
+        notes: orderInfo.order.notes,
+        handler: function (response) {
+          // After payment success, close modal and redirect
+          setShowCheckout(false);
+          setOrderInfo(null);
+          navigate("/subscription");
+        },
+        modal: {
+          ondismiss: function() {
+            // When user closes the modal, reset state
+            setShowCheckout(false);
+            setOrderInfo(null);
+          }
+        },
+        prefill: {},
+        theme: { color: "#1B4A8B" },
+      };
+      
+      console.log("Razorpay options:", options);
+      const rzp = new window.Razorpay(options);
+      console.log("Razorpay instance created:", rzp);
+      rzp.open();
+      console.log("Razorpay opened");
+    } catch (error) {
+      console.error("Error launching Razorpay:", error);
+      alert("Error in opening checkout: " + error.message);
+    }
   };
 
   return (
@@ -462,7 +516,10 @@ export default function CourseDetails() {
                   </div>
                 </div>
 
-                <button className="w-full bg-[#1b3b6b] text-white font-semibold py-3 px-4 rounded-lg hover:bg-[#163257] transition-colors duration-300">
+                <button 
+                  onClick={handleEnrollClick}
+                  className="w-full bg-[#1b3b6b] text-white font-semibold py-3 px-4 rounded-lg hover:bg-[#163257] transition-colors duration-300"
+                >
                   Enroll Now
                 </button>
               </div>
@@ -537,7 +594,10 @@ export default function CourseDetails() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Confirm Purchase</h3>
               <button
-                onClick={() => setShowCheckout(false)}
+                onClick={() => {
+                  setShowCheckout(false);
+                  setOrderInfo(null);
+                }}
                 className="text-gray-500 hover:text-gray-700"
               >
                 ✖
