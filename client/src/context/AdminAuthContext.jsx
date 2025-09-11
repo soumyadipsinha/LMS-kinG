@@ -16,7 +16,7 @@ export const AdminAuthProvider = ({ children }) => {
   const http = axios.create({
     baseURL: backendURL,
     timeout: 15000,
-    withCredentials: false,
+    withCredentials: true, // Include cookies in requests
     headers: { "Content-Type": "application/json" },
   });
 

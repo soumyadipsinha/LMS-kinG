@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
     baseURL: backendURL,
     timeout: 15000,
     headers: { "Content-Type": "application/json" },
+    withCredentials: true, // Include cookies in requests
   });
 
   // Fetch current user on load

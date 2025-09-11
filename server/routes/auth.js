@@ -1,10 +1,19 @@
 import express from "express";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 import User from "../models/User.js";
+
+// Make sure environment variables are loaded
+dotenv.config();
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 const JWT_EXPIRE = process.env.JWT_EXPIRE || "7d";
+
+// Debug logging for JWT_SECRET
+console.log("Auth routes - JWT_SECRET loaded:", JWT_SECRET ? "Present" : "Missing");
+console.log("Auth routes - JWT_SECRET length:", JWT_SECRET?.length || 0);
+console.log("Auth routes - JWT_SECRET value:", JWT_SECRET);
 
 // --- SIGNUP ---
 router.post("/signup", async (req, res) => {
@@ -42,6 +51,7 @@ router.post("/login", async (req, res) => {
     if (!isMatch) return res.status(401).json({ message: "Invalid password" });
 
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: JWT_EXPIRE });
+    console.log("Login - Generated token with JWT_SECRET length:", JWT_SECRET?.length);
 
     res.status(200).json({
       user: { id: user._id, firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role, avatar: user.avatar },
