@@ -1,6 +1,7 @@
 import Course from '../models/Course.js';
 import Admin from '../models/Admin.js';
 import { uploadToCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
+import { createCourseAnnouncement } from './notificationController.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -197,6 +198,41 @@ export const createCourse = async (req, res) => {
 
     // Populate instructor info
     await course.populate('instructor', 'firstName lastName email avatar');
+
+    // Send real-time notification to all users if course is published
+    if (course.isPublished) {
+      try {
+        const adminName = `${course.instructor.firstName} ${course.instructor.lastName}`;
+        const notificationCount = await createCourseAnnouncement(
+          course._id, 
+          course.title, 
+          adminName
+        );
+        
+        // Emit real-time notification via Socket.IO
+        const io = req.app.get('io');
+        if (io) {
+          io.to('notifications').emit('new_course_notification', {
+            type: 'new_course_available',
+            title: 'New Course Available!',
+            message: `A new course "${course.title}" has been added by ${adminName}. Check it out now!`,
+            courseId: course._id,
+            courseTitle: course.title,
+            courseThumbnail: course.thumbnail,
+            adminName: adminName,
+            actionUrl: `/courses/${course._id}`,
+            actionText: 'View Course',
+            priority: 'high',
+            timestamp: new Date()
+          });
+        }
+        
+        console.log(`📢 Course notification sent to ${notificationCount} users`);
+      } catch (notificationError) {
+        console.error('Failed to send course notifications:', notificationError);
+        // Don't fail the course creation if notification fails
+      }
+    }
 
     res.status(201).json({
       status: 'success',

@@ -177,7 +177,7 @@ export default function AdminDashboard() {
       {/* Quick Actions */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <Link to="/admin/students/add" className="flex flex-col items-center p-4 rounded-lg border-2 border-dashed border-gray-300 hover:border-red-400 hover:bg-red-50 transition-all duration-300 group">
             <span className="text-3xl mb-2 group-hover:scale-110 transition-transform duration-300">👤</span>
             <span className="text-sm font-medium text-gray-700 group-hover:text-red-700">Add Student</span>
@@ -191,6 +191,11 @@ export default function AdminDashboard() {
           <Link to="/admin/exams/add" className="flex flex-col items-center p-4 rounded-lg border-2 border-dashed border-gray-300 hover:border-purple-400 hover:bg-purple-50 transition-all duration-300 group">
             <span className="text-3xl mb-2 group-hover:scale-110 transition-transform duration-300">📝</span>
             <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700">Create Exam</span>
+          </Link>
+          
+          <Link to="/admin/notifications" className="flex flex-col items-center p-4 rounded-lg border-2 border-dashed border-gray-300 hover:border-purple-400 hover:bg-purple-50 transition-all duration-300 group">
+            <span className="text-3xl mb-2 group-hover:scale-110 transition-transform duration-300">🔔</span>
+            <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700">Send Notifications</span>
           </Link>
           
           <Link to="/admin/analytics" className="flex flex-col items-center p-4 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-400 hover:bg-blue-50 transition-all duration-300 group">

@@ -1,24 +1,33 @@
-// src/pages/Notifications.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import notificationService from "../services/notificationService";
+import socketService from "../services/socketService";
 
 const brand = { blue: "#18457A", green: "#16a34a", red: "#dc2626" };
 
-function NotificationCard({ title, message, time, type, isRead }) {
+function NotificationCard({ notification, onMarkAsRead, onDelete }) {
   const getTypeIcon = (type) => {
     switch (type) {
-      case "course":
+      case "new_course_available":
         return (
           <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
             <span className="text-white text-lg">📚</span>
           </div>
         );
-      case "payment":
+      case "course_enrollment":
+        return (
+          <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+            <span className="text-white text-lg">✅</span>
+          </div>
+        );
+      case "payment_success":
         return (
           <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
             <span className="text-white text-lg">💰</span>
           </div>
         );
-      case "system":
+      case "system_announcement":
         return (
           <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
             <span className="text-white text-lg">⚙️</span>
@@ -35,33 +44,88 @@ function NotificationCard({ title, message, time, type, isRead }) {
 
   const getTypeColor = (type) => {
     switch (type) {
-      case "course": return "from-blue-50 to-cyan-50 border-blue-200";
-      case "payment": return "from-green-50 to-emerald-50 border-green-200";
-      case "system": return "from-purple-50 to-pink-50 border-purple-200";
+      case "new_course_available": return "from-blue-50 to-cyan-50 border-blue-200";
+      case "course_enrollment": return "from-green-50 to-emerald-50 border-green-200";
+      case "payment_success": return "from-green-50 to-emerald-50 border-green-200";
+      case "system_announcement": return "from-purple-50 to-pink-50 border-purple-200";
       default: return "from-gray-50 to-slate-50 border-gray-200";
     }
   };
 
+  const formatTime = (timestamp) => {
+    const now = new Date();
+    const notificationTime = new Date(timestamp);
+    const diffInMinutes = Math.floor((now - notificationTime) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return "Just now";
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+    return `${Math.floor(diffInMinutes / 1440)}d ago`;
+  };
+
+  const handleMarkAsRead = async () => {
+    if (!notification.isRead) {
+      try {
+        await notificationService.markAsRead(notification._id);
+        onMarkAsRead(notification._id);
+      } catch (error) {
+        console.error('Error marking notification as read:', error);
+      }
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await notificationService.deleteNotification(notification._id);
+      onDelete(notification._id);
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+    }
+  };
+
   return (
-    <div className={`bg-gradient-to-r ${getTypeColor(type)} border-2 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 ${!isRead ? 'border-l-4 border-l-blue-500 ring-2 ring-blue-100' : ''}`}>
+    <div className={`bg-gradient-to-r ${getTypeColor(notification.type)} border-2 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 ${!notification.isRead ? 'border-l-4 border-l-blue-500 ring-2 ring-blue-100' : ''}`}>
       <div className="flex items-start gap-4">
         <div className="flex-shrink-0">
-          {getTypeIcon(type)}
+          {getTypeIcon(notification.type)}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-2">
-            <h3 className={`text-lg font-bold ${!isRead ? 'text-slate-900' : 'text-slate-700'}`}>
-              {title}
+            <h3 className={`text-lg font-bold ${!notification.isRead ? 'text-slate-900' : 'text-slate-700'}`}>
+              {notification.title}
             </h3>
-            <span className="text-xs text-slate-500 bg-white px-2 py-1 rounded-full shadow-sm">
-              {time}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-500 bg-white px-2 py-1 rounded-full shadow-sm">
+                {formatTime(notification.createdAt)}
+              </span>
+              <button
+                onClick={handleDelete}
+                className="text-slate-400 hover:text-red-500 transition-colors"
+                title="Delete notification"
+              >
+                ✕
+              </button>
+            </div>
           </div>
-          <p className="text-sm text-slate-600 leading-relaxed">{message}</p>
-          {!isRead && (
+          <p className="text-sm text-slate-600 leading-relaxed mb-3">{notification.message}</p>
+          
+          {notification.actionUrl && (
+            <Link
+              to={notification.actionUrl}
+              className="inline-block text-sm text-blue-600 hover:text-blue-800 font-semibold bg-white px-3 py-1 rounded-full shadow-sm transition-all duration-300 hover:shadow-md mb-3"
+              onClick={handleMarkAsRead}
+            >
+              {notification.actionText || 'View Details'}
+            </Link>
+          )}
+          
+          {!notification.isRead && (
             <div className="mt-4 flex items-center gap-3">
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-              <button className="text-sm text-blue-600 hover:text-blue-800 font-semibold bg-white px-3 py-1 rounded-full shadow-sm transition-all duration-300 hover:shadow-md">
+              <button 
+                onClick={handleMarkAsRead}
+                className="text-sm text-blue-600 hover:text-blue-800 font-semibold bg-white px-3 py-1 rounded-full shadow-sm transition-all duration-300 hover:shadow-md"
+              >
                 Mark as read
               </button>
             </div>
@@ -72,221 +136,270 @@ function NotificationCard({ title, message, time, type, isRead }) {
   );
 }
 
-function NotificationPreference({ title, description, enabled, onToggle, icon }) {
-  return (
-    <div className="bg-white border-2 border-gray-100 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4 flex-1">
-          <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${enabled ? 'bg-gradient-to-r from-green-100 to-emerald-100' : 'bg-gradient-to-r from-gray-100 to-slate-100'}`}>
-            {icon}
-          </div>
-          <div className="flex-1">
-            <h3 className="text-sm font-bold text-slate-900">{title}</h3>
-            <p className="text-sm text-slate-600 mt-1">{description}</p>
-          </div>
-        </div>
-        <button
-          onClick={onToggle}
-          className={`relative inline-flex h-7 w-14 items-center rounded-full transition-all duration-300 shadow-lg ${
-            enabled ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-gradient-to-r from-gray-300 to-slate-300'
-          }`}
-        >
-          <span
-            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-all duration-300 ${
-              enabled ? 'translate-x-8' : 'translate-x-1'
-            }`}
-          />
-        </button>
-      </div>
-    </div>
-  );
-}
-
 export default function Notifications() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("all");
-  const [preferences, setPreferences] = useState({
-    emailNotifications: true,
-    pushNotifications: false,
-    courseUpdates: true,
-    paymentReminders: true,
-    marketingEmails: false,
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pages: 1,
+    total: 0
   });
 
-  const notifications = [
-    {
-      id: 1,
-      title: "New Course Available",
-      message: "Advanced Machine Learning course is now available for enrollment.",
-      time: "2 hours ago",
-      type: "course",
-      isRead: false,
-    },
-    {
-      id: 2,
-      title: "Payment Successful",
-      message: "Your payment of ₹4,999 for Machine Learning Course has been processed successfully.",
-      time: "1 day ago",
-      type: "payment",
-      isRead: true,
-    },
-    {
-      id: 3,
-      title: "System Maintenance",
-      message: "Scheduled maintenance will occur on December 20th from 2-4 AM IST.",
-      time: "2 days ago",
-      type: "system",
-      isRead: true,
-    },
-    {
-      id: 4,
-      title: "Course Progress Update",
-      message: "You've completed 60% of the Machine Learning course. Keep up the great work!",
-      time: "3 days ago",
-      type: "course",
-      isRead: false,
-    },
-  ];
-
-  const filteredNotifications = activeTab === "all" 
-    ? notifications 
-    : notifications.filter(n => n.type === activeTab);
-
-  const togglePreference = (key) => {
-    setPreferences(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
+  // Load notifications
+  const loadNotifications = async (page = 1, type = null) => {
+    try {
+      setLoading(true);
+      const params = { page, limit: 10 };
+      if (type && type !== 'all') {
+        params.type = type;
+      }
+      
+      const response = await notificationService.getNotifications(params);
+      setNotifications(response.data.notifications);
+      setPagination(response.data.pagination);
+      setUnreadCount(response.data.pagination.unreadCount);
+    } catch (error) {
+      console.error('Error loading notifications:', error);
+      setError('Failed to load notifications');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  return (
-    <section className="max-w-6xl mx-auto px-6 md:px-10 py-8 bg-gradient-to-br from-slate-50 to-indigo-50 min-h-screen">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8 bg-white rounded-2xl p-6 shadow-lg border border-indigo-100">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="text-3xl">🔔</div>
-            <h1 className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Notifications
-            </h1>
+  // Load notification count
+  const loadNotificationCount = async () => {
+    try {
+      const response = await notificationService.getNotificationCount();
+      setUnreadCount(response.data.unreadCount);
+    } catch (error) {
+      console.error('Error loading notification count:', error);
+    }
+  };
+
+  // Mark notification as read
+  const handleMarkAsRead = (notificationId) => {
+    setNotifications(prev => 
+      prev.map(notification => 
+        notification._id === notificationId 
+          ? { ...notification, isRead: true, readAt: new Date() }
+          : notification
+      )
+    );
+    setUnreadCount(prev => Math.max(0, prev - 1));
+  };
+
+  // Delete notification
+  const handleDelete = (notificationId) => {
+    setNotifications(prev => {
+      const notification = prev.find(n => n._id === notificationId);
+      const newNotifications = prev.filter(n => n._id !== notificationId);
+      if (notification && !notification.isRead) {
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+      return newNotifications;
+    });
+  };
+
+  // Mark all as read
+  const handleMarkAllAsRead = async () => {
+    try {
+      await notificationService.markAllAsRead();
+      setNotifications(prev => 
+        prev.map(notification => ({ ...notification, isRead: true, readAt: new Date() }))
+      );
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Error marking all as read:', error);
+    }
+  };
+
+  // Handle new course notification from socket
+  const handleNewCourseNotification = (notificationData) => {
+    const newNotification = {
+      _id: `temp_${Date.now()}`,
+      type: notificationData.type,
+      title: notificationData.title,
+      message: notificationData.message,
+      data: {
+        courseId: notificationData.courseId,
+        courseTitle: notificationData.courseTitle,
+        courseThumbnail: notificationData.courseThumbnail
+      },
+      isRead: false,
+      priority: notificationData.priority,
+      actionUrl: notificationData.actionUrl,
+      actionText: notificationData.actionText,
+      createdAt: notificationData.timestamp
+    };
+
+    setNotifications(prev => [newNotification, ...prev]);
+    setUnreadCount(prev => prev + 1);
+  };
+
+  // Initialize socket connection and load data
+  useEffect(() => {
+    if (user) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Connect to socket
+        socketService.connect(token);
+        
+        // Listen for new course notifications
+        socketService.onNewCourseNotification(handleNewCourseNotification);
+      }
+      
+      // Load initial data
+      loadNotifications();
+      loadNotificationCount();
+    }
+
+    return () => {
+      socketService.offNewCourseNotification();
+    };
+  }, [user]);
+
+  // Handle tab change
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    loadNotifications(1, tab);
+  };
+
+  // Filter notifications based on active tab
+  const filteredNotifications = notifications.filter(notification => {
+    if (activeTab === 'all') return true;
+    if (activeTab === 'unread') return !notification.isRead;
+    return notification.type === activeTab;
+  });
+
+  if (loading && notifications.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           </div>
-          <p className="text-[12px] text-slate-500 mt-1">Manage your notification preferences and view recent updates</p>
-        </div>
-        <button className="inline-flex items-center gap-2 rounded-full border-2 border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 px-4 py-2 text-sm font-semibold text-indigo-700 hover:from-indigo-100 hover:to-purple-100 transition-all duration-300 shadow-sm">
-          <span className="text-lg">✅</span>
-          Mark All as Read
-        </button>
-      </div>
-
-      {/* Tabs */}
-      <div className="bg-white rounded-2xl p-2 shadow-lg border border-indigo-100 mb-8">
-        <div className="flex flex-wrap gap-2">
-          <button
-            className={`px-6 py-3 text-sm font-bold rounded-xl transition-all duration-300 ${
-              activeTab === "all" 
-                ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg" 
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-            }`}
-            onClick={() => setActiveTab("all")}
-          >
-            📋 All Notifications
-          </button>
-          <button
-            className={`px-6 py-3 text-sm font-bold rounded-xl transition-all duration-300 ${
-              activeTab === "course" 
-                ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg" 
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-            }`}
-            onClick={() => setActiveTab("course")}
-          >
-            📚 Course Updates
-          </button>
-          <button
-            className={`px-6 py-3 text-sm font-bold rounded-xl transition-all duration-300 ${
-              activeTab === "payment" 
-                ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg" 
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-            }`}
-            onClick={() => setActiveTab("payment")}
-          >
-            💰 Payment Alerts
-          </button>
-          <button
-            className={`px-6 py-3 text-sm font-bold rounded-xl transition-all duration-300 ${
-              activeTab === "system" 
-                ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg" 
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-            }`}
-            onClick={() => setActiveTab("system")}
-          >
-            ⚙️ System Notifications
-          </button>
         </div>
       </div>
+    );
+  }
 
-      {/* Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Notifications List */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-indigo-100">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="text-2xl">📬</div>
-              <h2 className="text-xl font-bold text-slate-900">Recent Notifications</h2>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-slate-900 mb-2">Notifications</h1>
+          <p className="text-slate-600">
+            Stay updated with your latest course activities and announcements
+          </p>
+          {unreadCount > 0 && (
+            <div className="mt-4 flex items-center gap-4">
+              <span className="text-sm text-slate-600">
+                {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
+              </span>
+              <button
+                onClick={handleMarkAllAsRead}
+                className="text-sm text-blue-600 hover:text-blue-800 font-semibold bg-white px-4 py-2 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md"
+              >
+                Mark all as read
+              </button>
             </div>
-            <div className="space-y-4">
-              {filteredNotifications.map((notification) => (
-                <NotificationCard key={notification.id} {...notification} />
+          )}
+        </div>
+
+        {/* Tabs */}
+        <div className="mb-8">
+          <div className="flex flex-wrap gap-2 bg-white rounded-2xl p-2 shadow-lg">
+            {[
+              { id: 'all', label: 'All', count: pagination.total },
+              { id: 'unread', label: 'Unread', count: unreadCount },
+              { id: 'new_course_available', label: 'New Courses', count: notifications.filter(n => n.type === 'new_course_available').length },
+              { id: 'course_enrollment', label: 'Enrollments', count: notifications.filter(n => n.type === 'course_enrollment').length },
+              { id: 'payment_success', label: 'Payments', count: notifications.filter(n => n.type === 'payment_success').length }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => handleTabChange(tab.id)}
+                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg'
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                {tab.label} {tab.count > 0 && `(${tab.count})`}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Notifications List */}
+        <div className="space-y-6">
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+              <p className="text-red-600">{error}</p>
+              <button
+                onClick={() => loadNotifications()}
+                className="mt-4 text-sm text-red-600 hover:text-red-800 font-semibold bg-white px-4 py-2 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md"
+              >
+                Try Again
+              </button>
+            </div>
+          )}
+
+          {filteredNotifications.length === 0 && !loading ? (
+            <div className="bg-white rounded-2xl p-12 text-center shadow-lg">
+              <div className="text-6xl mb-4">🔔</div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">No notifications</h3>
+              <p className="text-slate-600">
+                {activeTab === 'unread' 
+                  ? "You're all caught up! No unread notifications."
+                  : "You don't have any notifications yet."
+                }
+              </p>
+            </div>
+          ) : (
+            filteredNotifications.map(notification => (
+              <NotificationCard
+                key={notification._id}
+                notification={notification}
+                onMarkAsRead={handleMarkAsRead}
+                onDelete={handleDelete}
+              />
+            ))
+          )}
+
+          {loading && notifications.length > 0 && (
+            <div className="flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+          )}
+        </div>
+
+        {/* Pagination */}
+        {pagination.pages > 1 && (
+          <div className="mt-8 flex justify-center">
+            <div className="flex gap-2">
+              {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(page => (
+                <button
+                  key={page}
+                  onClick={() => loadNotifications(page)}
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
+                    pagination.current === page
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg'
+                      : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm'
+                  }`}
+                >
+                  {page}
+                </button>
               ))}
             </div>
           </div>
-        </div>
-
-        {/* Preferences Sidebar */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-indigo-100">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="text-2xl">⚙️</div>
-              <h2 className="text-xl font-bold text-slate-900">Notification Preferences</h2>
-            </div>
-            <div className="space-y-4">
-              <NotificationPreference
-                title="Email Notifications"
-                description="Receive notifications via email"
-                enabled={preferences.emailNotifications}
-                onToggle={() => togglePreference('emailNotifications')}
-                icon="📧"
-              />
-              <NotificationPreference
-                title="Push Notifications"
-                description="Receive push notifications in browser"
-                enabled={preferences.pushNotifications}
-                onToggle={() => togglePreference('pushNotifications')}
-                icon="🔔"
-              />
-              <NotificationPreference
-                title="Course Updates"
-                description="Get notified about new courses and updates"
-                enabled={preferences.courseUpdates}
-                onToggle={() => togglePreference('courseUpdates')}
-                icon="📚"
-              />
-              <NotificationPreference
-                title="Payment Reminders"
-                description="Receive payment due reminders"
-                enabled={preferences.paymentReminders}
-                onToggle={() => togglePreference('paymentReminders')}
-                icon="💰"
-              />
-              <NotificationPreference
-                title="Marketing Emails"
-                description="Receive promotional and marketing emails"
-                enabled={preferences.marketingEmails}
-                onToggle={() => togglePreference('marketingEmails')}
-                icon="📢"
-              />
-            </div>
-          </div>
-        </div>
+        )}
       </div>
-    </section>
+    </div>
   );
 }

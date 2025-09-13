@@ -26,6 +26,7 @@ import ExamDetails from "./pages/ExamDetails.jsx";
 import TermsConditions from "./pages/TermsConditions.jsx";
 import RefundPolicy from "./pages/RefundPolicy.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
+import SocketTest from "./pages/SocketTest.jsx";
 
 // Admin Pages
 import AdminDashboard from "./pages/AdminDashboard.jsx";
@@ -33,6 +34,7 @@ import AdminStudents from "./pages/AdminStudents.jsx";
 import AdminCourses from "./pages/AdminCourses.jsx";
 import AdminCourseManagement from "./pages/AdminCourseManagement.jsx";
 import AdminExams from "./pages/AdminExams.jsx";
+import AdminNotifications from "./pages/AdminNotifications.jsx";
 import AdminAnalytics from "./pages/AdminAnalytics.jsx";
 import AdminSettings from "./pages/AdminSettings.jsx";
 
@@ -50,6 +52,7 @@ export default function App() {
         <Route path="terms-conditions" element={<TermsConditions />} />
         <Route path="refund-policy" element={<RefundPolicy />} />
         <Route path="privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="socket-test" element={<SocketTest />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
         <Route path="admin/login" element={<AdminLogin />} />
@@ -76,6 +79,7 @@ export default function App() {
         <Route path="students" element={<AdminStudents />} />
         <Route path="courses" element={<AdminCourseManagement />} />
         <Route path="exams" element={<AdminExams />} />
+        <Route path="notifications" element={<AdminNotifications />} />
         <Route path="analytics" element={<AdminAnalytics />} />
         <Route path="settings" element={<AdminSettings />} />
       </Route>
